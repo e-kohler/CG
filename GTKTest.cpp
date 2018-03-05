@@ -55,17 +55,10 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     gtk_render_background (context, cr, 0, 0, width, height);
 
-    /**cairo_arc (cr,
+    cairo_arc (cr,
                 width / 2.0, height / 2.0,
                 MIN (width, height) / 2.0,
-                0, 2 * G_PI);**/
-
-    cairo_move_to (cr, 0, 0);
-    cairo_line_to (cr, 1, 1);
-    cairo_move_to (cr, 1, 0);
-    cairo_line_to (cr, 0, 1);
-    cairo_set_line_width (cr, 0.2);
-    cairo_stroke (cr);
+                0, 2 * G_PI);
 
     gtk_style_context_get_color (context,
                                 gtk_style_context_get_state (context),
