@@ -51,14 +51,14 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     GtkStyleContext* context;
     list<int> lista;
 
-    Line linha = new Line(lista);
+    Line* linha = new Line();
 
     context = gtk_widget_get_style_context (widget);
 
     width = gtk_widget_get_allocated_width (widget);
     height = gtk_widget_get_allocated_height (widget);
 
-    linha.draw();
+    linha->draw(cr);
     cairo_set_source_rgb (cr, 0, 0, 255);
     cairo_move_to(cr, width/2, height/2);
     cairo_line_to(cr, width, height);

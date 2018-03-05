@@ -1,3 +1,6 @@
+#ifndef ELEMENT_H
+#define ELEMENT_H
+
 using namespace std;
 #include <list>
 #include <gtk/gtk.h>
@@ -7,25 +10,26 @@ class Element {
         list<int> coords_;
     
     public:
-        Element(list<int> coords);
+        Element();
         ~Element();
         virtual void draw(cairo_t* cr) = 0;
 };
 
 class Point : public Element {
     public:
-        Point(list<int> coords);
+        Point();
         void draw(cairo_t* cr);
 };
 
 class Line : public Element {
     public:
-        Line(list<int> coords);
+        Line();
         void draw(cairo_t* cr);
 };
 
 class Polygon : public Element {
     public:
-        Polygon(list<int> coords);
+        Polygon();
         void draw(cairo_t* cr);
 };
+#endif

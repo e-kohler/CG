@@ -1,40 +1,31 @@
 #include "Element.h"
+#include <gtk/gtk.h>
 
-Element::Element(list<int> coords) {
-    coords_ = coords;
+Element::Element() {
 }
 
 Element::~Element() {}
 
-Point::Point(list<int> coords) {
-    Point(list<int> coords)
-    : Element(coords)
-    {}
+Point::Point() {
 }
 
-Point::draw(cairo_t* cr) {
+void Point::draw(cairo_t* cr) {
     //desenha a parada
 }
 
-Line::Line(list<int> coords) {
-    Line(list<int> coords)
-    : Element(coords)
-    {}
+Line::Line() {
 }
 
-Line::draw(cairo_t* cr) {
+void Line::draw(cairo_t* cr) {
     cairo_set_source_rgb (cr, 255, 0, 0);
     cairo_move_to(cr, 100, 100);
     cairo_line_to(cr, 0, 0);
     cairo_stroke(cr);
 }
 
-Polygon::Polygon(list<int> coords) {
-    Polygon(list<int> coords)
-    : Element(coords)
-    {}
+Polygon::Polygon() {
 }
 
-Polygon::draw(cairo_t* cr) {
+void Polygon::draw(cairo_t* cr) {
     //desenha a parada
 }
