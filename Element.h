@@ -2,34 +2,34 @@
 #define ELEMENT_H
 
 using namespace std;
-#include <list>
+#include <vector>
 #include <gtk/gtk.h>
 
 class Element {
     protected:
-        list<int> coords_;
+        vector<int> coords_;
     
     public:
-        Element();
+        Element(vector<int> coords);
         ~Element();
         virtual void draw(cairo_t* cr) = 0;
 };
 
 class Point : public Element {
     public:
-        Point();
+        Point(vector<int> coords);
         void draw(cairo_t* cr);
 };
 
 class Line : public Element {
     public:
-        Line();
+        Line(vector<int> coords);
         void draw(cairo_t* cr);
 };
 
 class Polygon : public Element {
     public:
-        Polygon();
+        Polygon(vector<int> coords);
         void draw(cairo_t* cr);
 };
 #endif
