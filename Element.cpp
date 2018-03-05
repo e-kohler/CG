@@ -23,7 +23,10 @@ Line::Line(list<int> coords) {
 }
 
 Line::draw(cairo_t* cr) {
-    //desenha a parada
+    cairo_set_source_rgb (cr, 255, 0, 0);
+    cairo_move_to(cr, 100, 100);
+    cairo_line_to(cr, 0, 0);
+    cairo_stroke(cr);
 }
 
 Polygon::Polygon(list<int> coords) {

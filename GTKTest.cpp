@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 #include <iostream>
+#include "Element.h"
+#include <list>
 using namespace std;
 
 void on_button_click();
@@ -47,16 +49,16 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     guint width, height;
     GdkRGBA color;
     GtkStyleContext* context;
+    list<int> lista;
+
+    Line linha = new Line(lista);
 
     context = gtk_widget_get_style_context (widget);
 
     width = gtk_widget_get_allocated_width (widget);
     height = gtk_widget_get_allocated_height (widget);
 
-    cairo_set_source_rgb (cr, 255, 0, 0);
-    cairo_move_to(cr, width/2, height/2);
-    cairo_line_to(cr, 0, 0);
-    cairo_stroke(cr);
+    linha.draw();
     cairo_set_source_rgb (cr, 0, 0, 255);
     cairo_move_to(cr, width/2, height/2);
     cairo_line_to(cr, width, height);
