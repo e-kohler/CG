@@ -31,7 +31,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_grid_attach (GTK_GRID (grid), button, 0, 1, 2, 2);
 
     drawing_area = gtk_drawing_area_new ();
-    gtk_widget_set_size_request (drawing_area, 100,100);
+    gtk_widget_set_size_request (drawing_area, 200,200);
     g_signal_connect (G_OBJECT (drawing_area), "draw",
     G_CALLBACK (draw_callback), NULL);
     gtk_grid_attach (GTK_GRID (grid), drawing_area, 0, 3, 2, 2);
@@ -53,7 +53,16 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     width = gtk_widget_get_allocated_width (widget);
     height = gtk_widget_get_allocated_height (widget);
 
-    gtk_render_background (context, cr, 0, 0, width, height);
+    cairo_set_source_rgb (cr, 255, 0, 0);
+    cairo_move_to(cr, width/2, height/2);
+    cairo_line_to(cr, 0, 0);
+    cairo_stroke(cr);
+    cairo_set_source_rgb (cr, 0, 0, 255);
+    cairo_move_to(cr, width/2, height/2);
+    cairo_line_to(cr, width, height);
+    cairo_stroke(cr);
+
+    /**gtk_render_background (context, cr, 0, 0, width, height);
 
     cairo_arc (cr,
                 width / 2.0, height / 2.0,
@@ -62,8 +71,7 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
 
     gtk_style_context_get_color (context,
                                 gtk_style_context_get_state (context),
-                                &color);
-    cairo_set_source_rgb (cr, 0, 0, 0);
+                                &color);**/
 
     cairo_fill (cr);
 
