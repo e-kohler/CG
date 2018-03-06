@@ -1,7 +1,8 @@
 #include <gtk/gtk.h>
 #include <iostream>
-#include "Element.h"
-#include <list>
+#include "Figure.h"
+#include "Coord.h"
+
 using namespace std;
 
 void on_button_click();
@@ -33,7 +34,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_grid_attach (GTK_GRID (grid), button, 0, 1, 2, 2);
 
     drawing_area = gtk_drawing_area_new ();  // cria a área de desenho, arruma o tamanho, conecta no callback e colcoa na grid.
-    gtk_widget_set_size_request (drawing_area, 200,200);
+    gtk_widget_set_size_request (drawing_area, 400,400);
     g_signal_connect (G_OBJECT (drawing_area), "draw",
     G_CALLBACK (draw_callback), NULL);
     gtk_grid_attach (GTK_GRID (grid), drawing_area, 0, 3, 2, 2);
@@ -49,15 +50,25 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     /*guint width, height;
     GdkRGBA color;                // não sei se vamos precisar disso
     GtkStyleContext* context;*/
-    vector<int> coords_polig = {40, 40, 80, 40, 90, 50, 10, 80};  //[(40, 40), (80, 40), (90, 50), (10, 80)]
-    vector<int> coords_linha = {150, 100, 170, 60};  // [(150, 100), (170, 60)]
-    vector<int> coords_triang = {90, 110, 30, 110, 45, 160};  // [(90, 110), (30, 110), (45, 160)]
-    vector<int> coords_point = {100, 90};
 
-    Polygon* polig = new Polygon(coords_polig);  // cria as formas
-    Polygon* triang = new Polygon(coords_triang);
-    Line* linha = new Line(coords_linha);
-    Point* point = new Point(coords_point);
+    Polygon* polig = new Polygon("tetra");  // cria as formas
+    Polygon* triang = new Polygon("tri");
+    Line* linha = new Line("linha");
+    Point* point = new Point("ponto");
+
+    linha->coords.push_back(Coord(150, 100)); // coloca as coordenadas de cada uma
+    linha->coords.push_back(Coord(170, 60));
+
+    polig->coords.push_back(Coord(40, 40));
+    polig->coords.push_back(Coord(80, 40));
+    polig->coords.push_back(Coord(90, 50));
+    polig->coords.push_back(Coord(10, 80));
+
+    triang->coords.push_back(Coord(90, 110));
+    triang->coords.push_back(Coord(30, 110));
+    triang->coords.push_back(Coord(45, 160));
+
+    point->coords.push_back(Coord(100, 90));
 
     /*context = gtk_widget_get_style_context (widget);
     width = gtk_widget_get_allocated_width (widget);  // nem disso
