@@ -13,27 +13,25 @@ class Figure {
         string name;
            
     public:
+        list<Coord> coords;
         Figure(string name);
         ~Figure();
-        list<Coord> coords;
         virtual void draw(cairo_t* cr);
 };
 
 class Point : public Figure {
     public:
+        virtual void draw(cairo_t* cr);
         Point(string name);
-        void draw(cairo_t* cr);
 };
 
 class Line : public Figure {
     public:
         Line(string name);
-        void draw(cairo_t* cr);
 };
 
 class Polygon : public Figure {
     public:
         Polygon(string name);
-        void draw(cairo_t* cr);
 };
 #endif

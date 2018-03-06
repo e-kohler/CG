@@ -17,7 +17,7 @@ void Figure::draw(cairo_t* cr) {
         float x = iterator->getX();
         float y = iterator->getY();
         cairo_line_to(cr, x, y);  // move o ponto atual para a primeira coordenada da forma, toda vez que um line_to ocorre, o ponto atual se torna o ponto ligado pelo line_to
-        if (iterator == coords.end()) {  // isso aqui é pra "fechar" a forma, quando chega na última coordenada, liga com a primeira
+        if (iterator == prev(coords.end())) {  // isso aqui é pra "fechar" a forma, quando chega na última coordenada, liga com a primeira
             float x = coords.front().getX();  // pega os valroes da primeira coordenada
             float y = coords.front().getY();
             cairo_line_to(cr, x, y);
@@ -42,38 +42,6 @@ Line::Line(string name)
         : Figure(name)
         {}
 
-void Line::draw(cairo_t* cr) {
-    list<Coord>::iterator iterator = coords.begin();
-    cairo_move_to(cr, iterator->getX(), iterator->getY());
-    for (; iterator != coords.end(); ++iterator) {
-        float x = iterator->getX();
-        float y = iterator->getY();
-        cairo_line_to(cr, x, y);
-        if (iterator == coords.end()) {
-            float x = coords.front().getX();
-            float y = coords.front().getY();
-            cairo_line_to(cr, x, y);
-        }
-    }
-    cairo_stroke(cr);
-}
-
 Polygon::Polygon(string name)
         :Figure(name)
         {}
-
-void Polygon::draw(cairo_t* cr) {
-    list<Coord>::iterator iterator = coords.begin();
-    cairo_move_to(cr, iterator->getX(), iterator->getY());
-    for (; iterator != coords.end(); ++iterator) {
-        float x = iterator->getX();
-        float y = iterator->getY();
-        cairo_line_to(cr, x, y);
-        if (iterator == prev(coords.end())) {
-            float x = coords.front().getX();
-            float y = coords.front().getY();
-            cairo_line_to(cr, x, y);
-        }
-    }
-    cairo_stroke(cr);
-}
