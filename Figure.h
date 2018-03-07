@@ -2,6 +2,7 @@
 #define FIGURE_H
 
 #include "Coord.h"
+#include "View.h"
 #include <gtk/gtk.h>
 #include <list>
 #include <string>
@@ -16,13 +17,13 @@ class Figure {
         list<Coord> coords;
         Figure(string name);
         ~Figure();
-        virtual void draw(cairo_t* cr);
+        virtual void draw(cairo_t* cr, View* view);
 };
 
 class Point : public Figure {
     public:
-        virtual void draw(cairo_t* cr);
         Point(string name);
+        virtual void draw(cairo_t* cr, View* view);
 };
 
 class Line : public Figure {

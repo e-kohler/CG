@@ -10,17 +10,22 @@ Figure::Figure(string name) {
 
 Figure::~Figure() {}
 
-void Figure::draw(cairo_t* cr) {
-    list<Coord>::iterator iterator = coords.begin();
-    cairo_move_to(cr, iterator->getX(), iterator->getY());  // método para desenhar das linhas e polígonos
+void Figure::draw(cairo_t* cr, View* view) {
+
+    auto iterator = coords.begin();
+
+    Coord coord = view->world_to_viewport(*iterator);
+
+    cairo_move_to(cr, coord.getX(), coord.getY());
+    cout << coord.getX() << " " << coord.getY() << "\n";
     for (; iterator != coords.end(); ++iterator) {
-        float x = iterator->getX();
-        float y = iterator->getY();
-        cairo_line_to(cr, x, y);  // move o ponto atual para a primeira coordenada da forma, toda vez que um line_to ocorre, o ponto atual se torna o ponto ligado pelo line_to
+        coord = view->world_to_viewport(*iterator);
+        cout << coord.getX() << " " << coord.getY() << "\n";
+        cairo_line_to(cr, coord.getX(), coord.getY());  // move o ponto atual para a primeira coordenada da forma, toda vez que um line_to ocorre, o ponto atual se torna o ponto ligado pelo line_to
         if (iterator == prev(coords.end())) {  // isso aqui é pra "fechar" a forma, quando chega na última coordenada, liga com a primeira
-            float x = coords.front().getX();  // pega os valroes da primeira coordenada
-            float y = coords.front().getY();
-            cairo_line_to(cr, x, y);
+            coord = coords.front();  // pega os valroes da primeira coordenada
+            coord = view->world_to_viewport(coord);
+            cairo_line_to(cr, coord.getX(), coord.getY());
         }
     }
     cairo_stroke(cr);
@@ -30,10 +35,10 @@ Point::Point(string name)
         : Figure(name)
         {}
 
-void Point::draw(cairo_t* cr) {
+void Point::draw(cairo_t* cr, View* view) {
     float x = coords.front().getX();
     float y = coords.front().getY();
-    cairo_move_to(cr, x-1.0, y-1.0);
+    cairo_move_to(cr, x-1.0, y-1.0);  // desenha uma reta de 1 pixel rs
     cairo_line_to(cr, x, y);
     cairo_stroke(cr);
 }
