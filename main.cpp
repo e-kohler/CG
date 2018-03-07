@@ -6,7 +6,7 @@
 using namespace std;
 
 GtkWidget* drawing_area;  // canvas de desenho
-list<Figure> figures;  // lista de figuras pra desenhar
+list<Figure*> figures;  // lista de ponteiros de figuras pra desenhar
 View* view;  // a câmera
 
 //funções que mudam a posição (esq, dir, cima, baixo) ou tamanho da câmera(zoom in, zoom out)
@@ -48,7 +48,7 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_set_source_rgb(cr, 1, 1, 1);  // linha branca
 
     for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
-        iterator->draw(cr, view);
+        (*iterator)->draw(cr, view);
     }
     cairo_stroke(cr);
     return FALSE;
@@ -61,9 +61,11 @@ static void activate (GtkApplication* app, gpointer user_data) {
     GtkWidget* viewport;
 
     Polygon* polig = new Polygon("tetra");  // cria as formas
+    Polygon* polig2 = new Polygon("tetra2");
     Polygon* triang = new Polygon("tri");
     Line* linha = new Line("linha");
     Point* point = new Point("ponto");
+    Point* point2 = new Point("ponto2");
 
     linha->coords.push_back(Coord(-5, 0));
     linha->coords.push_back(Coord(0, 5));
@@ -73,15 +75,24 @@ static void activate (GtkApplication* app, gpointer user_data) {
     polig->coords.push_back(Coord(-1, -1));
     polig->coords.push_back(Coord(-1, 1));
 
+    polig2->coords.push_back(Coord(-2, -2));
+    polig2->coords.push_back(Coord(-3, -4));
+    polig2->coords.push_back(Coord(-5, -4));
+    polig2->coords.push_back(Coord(-4, -2));
+
     triang->coords.push_back(Coord(1, 2));
     triang->coords.push_back(Coord(3, 1));
     triang->coords.push_back(Coord(4, 4));
 
-    //point->coords.push_back(Coord(100, 90));
+    point->coords.push_back(Coord(0, 0));
+    point2->coords.push_back(Coord(3, -4));
 
-    figures.push_back(*linha);  // coloca na lista global
-    figures.push_back(*polig);
-    figures.push_back(*triang);
+    figures.push_back(linha);  // coloca na lista global
+    figures.push_back(polig);
+    figures.push_back(polig2);
+    figures.push_back(triang);
+    figures.push_back(point);
+    figures.push_back(point2);
 
     view = new View();
 

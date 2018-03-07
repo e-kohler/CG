@@ -23,7 +23,7 @@ class Figure {
 class Point : public Figure {
     public:
         Point(string name);
-        virtual void draw(cairo_t* cr, View* view);  // só point da override pq é diferente
+        void draw(cairo_t* cr, View* view) override;  // só point da override pq é diferente
 };
 
 class Line : public Figure {

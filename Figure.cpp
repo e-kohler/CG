@@ -1,6 +1,7 @@
 #include "Figure.h"
 #include <gtk/gtk.h>
 #include <iostream>
+#include <cmath> 
 
 using namespace std;
 
@@ -15,7 +16,6 @@ void Figure::draw(cairo_t* cr, View* view) {
     auto iterator = coords.begin();  // cada figura tem uma lista de coordenadas (vertices) chamada coords
 
     Coord coord = view->world_to_viewport(*iterator);  // coord recebe a primeira coordenada da figura transformada
-
     cairo_move_to(cr, coord.getX(), coord.getY());  // move pra coordenada
     for (; iterator != coords.end(); ++iterator) {  // percorre toda a lista de coordenadas, aplicando a transformação para viewport e desenhando as linhas nos resultados
         coord = view->world_to_viewport(*iterator); 
@@ -26,7 +26,6 @@ void Figure::draw(cairo_t* cr, View* view) {
             cairo_line_to(cr, coord.getX(), coord.getY());
         }
     }
-    cairo_stroke(cr);
 }
 
 Point::Point(string name)
@@ -34,11 +33,10 @@ Point::Point(string name)
         {}
 
 void Point::draw(cairo_t* cr, View* view) {
-    float x = coords.front().getX();
-    float y = coords.front().getY();
-    cairo_move_to(cr, x-1.0, y-1.0);  // desenha uma reta de 1 pixel rs
-    cairo_line_to(cr, x, y);          // nao ta com a tranformação pra viewport
-    cairo_stroke(cr);
+    Coord coord = *coords.begin();
+    coord = view->world_to_viewport(coord);
+    cairo_move_to(cr, coord.getX(), coord.getY());
+    cairo_arc(cr, coord.getX(), coord.getY(), 1, 0, 2*M_PI);
 }
 
 Line::Line(string name)
