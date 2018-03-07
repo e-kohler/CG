@@ -41,13 +41,11 @@ static void zoom_out() {
 }
 
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
-    cairo_set_source_rgb(cr, 0, 0, 0);
+    cairo_set_source_rgb(cr, 0, 0, 0);  //fundo preto
     cairo_paint(cr);
 
     cairo_set_line_width(cr, 1);
-
-    // linha branca
-    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_set_source_rgb(cr, 1, 1, 1);  // linha branca
 
     for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
         iterator->draw(cr, view);
