@@ -1,7 +1,7 @@
 #ifndef COORD_H
 #define COORD_H
 
-class Coord {
+class Coord {  // essa classe é só um vetor 2d
     public:
         Coord();
         Coord (float x, float y);

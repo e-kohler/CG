@@ -5,10 +5,11 @@
 
 using namespace std;
 
-GtkWidget* drawing_area;
-list<Figure> figures;
-View* view;
+GtkWidget* drawing_area;  // canvas de desenho
+list<Figure> figures;  // lista de figuras pra desenhar
+View* view;  // a câmera
 
+//funções que mudam a posição (esq, dir, cima, baixo) ou tamanho da câmera(zoom in, zoom out)
 static void move_up() {
     view->pos = view->pos + Coord(0, 1);
     gtk_widget_queue_draw(drawing_area);
@@ -48,7 +49,7 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     // linha branca
     cairo_set_source_rgb(cr, 1, 1, 1);
 
-    for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) {
+    for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
         iterator->draw(cr, view);
     }
     cairo_stroke(cr);
@@ -80,7 +81,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
 
     point->coords.push_back(Coord(100, 90));
 
-    figures.push_back(*linha);
+    figures.push_back(*linha);  // coloca na lista global
     figures.push_back(*polig);
     figures.push_back(*triang);
 
@@ -110,7 +111,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_grid_attach (GTK_GRID (grid), button, 0, 1, 1, 1);
 
     button = gtk_button_new_with_label ("In");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect_swapped (button, "clicked", G_CALLBACK (zoom_in), window);  // swapped é a mesma coisa que o connect, mas pode passar parâmetro, no caso o window pro destroy.
+    g_signal_connect (button, "clicked", G_CALLBACK (zoom_in), NULL);
     gtk_grid_attach (GTK_GRID (grid), button, 3, 2, 1, 1);
 
     button = gtk_button_new_with_label ("Out");  //cria um botão, conecta na função e coloca na grid
@@ -118,7 +119,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_grid_attach (GTK_GRID (grid), button, 3, 0, 1, 1);
 
     drawing_area = gtk_drawing_area_new ();  // cria a área de desenho, arruma o tamanho, conecta no callback e colcoa na grid.
-    gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());
+    gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // o tamanho da drawing_board é o tamanho do viewport, eles são a mesma coisa
     g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
     gtk_grid_attach (GTK_GRID (grid), drawing_area, 0, 3, 3, 4);
 

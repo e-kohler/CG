@@ -17,13 +17,13 @@ class Figure {
         list<Coord> coords;
         Figure(string name);
         ~Figure();
-        virtual void draw(cairo_t* cr, View* view);
+        virtual void draw(cairo_t* cr, View* view);  // o draw depende do view, pois a cada redesenho, as propriedades da câmera sao levadas em conta
 };
 
 class Point : public Figure {
     public:
         Point(string name);
-        virtual void draw(cairo_t* cr, View* view);
+        virtual void draw(cairo_t* cr, View* view);  // só point da override pq é diferente
 };
 
 class Line : public Figure {
