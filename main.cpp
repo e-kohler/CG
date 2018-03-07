@@ -65,19 +65,19 @@ static void activate (GtkApplication* app, gpointer user_data) {
     Line* linha = new Line("linha");
     Point* point = new Point("ponto");
 
-    linha->coords.push_back(Coord(6, 4));
-    linha->coords.push_back(Coord(6, 1));
+    linha->coords.push_back(Coord(-5, 0));
+    linha->coords.push_back(Coord(0, 5));
 
-    polig->coords.push_back(Coord(4, 4));
-    polig->coords.push_back(Coord(8, 4));
-    polig->coords.push_back(Coord(9, 5));
-    polig->coords.push_back(Coord(1, 8));
+    polig->coords.push_back(Coord(1, 1));
+    polig->coords.push_back(Coord(1, -1));
+    polig->coords.push_back(Coord(-1, -1));
+    polig->coords.push_back(Coord(-1, 1));
 
-    triang->coords.push_back(Coord(1, 3));
-    triang->coords.push_back(Coord(3, 6));
-    triang->coords.push_back(Coord(4, 2));
+    triang->coords.push_back(Coord(1, 2));
+    triang->coords.push_back(Coord(3, 1));
+    triang->coords.push_back(Coord(4, 4));
 
-    point->coords.push_back(Coord(100, 90));
+    //point->coords.push_back(Coord(100, 90));
 
     figures.push_back(*linha);  // coloca na lista global
     figures.push_back(*polig);
@@ -87,22 +87,22 @@ static void activate (GtkApplication* app, gpointer user_data) {
 
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Janela");  // cria a janela
-    gtk_window_set_default_size (GTK_WINDOW (window), 480, 480);
+    //gtk_window_set_default_size (GTK_WINDOW (window), 480, 480);
 
     grid = gtk_grid_new ();
     gtk_container_add (GTK_CONTAINER (window), grid);  // cria o grid e coloca na janela
 
     button = gtk_button_new_with_label ("Cima");  //cria um botão, conecta na função e coloca na grid
     g_signal_connect (button, "clicked", G_CALLBACK (move_up), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 1, 0, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), button, 0, 0, 1, 1);
 
     button = gtk_button_new_with_label ("Baixo");  //cria um botão, conecta na função e coloca na grid
     g_signal_connect (button, "clicked", G_CALLBACK (move_down), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 1, 2, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), button, 0, 2, 1, 1);
 
     button = gtk_button_new_with_label ("Dir");  //cria um botão, conecta na função e coloca na grid
     g_signal_connect (button, "clicked", G_CALLBACK (move_right), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 2, 1, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), button, 1, 1, 1, 1);
 
     button = gtk_button_new_with_label ("Esq");  //cria um botão, conecta na função e coloca na grid
     g_signal_connect (button, "clicked", G_CALLBACK (move_left), NULL);
@@ -110,16 +110,16 @@ static void activate (GtkApplication* app, gpointer user_data) {
 
     button = gtk_button_new_with_label ("In");  //cria um botão, conecta na função e coloca na grid
     g_signal_connect (button, "clicked", G_CALLBACK (zoom_in), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 3, 2, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), button, 2, 2, 1, 1);
 
     button = gtk_button_new_with_label ("Out");  //cria um botão, conecta na função e coloca na grid
     g_signal_connect (button, "clicked", G_CALLBACK (zoom_out), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 3, 0, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), button, 2, 0, 1, 1);
 
     drawing_area = gtk_drawing_area_new ();  // cria a área de desenho, arruma o tamanho, conecta no callback e colcoa na grid.
     gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // o tamanho da drawing_board é o tamanho do viewport, eles são a mesma coisa
     g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
-    gtk_grid_attach (GTK_GRID (grid), drawing_area, 0, 3, 3, 4);
+    gtk_grid_attach (GTK_GRID (grid), drawing_area, 0, 3, 3, 3);
 
     gtk_widget_show_all (window);  // mostra tudo
 }
