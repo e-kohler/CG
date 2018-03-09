@@ -18,6 +18,7 @@ class Figure {
         Figure(string name);
         ~Figure();
         virtual void draw(cairo_t* cr, View* view);  // o draw depende do view, pois a cada redesenho, as propriedades da câmera sao levadas em conta
+        string getName();
 };
 
 class Point : public Figure {

@@ -9,6 +9,10 @@ Figure::Figure(string name) {
     this->name = name;
 }
 
+string Figure::getName() {
+    return this->name;
+}
+
 Figure::~Figure() {}
 
 void Figure::draw(cairo_t* cr, View* view) {
