@@ -16,32 +16,32 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data);
 
 
 //funções que mudam a posição (esq, dir, cima, baixo) ou tamanho da câmera(zoom in, zoom out)
-static void move_up() {
+static void on_but_cima_clicked() {
     view->pos = view->pos + Coord(0, 1);
     gtk_widget_queue_draw(drawing_area);
 }
 
-static void move_down() {
+static void on_but_baix_clicked() {
     view->pos = view->pos + Coord(0, -1);
     gtk_widget_queue_draw(drawing_area);
 }
 
-static void move_left() {
+static void on_but_esq_clicked() {
     view->pos = view->pos + Coord(-1, 0);
     gtk_widget_queue_draw(drawing_area);
 }
 
-static void move_right() {
+static void on_but_dir_clicked() {
     view->pos = view->pos + Coord(1, 0);
     gtk_widget_queue_draw(drawing_area);
 }
 
-static void zoom_in() {
+static void on_but_in_clicked() {
     view->size = view->size - Coord(1, 1);
     gtk_widget_queue_draw(drawing_area);
 }
 
-static void zoom_out() {
+static void on_but_out_clicked() {
     view->size = view->size - Coord(-1, -1);
     gtk_widget_queue_draw(drawing_area);
 }
@@ -62,7 +62,7 @@ static void add_ponto(GtkWidget** entries) {
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
-static void point_window() {
+static void on_but_point_clicked() {
     GtkWidget* window;
     GtkWidget* grid;
     GtkWidget* button;
@@ -97,7 +97,7 @@ static void point_window() {
     gtk_grid_attach(GTK_GRID(grid), entry_x, 1, 1, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), label_y, 0, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), entry_y, 1, 2, 1, 1);
-    gtk_grid_attach (GTK_GRID (grid), button, 1, 3, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), button, 0, 3, 3, 3);
     gtk_widget_show_all(window);
 }
 
@@ -121,7 +121,7 @@ static void add_line(GtkWidget** entries) {
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
-static void line_window() {
+static void on_but_line_clicked() {
     GtkWidget* window;
     GtkWidget* grid;
     GtkWidget* button;
@@ -162,15 +162,15 @@ static void line_window() {
     gtk_grid_attach(GTK_GRID(grid), entry_x, 1, 1, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), label_y, 0, 2, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), entry_y, 1, 2, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), label_x2, 1, 3, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), entry_x2, 2, 3, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), label_y2, 1, 4, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), entry_y2, 2, 4, 1, 1);
-    gtk_grid_attach (GTK_GRID (grid), button, 2, 5, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), label_x2, 0, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), entry_x2, 1, 3, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), label_y2, 0, 4, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), entry_y2, 1, 4, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), button, 0, 5, 3, 3);
     gtk_widget_show_all(window);
 }
 
-static void polig_window() {
+static void on_but_polig_clicked() {
 
 }
 
@@ -189,10 +189,14 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
 }
 
 static void activate (GtkApplication* app, gpointer user_data) {
+	GtkBuilder* builder;
     GtkWidget* window;
+    GtkWidget* paned;
     GtkWidget* grid;
-    GtkWidget* button;
-    GtkWidget* display_names;
+    GtkWidget* box;
+    GtkWidget* but_esq, but_dir, but_cima, but_baix, but_in, but_out;
+    GtkWidget* scrolledwindow;
+    GtkWidget* textview;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
     Polygon* polig2 = new Polygon("tetra2");
@@ -229,76 +233,87 @@ static void activate (GtkApplication* app, gpointer user_data) {
     figures.push_back(point2);
 
     view = new View();
+    
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, "cg_top_frame.glade", NULL);
+    
+    /**paned = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "paned"));
 
-    window = gtk_application_window_new (app);
-    gtk_window_set_title (GTK_WINDOW (window), "Plano 2D");  // cria a janela
-    gtk_window_set_default_size (GTK_WINDOW (window), 480, 480);
+	box = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "box"));
 
-    grid = gtk_grid_new ();
-    gtk_container_add (GTK_CONTAINER (window), grid);  // cria o grid e coloca na janela
+    grid = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "grid"));
 
-    button = gtk_button_new_with_label ("Cima");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (move_up), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 0, 0, 1, 1);
+    but_out = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_out"));  //cria um botão, conecta na função e coloca na grid
+    g_signal_connect (but_out, "clicked", G_CALLBACK (zoom_out), NULL);
 
-    button = gtk_button_new_with_label ("Baixo");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (move_down), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 0, 2, 1, 1);
+    but_in = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_in"));  //cria um botão, conecta na função e coloca na grid
+    g_signal_connect (but_in, "clicked", G_CALLBACK (zoom_in), NULL);
 
-    button = gtk_button_new_with_label ("Dir");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (move_right), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 1, 1, 1, 1);
+    but_cima = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_cima"));  //cria um botão, conecta na função e coloca na grid
+    g_signal_connect (but_cima, "clicked", G_CALLBACK (move_up), NULL);
 
-    button = gtk_button_new_with_label ("Esq");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (move_left), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 0, 1, 1, 1);
+    but_baix = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_baix"));  //cria um botão, conecta na função e coloca na grid
+    g_signal_connect (but_baix, "clicked", G_CALLBACK (move_down), NULL);
 
-    button = gtk_button_new_with_label ("In");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (zoom_in), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 2, 2, 1, 1);
+    but_esq = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_esq"));  //cria um botão, conecta na função e coloca na grid
+    g_signal_connect (but_esq, "clicked", G_CALLBACK (move_left), NULL);
 
-    button = gtk_button_new_with_label ("Out");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (zoom_out), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 2, 0, 1, 1);
+    but_dir = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_dir"));  //cria um botão, conecta na função e coloca na grid
+    g_signal_connect (but_dir, "clicked", G_CALLBACK (move_right), NULL);
 
-    button = gtk_button_new_with_label ("Ponto");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (point_window), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 3, 4, 1, 1);
+    // button = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "box"));  //cria um botão, conecta na função e coloca na grid
+    // g_signal_connect (button, "clicked", G_CALLBACK (point_window), NULL);
 
-    button = gtk_button_new_with_label ("Reta");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (line_window), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 3, 3, 1, 1);
+    // button = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "box"));  //cria um botão, conecta na função e coloca na grid
+    // g_signal_connect (button, "clicked", G_CALLBACK (line_window), NULL);
 
-    button = gtk_button_new_with_label ("Polígono");  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (polig_window), NULL);
-    gtk_grid_attach (GTK_GRID (grid), button, 3, 5, 1, 1);
+    button = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "box"));  //cria um botão, conecta na função e coloca na grid
+    g_signal_connect (button, "clicked", G_CALLBACK (polig_window), NULL);**/
 
-    drawing_area = gtk_drawing_area_new ();  // cria a área de desenho, arruma o tamanho, conecta no callback e colcoa na grid.
+    drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // cria a área de desenho, arruma o tamanho, conecta no callback e colcoa na grid.
     gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // o tamanho da drawing_board é o tamanho do viewport, eles são a mesma coisa
     g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
-    gtk_grid_attach (GTK_GRID (grid), drawing_area, 0, 3, 3, 3);
 
-    display_names = gtk_text_view_new();
-    buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (display_names));
-    gtk_text_view_set_editable (GTK_TEXT_VIEW (display_names), FALSE);
+    scrolledwindow = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "scrolledwindow"));
+
+    textview = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "textview"));
+    buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (textview));
+    gtk_text_view_set_editable (GTK_TEXT_VIEW (textview), FALSE);
     for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) {
         auto nome = (*iterator)->getName();
         nome.append("\n");
         gtk_text_buffer_get_end_iter(buffer, &iter);
         gtk_text_buffer_insert(buffer, &iter, nome.c_str(), -1);
     }
-    gtk_grid_attach(GTK_GRID (grid), display_names, 4, 3, 2, 2);
+    
+    gtk_builder_add_callback_symbol(builder, "on_but_baix_clicked", on_but_baix_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_cima_clicked", on_but_cima_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_dir_clicked", on_but_dir_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_esq_clicked", on_but_esq_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_in_clicked", on_but_in_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_out_clicked", on_but_out_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_point_clicked", on_but_point_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_line_clicked", on_but_line_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
+
+    gtk_builder_connect_signals(builder, NULL);
+
+    window = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "window"));
+    
+    gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
 
     gtk_widget_show_all (window);  // mostra tudo
 }
 
 int main (int argc, char **argv) {
-  int status;
+    int status;
 
-  app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-  g_object_unref (app);
+    gtk_init(&argc, &argv);
 
-  return status;
-}
+    app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+    g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+    status = g_application_run (G_APPLICATION (app), argc, argv);
+    g_object_unref (app);
+
+    return status;
+    }
