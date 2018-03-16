@@ -7,6 +7,8 @@ class Coord {  // essa classe é só um vetor 2d
         Coord (float x, float y);
         float getX();
         float getY();
+        void setX(float x);
+        void setY(float y);
         Coord operator+(Coord coord);
         Coord operator-(Coord coord); 
         Coord operator*(float number);

@@ -2,7 +2,7 @@
 
 View::View() {
     pos = Coord(0, 0);
-    viewport = Coord(400, 400);  // propriedades da camera que limita o mundo
+    viewport = Coord(600, 600);  // propriedades da camera que limita o mundo
     size = Coord(10, 10);
 }
 

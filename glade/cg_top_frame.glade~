@@ -171,7 +171,7 @@
                 <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
                 <property name="min_content_width">10</property>
-                <property name="min_content_height">110</property>
+                <property name="min_content_height">320</property>
                 <child>
                   <object class="GtkTextView" id="textview">
                     <property name="visible">True</property>

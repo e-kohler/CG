@@ -9,11 +9,26 @@ Figure::Figure(string name) {
     this->name = name;
 }
 
+Figure::~Figure() {}
+
 string Figure::getName() {
     return this->name;
 }
 
-Figure::~Figure() {}
+void Figure::transform(vector<vector<float> > matrix) {
+    for (auto iterator = coords.begin(); iterator != coords.end(); ++iterator) {
+        vector<float> current_coord = {iterator->getX(), iterator->getY(), 1};
+        vector<float> result(3);
+        for (int i = 0; i < 3; i++) {
+            result[i] = 0;
+            for (int j = 0; j < 3; j++) {
+                result[i] += current_coord[j] * matrix[j][i];
+            }
+        }
+        iterator->setX(result[0]);
+        iterator->setY(result[1]);
+    }
+}
 
 void Figure::draw(cairo_t* cr, View* view) {
 

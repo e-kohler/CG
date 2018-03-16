@@ -5,6 +5,7 @@
 #include "View.h"
 #include <gtk/gtk.h>
 #include <list>
+#include <vector>
 #include <string>
 
 using namespace std;
@@ -19,6 +20,7 @@ class Figure {
         ~Figure();
         virtual void draw(cairo_t* cr, View* view);  // o draw depende do view, pois a cada redesenho, as propriedades da câmera sao levadas em conta
         string getName();
+        virtual void transform(vector<vector<float> > matrix);
 };
 
 class Point : public Figure {

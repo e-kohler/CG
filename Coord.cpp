@@ -15,6 +15,14 @@ float Coord::getY() {
     return y;
 }
 
+void Coord::setX(float x) {
+    this->x = x;
+}
+
+void Coord::setY(float y) {
+    this->y = y;
+}
+
 Coord Coord::operator+(Coord coord) {
     return Coord(this->x + coord.getX(), this->y + coord.getY());
 }

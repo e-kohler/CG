@@ -191,11 +191,6 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
 static void activate (GtkApplication* app, gpointer user_data) {
 	GtkBuilder* builder;
     GtkWidget* window;
-    GtkWidget* paned;
-    GtkWidget* grid;
-    GtkWidget* box;
-    GtkWidget* but_esq, but_dir, but_cima, but_baix, but_in, but_out;
-    GtkWidget* scrolledwindow;
     GtkWidget* textview;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
@@ -223,8 +218,11 @@ static void activate (GtkApplication* app, gpointer user_data) {
     triang->coords.push_back(Coord(4, 4));
 
     point->coords.push_back(Coord(0, 0));
-    point2->coords.push_back(Coord(3, -4));
-
+    point2->coords.push_back(Coord(3, 3));
+    vector<vector<float> > trans_mat = {{1, 0, 0}, {0, 1, 0}, {3, 1, 1}};
+    point2->transform(trans_mat);
+    linha->transform(trans_mat);
+    triang->transform(trans_mat);
     figures.push_back(linha);  // coloca na lista global
     figures.push_back(polig);
     figures.push_back(polig2);
@@ -235,46 +233,11 @@ static void activate (GtkApplication* app, gpointer user_data) {
     view = new View();
     
     builder = gtk_builder_new();
-    gtk_builder_add_from_file(builder, "cg_top_frame.glade", NULL);
-    
-    /**paned = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "paned"));
-
-	box = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "box"));
-
-    grid = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "grid"));
-
-    but_out = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_out"));  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (but_out, "clicked", G_CALLBACK (zoom_out), NULL);
-
-    but_in = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_in"));  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (but_in, "clicked", G_CALLBACK (zoom_in), NULL);
-
-    but_cima = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_cima"));  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (but_cima, "clicked", G_CALLBACK (move_up), NULL);
-
-    but_baix = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_baix"));  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (but_baix, "clicked", G_CALLBACK (move_down), NULL);
-
-    but_esq = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_esq"));  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (but_esq, "clicked", G_CALLBACK (move_left), NULL);
-
-    but_dir = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "but_dir"));  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (but_dir, "clicked", G_CALLBACK (move_right), NULL);
-
-    // button = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "box"));  //cria um botão, conecta na função e coloca na grid
-    // g_signal_connect (button, "clicked", G_CALLBACK (point_window), NULL);
-
-    // button = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "box"));  //cria um botão, conecta na função e coloca na grid
-    // g_signal_connect (button, "clicked", G_CALLBACK (line_window), NULL);
-
-    button = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "box"));  //cria um botão, conecta na função e coloca na grid
-    g_signal_connect (button, "clicked", G_CALLBACK (polig_window), NULL);**/
+    gtk_builder_add_from_file(builder, "./glade/cg_top_frame.glade", NULL);
 
     drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // cria a área de desenho, arruma o tamanho, conecta no callback e colcoa na grid.
     gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // o tamanho da drawing_board é o tamanho do viewport, eles são a mesma coisa
     g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
-
-    scrolledwindow = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "scrolledwindow"));
 
     textview = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "textview"));
     buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (textview));
@@ -299,6 +262,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_connect_signals(builder, NULL);
 
     window = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "window"));
+    gtk_window_set_default_size(GTK_WINDOW(window), 1000, 600);
     
     gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
 
