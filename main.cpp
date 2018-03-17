@@ -181,9 +181,13 @@ static void on_but_polig_clicked() {
 
 }
 
-static void on_select_shape() {
-    cout << "teste kkk" << endl;
-
+static void on_but_transform_clicked() {
+    auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
+    auto it = figures.begin();
+    advance(it, selected_index); //std
+    vector<vector<float> > trans_mat = {{1, 0, 0}, {0, 1, 0}, {3, 1, 1}};
+    (*it)->transform(trans_mat);
+    gtk_widget_queue_draw(drawing_area);
 }
 
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
@@ -267,6 +271,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_point_clicked", on_but_point_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_line_clicked", on_but_line_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_transform_clicked", on_but_transform_clicked);
 
     gtk_builder_connect_signals(builder, NULL);
     gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
