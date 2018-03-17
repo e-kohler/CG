@@ -57,8 +57,18 @@ static void add_line(GtkWidget** entries) {
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
-static void translation(Coord vector) {
+static void translate(Figure* figure, Coord vector) {
     std::vector<std::vector<float> > trans_matrix = {{1, 0, 0}, {0, 1, 0},{vector.getX(), vector.getY(), 1}};
+    figure->transform(trans_matrix);  // o translate nao precisa daquelas mutiplicação de matriz, é só mover a figura msm
+}
+
+static void escalate(Figure* figure, Coord vector) {
+    auto it_coords = figure->coords.begin();
+    float geo_middle;
+    for (; it_coords != figure->coords.end(); ++it_coords) {
+        // aqui vou calcular o meio geometrico da figura, pra achar a distancia dela ate o centro
+        // pra fazer as matrizes que vao ser multiplicadas pra fazer os ajustes la pa
+    }
 }
 
 /////////////////////////////Funções de controle de botões/////////////////////////////
@@ -185,12 +195,23 @@ static void on_but_polig_clicked() {
     // só na balinha
 }
 
-static void on_but_transform_clicked() {
+static void on_but_translate_clicked() {
+    Coord test_vector = Coord(3, -4);
+
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    std::vector<std::vector<float> > trans_mat = {{1, 0, 0}, {0, 1, 0}, {3, 1, 1}};  // matriz para transformação teste
-    (*it)->transform(trans_mat);
+    translate(*it, test_vector);
+    gtk_widget_queue_draw(drawing_area);
+}
+
+static void on_but_escalate_clicked() {
+    Coord test_vector = Coord(-1, -1);
+
+    auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
+    auto it = figures.begin();
+    std::advance(it, selected_index); //std
+    //escalate(*it, test_vector);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -247,7 +268,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_point_clicked", on_but_point_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_line_clicked", on_but_line_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
-    gtk_builder_add_callback_symbol(builder, "on_but_transform_clicked", on_but_transform_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_translate_clicked", on_but_translate_clicked);
     gtk_builder_connect_signals(builder, NULL);
 
     drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // recebe área de desenho do glade
