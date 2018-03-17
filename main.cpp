@@ -13,6 +13,7 @@ View* view;  // a câmera
 GtkApplication *app;
 GtkTextIter iter;
 GtkTextBuffer* buffer;
+GtkWidget *combo_box;
 
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data);
 
@@ -59,8 +60,10 @@ static void add_ponto(GtkWidget** entries) {
     figures.push_back(point);
     gtk_widget_queue_draw(drawing_area);
     gtk_text_buffer_get_end_iter(buffer, &iter);
-    nome_string.append("\n");
-    gtk_text_buffer_insert(buffer, &iter, nome_string.c_str(), -1);
+    // nome_string.append("\n");
+    // gtk_text_buffer_insert(buffer, &iter, , -1);
+    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
@@ -112,15 +115,16 @@ static void add_line(GtkWidget** entries) {
     auto y2 = gtk_entry_get_text(GTK_ENTRY(entries[4]));
 
     string nome_string(nome);
-    nome_string.append("\n");
+    // nome_string.append("\n");
 
     Line* line = new Line(nome);
     line->coords.push_back(Coord(stof(x), stof(y)));
     line->coords.push_back(Coord(stof(x2), stof(y2)));
     figures.push_back(line);
     gtk_widget_queue_draw(drawing_area);
-    gtk_text_buffer_get_end_iter(buffer, &iter);
-    gtk_text_buffer_insert(buffer, &iter, nome_string.c_str(), -1);
+    // gtk_text_buffer_get_end_iter(buffer, &iter);
+    // gtk_text_buffer_insert(buffer, &iter, nome_string.c_str(), -1);
+    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
@@ -179,7 +183,7 @@ static void on_but_polig_clicked() {
 
 static void on_select_shape() {
     cout << "teste kkk" << endl;
-    
+
 }
 
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
@@ -199,7 +203,7 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
 static void activate (GtkApplication* app, gpointer user_data) {
 	GtkBuilder* builder;
     GtkWidget* window;
-    GtkWidget* combo_box;
+    // GtkWidget* combo_box;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
     Polygon* polig2 = new Polygon("tetra2");
@@ -286,4 +290,4 @@ int main (int argc, char **argv) {
     g_object_unref (app);
 
     return status;
-    }
+}
