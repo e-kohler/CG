@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 -->
+<!-- Generated with glade 3.20.4 -->
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkWindow" id="window">
@@ -166,19 +166,10 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow">
+              <object class="GtkComboBoxText" id="combo_box">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="shadow_type">in</property>
-                <property name="min_content_width">10</property>
-                <property name="min_content_height">320</property>
-                <child>
-                  <object class="GtkTextView" id="textview">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="editable">False</property>
-                  </object>
-                </child>
+                <property name="can_focus">False</property>
+                <property name="active">0</property>
               </object>
               <packing>
                 <property name="expand">False</property>

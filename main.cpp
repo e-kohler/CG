@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 #include <iostream>
+#include <string>
+#include <cstring>
 #include "Figure.h"
 #include "Coord.h"
 
@@ -191,7 +193,8 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
 static void activate (GtkApplication* app, gpointer user_data) {
 	GtkBuilder* builder;
     GtkWidget* window;
-    GtkWidget* textview;
+    //GtkWidget* textview;
+    GtkWidget* combo_box;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
     Polygon* polig2 = new Polygon("tetra2");
@@ -239,15 +242,22 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // o tamanho da drawing_board é o tamanho do viewport, eles são a mesma coisa
     g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
 
-    textview = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "textview"));
+    /*textview = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "textview"));
     buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (textview));
-    gtk_text_view_set_editable (GTK_TEXT_VIEW (textview), FALSE);
+    gtk_text_view_set_editable (GTK_TEXT_VIEW (textview), FALSE); */
+
+    combo_box = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "combo_box"));
+    const char *distros[] = {"Select distribution", "Fedora", "Mint", "Suse"};
+
     for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) {
-        auto nome = (*iterator)->getName();
-        nome.append("\n");
-        gtk_text_buffer_get_end_iter(buffer, &iter);
-        gtk_text_buffer_insert(buffer, &iter, nome.c_str(), -1);
-    }
+        const char *nome = (*iterator)->getName().c_str();
+        
+        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome);
+        // nome.append("\n");
+        // gtk_text_buffer_get_end_iter(buffer, &iter);
+        // gtk_text_buffer_insert(buffer, &iter, nome.c_str(), -1);
+    } 
+
     
     gtk_builder_add_callback_symbol(builder, "on_but_baix_clicked", on_but_baix_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_cima_clicked", on_but_cima_clicked);
@@ -260,9 +270,10 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
 
     gtk_builder_connect_signals(builder, NULL);
+    gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
 
     window = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "window"));
-    gtk_window_set_default_size(GTK_WINDOW(window), 1000, 600);
+    gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     
     gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
 
