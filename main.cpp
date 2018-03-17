@@ -64,6 +64,7 @@ static void add_ponto(GtkWidget** entries) {
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
+
 static void on_but_point_clicked() {
     GtkWidget* window;
     GtkWidget* grid;
@@ -176,6 +177,11 @@ static void on_but_polig_clicked() {
 
 }
 
+static void on_select_shape() {
+    cout << "teste kkk" << endl;
+    
+}
+
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_set_source_rgb(cr, 1, 1, 1);  //fundo preto
     cairo_paint(cr);
@@ -193,7 +199,6 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
 static void activate (GtkApplication* app, gpointer user_data) {
 	GtkBuilder* builder;
     GtkWidget* window;
-    //GtkWidget* textview;
     GtkWidget* combo_box;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
@@ -242,17 +247,13 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // o tamanho da drawing_board é o tamanho do viewport, eles são a mesma coisa
     g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
 
-
     combo_box = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "combo_box"));
-    const char *distros[] = {"Select distribution", "Fedora", "Mint", "Suse"};
 
     for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) {
         const char *nome = (*iterator)->getName().c_str();
-
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome);
     } 
 
-    
     gtk_builder_add_callback_symbol(builder, "on_but_baix_clicked", on_but_baix_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_cima_clicked", on_but_cima_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_dir_clicked", on_but_dir_clicked);
