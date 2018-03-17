@@ -57,6 +57,10 @@ static void add_line(GtkWidget** entries) {
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
+static void translation(Coord vector) {
+    std::vector<std::vector<float> > trans_matrix = {{1, 0, 0}, {0, 1, 0},{vector.getX(), vector.getY(), 1}};
+}
+
 /////////////////////////////Funções de controle de botões/////////////////////////////
 
 static void on_but_cima_clicked() {
