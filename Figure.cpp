@@ -1,5 +1,4 @@
 #include "Figure.h"
-#include <gtk/gtk.h>
 #include <iostream>
 #include <cmath> 
 

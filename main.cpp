@@ -1,5 +1,3 @@
-#include <gtk/gtk.h>
-#include <iostream>
 #include "Figure.h"
 
 GtkWidget* drawing_area;  // canvas de desenho
@@ -186,7 +184,7 @@ static void on_but_polig_clicked() {
 static void on_but_transform_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
-    advance(it, selected_index); //std
+    std::advance(it, selected_index); //std
     std::vector<std::vector<float> > trans_mat = {{1, 0, 0}, {0, 1, 0}, {3, 1, 1}};  // matriz para transformação teste
     (*it)->transform(trans_mat);
     gtk_widget_queue_draw(drawing_area);
@@ -195,7 +193,7 @@ static void on_but_transform_clicked() {
 /////////////////////////////Instacia os objetos programa/////////////////////////////
 
 static void activate (GtkApplication* app, gpointer user_data) {
-	GtkBuilder* builder;
+    GtkBuilder* builder;
     GtkWidget* window;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
