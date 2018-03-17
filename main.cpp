@@ -177,11 +177,11 @@ static void on_but_polig_clicked() {
 }
 
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
-    cairo_set_source_rgb(cr, 0, 0, 0);  //fundo preto
+    cairo_set_source_rgb(cr, 1, 1, 1);  //fundo preto
     cairo_paint(cr);
 
     cairo_set_line_width(cr, 1);
-    cairo_set_source_rgb(cr, 1, 1, 1);  // linha branca
+    cairo_set_source_rgb(cr, 0, 0, 0);  // linha branca
 
     for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
         (*iterator)->draw(cr, view);
@@ -251,7 +251,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
 
     for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) {
         const char *nome = (*iterator)->getName().c_str();
-        
+
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome);
         // nome.append("\n");
         // gtk_text_buffer_get_end_iter(buffer, &iter);
