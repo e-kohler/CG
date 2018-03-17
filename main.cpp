@@ -203,7 +203,7 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
 static void activate (GtkApplication* app, gpointer user_data) {
 	GtkBuilder* builder;
     GtkWidget* window;
-    //  GtkWidget* combo_box;
+    // GtkWidget* combo_box;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
     Polygon* polig2 = new Polygon("tetra2");
