@@ -1,7 +1,6 @@
 #include <gtk/gtk.h>
 #include <iostream>
 #include "Figure.h"
-#include "Coord.h"
 
 GtkWidget* drawing_area;  // canvas de desenho
 std::list<Figure*> figures;  // lista de ponteiros de figuras pra desenhar
