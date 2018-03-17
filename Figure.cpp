@@ -3,22 +3,20 @@
 #include <iostream>
 #include <cmath> 
 
-using namespace std;
-
-Figure::Figure(string name) {
+Figure::Figure(std::string name) {
     this->name = name;
 }
 
 Figure::~Figure() {}
 
-string Figure::getName() {
+std::string Figure::getName() {
     return this->name;
 }
 
-void Figure::transform(vector<vector<float> > matrix) {
+void Figure::transform(std::vector<std::vector<float> > matrix) {
     for (auto iterator = coords.begin(); iterator != coords.end(); ++iterator) {
-        vector<float> current_coord = {iterator->getX(), iterator->getY(), 1};
-        vector<float> result(3);
+        std::vector<float> current_coord = {iterator->getX(), iterator->getY(), 1};
+        std::vector<float> result(3);
         for (int i = 0; i < 3; i++) {
             result[i] = 0;
             for (int j = 0; j < 3; j++) {
@@ -47,7 +45,7 @@ void Figure::draw(cairo_t* cr, View* view) {
     }
 }
 
-Point::Point(string name)
+Point::Point(std::string name)
         : Figure(name)
         {}
 
@@ -58,10 +56,10 @@ void Point::draw(cairo_t* cr, View* view) {
     cairo_arc(cr, coord.getX(), coord.getY(), 1, 0, 2*M_PI);
 }
 
-Line::Line(string name)
+Line::Line(std::string name)
         : Figure(name)
         {}
 
-Polygon::Polygon(string name)
+Polygon::Polygon(std::string name)
         :Figure(name)
         {}

@@ -8,34 +8,32 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 class Figure {
     protected:
-        string name;
+        std::string name;
            
     public:
-        list<Coord> coords;
-        Figure(string name);
+        std::list<Coord> coords;
+        Figure(std::string name);
         ~Figure();
         virtual void draw(cairo_t* cr, View* view);  // o draw depende do view, pois a cada redesenho, as propriedades da câmera sao levadas em conta
-        string getName();
-        virtual void transform(vector<vector<float> > matrix);
+        std::string getName();
+        virtual void transform(std::vector<std::vector<float> > matrix);
 };
 
 class Point : public Figure {
     public:
-        Point(string name);
+        Point(std::string name);
         void draw(cairo_t* cr, View* view) override;  // só point da override pq é diferente
 };
 
 class Line : public Figure {
     public:
-        Line(string name);
+        Line(std::string name);
 };
 
 class Polygon : public Figure {
     public:
-        Polygon(string name);
+        Polygon(std::string name);
 };
 #endif

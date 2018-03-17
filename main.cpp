@@ -1,24 +1,67 @@
 #include <gtk/gtk.h>
 #include <iostream>
-#include <string>
-#include <cstring>
 #include "Figure.h"
 #include "Coord.h"
 
-using namespace std;
-
 GtkWidget* drawing_area;  // canvas de desenho
-list<Figure*> figures;  // lista de ponteiros de figuras pra desenhar
+std::list<Figure*> figures;  // lista de ponteiros de figuras pra desenhar
 View* view;  // a câmera
 GtkApplication *app;
-GtkTextIter iter;
-GtkTextBuffer* buffer;
 GtkWidget *combo_box;
 
-gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data);
+/////////////////////////////Callback de desenho/////////////////////////////
 
+gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
+    cairo_set_source_rgb(cr, 1, 1, 1);  //fundo preto
+    cairo_paint(cr);
 
-//funções que mudam a posição (esq, dir, cima, baixo) ou tamanho da câmera(zoom in, zoom out)
+    cairo_set_line_width(cr, 1);
+    cairo_set_source_rgb(cr, 0, 0, 0);  // linha branca
+
+    for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
+        (*iterator)->draw(cr, view);
+    }
+    cairo_stroke(cr);
+    return FALSE;
+}
+
+/////////////////////////////Funções estáticas/////////////////////////////
+
+static void add_ponto(GtkWidget** entries) {
+    auto nome = gtk_entry_get_text(GTK_ENTRY(entries[3]));
+    auto x = gtk_entry_get_text(GTK_ENTRY(entries[1]));
+    auto y = gtk_entry_get_text(GTK_ENTRY(entries[2]));
+
+    Point* point = new Point(nome);
+    point->coords.push_back(Coord(std::stof(x), std::stof(y)));
+    std::string nome_string(nome);
+    figures.push_back(point);
+    gtk_widget_queue_draw(drawing_area);
+    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+
+    gtk_widget_destroy(GTK_WIDGET(entries[0]));
+}
+
+static void add_line(GtkWidget** entries) {
+    auto nome = gtk_entry_get_text(GTK_ENTRY(entries[5]));
+    auto x = gtk_entry_get_text(GTK_ENTRY(entries[1]));
+    auto y = gtk_entry_get_text(GTK_ENTRY(entries[2]));
+    auto x2 = gtk_entry_get_text(GTK_ENTRY(entries[3]));
+    auto y2 = gtk_entry_get_text(GTK_ENTRY(entries[4]));
+
+    std::string nome_string(nome);
+
+    Line* line = new Line(nome);
+    line->coords.push_back(Coord(std::stof(x), std::stof(y)));
+    line->coords.push_back(Coord(std::stof(x2), std::stof(y2)));
+    figures.push_back(line);
+    gtk_widget_queue_draw(drawing_area);
+    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+    gtk_widget_destroy(GTK_WIDGET(entries[0]));
+}
+
+/////////////////////////////Funções de controle de botões/////////////////////////////
+
 static void on_but_cima_clicked() {
     view->pos = view->pos + Coord(0, 1);
     gtk_widget_queue_draw(drawing_area);
@@ -48,25 +91,6 @@ static void on_but_out_clicked() {
     view->size = view->size - Coord(-1, -1);
     gtk_widget_queue_draw(drawing_area);
 }
-
-static void add_ponto(GtkWidget** entries) {
-    auto nome = gtk_entry_get_text(GTK_ENTRY(entries[3]));
-    auto x = gtk_entry_get_text(GTK_ENTRY(entries[1]));
-    auto y = gtk_entry_get_text(GTK_ENTRY(entries[2]));
-
-    Point* point = new Point(nome);
-    point->coords.push_back(Coord(stof(x), stof(y)));
-    string nome_string(nome);
-    figures.push_back(point);
-    gtk_widget_queue_draw(drawing_area);
-    gtk_text_buffer_get_end_iter(buffer, &iter);
-    // nome_string.append("\n");
-    // gtk_text_buffer_insert(buffer, &iter, , -1);
-    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
-
-    gtk_widget_destroy(GTK_WIDGET(entries[0]));
-}
-
 
 static void on_but_point_clicked() {
     GtkWidget* window;
@@ -105,27 +129,6 @@ static void on_but_point_clicked() {
     gtk_grid_attach(GTK_GRID(grid), entry_y, 1, 2, 1, 1);
     gtk_grid_attach (GTK_GRID (grid), button, 0, 3, 3, 3);
     gtk_widget_show_all(window);
-}
-
-static void add_line(GtkWidget** entries) {
-    auto nome = gtk_entry_get_text(GTK_ENTRY(entries[5]));
-    auto x = gtk_entry_get_text(GTK_ENTRY(entries[1]));
-    auto y = gtk_entry_get_text(GTK_ENTRY(entries[2]));
-    auto x2 = gtk_entry_get_text(GTK_ENTRY(entries[3]));
-    auto y2 = gtk_entry_get_text(GTK_ENTRY(entries[4]));
-
-    string nome_string(nome);
-    // nome_string.append("\n");
-
-    Line* line = new Line(nome);
-    line->coords.push_back(Coord(stof(x), stof(y)));
-    line->coords.push_back(Coord(stof(x2), stof(y2)));
-    figures.push_back(line);
-    gtk_widget_queue_draw(drawing_area);
-    // gtk_text_buffer_get_end_iter(buffer, &iter);
-    // gtk_text_buffer_insert(buffer, &iter, nome_string.c_str(), -1);
-    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
-    gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
 static void on_but_line_clicked() {
@@ -178,36 +181,23 @@ static void on_but_line_clicked() {
 }
 
 static void on_but_polig_clicked() {
-
+    // só na balinha
 }
 
 static void on_but_transform_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     advance(it, selected_index); //std
-    vector<vector<float> > trans_mat = {{1, 0, 0}, {0, 1, 0}, {3, 1, 1}};
+    std::vector<std::vector<float> > trans_mat = {{1, 0, 0}, {0, 1, 0}, {3, 1, 1}};  // matriz para transformação teste
     (*it)->transform(trans_mat);
     gtk_widget_queue_draw(drawing_area);
 }
 
-gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
-    cairo_set_source_rgb(cr, 1, 1, 1);  //fundo preto
-    cairo_paint(cr);
-
-    cairo_set_line_width(cr, 1);
-    cairo_set_source_rgb(cr, 0, 0, 0);  // linha branca
-
-    for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
-        (*iterator)->draw(cr, view);
-    }
-    cairo_stroke(cr);
-    return FALSE;
-}
+/////////////////////////////Instacia os objetos programa/////////////////////////////
 
 static void activate (GtkApplication* app, gpointer user_data) {
 	GtkBuilder* builder;
     GtkWidget* window;
-    // GtkWidget* combo_box;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
     Polygon* polig2 = new Polygon("tetra2");
@@ -235,10 +225,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
 
     point->coords.push_back(Coord(0, 0));
     point2->coords.push_back(Coord(3, 3));
-    vector<vector<float> > trans_mat = {{1, 0, 0}, {0, 1, 0}, {3, 1, 1}};
-    point2->transform(trans_mat);
-    linha->transform(trans_mat);
-    triang->transform(trans_mat);
+
     figures.push_back(linha);  // coloca na lista global
     figures.push_back(polig);
     figures.push_back(polig2);
@@ -250,18 +237,6 @@ static void activate (GtkApplication* app, gpointer user_data) {
     
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "./glade/cg_top_frame.glade", NULL);
-
-    drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // cria a área de desenho, arruma o tamanho, conecta no callback e colcoa na grid.
-    gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // o tamanho da drawing_board é o tamanho do viewport, eles são a mesma coisa
-    g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
-
-    combo_box = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "combo_box"));
-
-    for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) {
-        const char *nome = (*iterator)->getName().c_str();
-        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome);
-    } 
-
     gtk_builder_add_callback_symbol(builder, "on_but_baix_clicked", on_but_baix_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_cima_clicked", on_but_cima_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_dir_clicked", on_but_dir_clicked);
@@ -272,8 +247,17 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_line_clicked", on_but_line_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_transform_clicked", on_but_transform_clicked);
-
     gtk_builder_connect_signals(builder, NULL);
+
+    drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // recebe área de desenho do glade
+    gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // bota o tamanho de acordo com o viewport
+    g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
+
+    combo_box = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "combo_box"));
+    for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) {
+        const char *nome = (*iterator)->getName().c_str();
+        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome);
+    } 
     gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
 
     window = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "window"));
@@ -283,6 +267,8 @@ static void activate (GtkApplication* app, gpointer user_data) {
 
     gtk_widget_show_all (window);  // mostra tudo
 }
+
+/////////////////////////////main/////////////////////////////
 
 int main (int argc, char **argv) {
     int status;
