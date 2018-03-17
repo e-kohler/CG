@@ -233,7 +233,7 @@
             </child>
             <child>
               <object class="GtkButton" id="but_translate">
-                <property name="label" translatable="yes">Transformar</property>
+                <property name="label" translatable="yes">Transladar</property>
                 <property name="name">but_transform</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>

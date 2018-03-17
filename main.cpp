@@ -1,4 +1,5 @@
 #include "Figure.h"
+#include <iostream>
 
 GtkWidget* drawing_area;  // canvas de desenho
 std::list<Figure*> figures;  // lista de ponteiros de figuras pra desenhar
@@ -57,6 +58,19 @@ static void add_line(GtkWidget** entries) {
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
+static std::vector<std::vector<float> > matrix_mult(std::vector<std::vector<float> > matrix_a, std::vector<std::vector<float> > matrix_b) {
+    std::vector<std::vector<float> > result(3, std::vector<float>(3, 0)); 
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            result[i][j] = 0;                       // multiplica duas matrizes 3x3
+            for (int k = 0; k < 3; k++) {
+            result[i][j] += matrix_a[i][k] * matrix_b[k][j];
+            }
+        }
+    }
+    return result;
+}
+
 static void translate(Figure* figure, Coord vector) {
     std::vector<std::vector<float> > trans_matrix = {{1, 0, 0}, {0, 1, 0},{vector.getX(), vector.getY(), 1}};
     figure->transform(trans_matrix);  // o translate nao precisa daquelas mutiplicação de matriz, é só mover a figura msm
@@ -64,11 +78,26 @@ static void translate(Figure* figure, Coord vector) {
 
 static void escalate(Figure* figure, Coord vector) {
     auto it_coords = figure->coords.begin();
-    float geo_middle;
+
+    std::vector<std::vector<float> > result_matrix;
+
+    Coord geo_middle = Coord(0,0);
     for (; it_coords != figure->coords.end(); ++it_coords) {
-        // aqui vou calcular o meio geometrico da figura, pra achar a distancia dela ate o centro
-        // pra fazer as matrizes que vao ser multiplicadas pra fazer os ajustes la pa
+        geo_middle = geo_middle + *it_coords;
     }
+    geo_middle = geo_middle / figure->coords.size();  // meio geométrico calculado
+
+    std::vector<std::vector<float> > move_center_matrix;
+    std::vector<std::vector<float> > move_back_matrix;
+    std::vector<std::vector<float> > escalate_matrix;
+    move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-geo_middle.getX(), -geo_middle.getY(), 1}};  // matriz q move a figura pro centro
+    move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {geo_middle.getX(), geo_middle.getY(), 1}};  // move de volta pro lugar
+    escalate_matrix = {{vector.getX(), 0, 0}, {0, vector.getY(), 0}, {0, 0, 1}};  // aplica o escalonamento
+
+    result_matrix = matrix_mult(move_center_matrix, escalate_matrix);
+    result_matrix = matrix_mult(result_matrix, move_back_matrix);  // multiplica as 3
+
+    figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
 }
 
 /////////////////////////////Funções de controle de botões/////////////////////////////
@@ -206,12 +235,12 @@ static void on_but_translate_clicked() {
 }
 
 static void on_but_escalate_clicked() {
-    Coord test_vector = Coord(-1, -1);
+    Coord test_vector = Coord(3, 2);
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    //escalate(*it, test_vector);
+    escalate(*it, test_vector);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -269,6 +298,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_line_clicked", on_but_line_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_translate_clicked", on_but_translate_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_escalate_clicked", on_but_escalate_clicked);
     gtk_builder_connect_signals(builder, NULL);
 
     drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // recebe área de desenho do glade
