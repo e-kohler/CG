@@ -210,6 +210,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
+                            <property name="margin_bottom">6</property>
                             <signal name="clicked" handler="on_but_polig_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -251,6 +252,7 @@
                       <object class="GtkComboBoxText" id="combo_box">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="margin_bottom">6</property>
                         <property name="active">0</property>
                         <signal name="changed" handler="on_but_polig_clicked" swapped="no"/>
                       </object>
@@ -286,6 +288,7 @@
                       <object class="GtkNotebook">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="margin_bottom">6</property>
                         <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
@@ -310,6 +313,8 @@
                                   <object class="GtkEntry" id="entry_x_tran">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="margin_top">2</property>
+                                    <property name="margin_bottom">2</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -361,6 +366,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="margin_top">5</property>
+                                <property name="margin_bottom">5</property>
                                 <signal name="clicked" handler="on_but_tran_clicked" swapped="no"/>
                               </object>
                               <packing>
@@ -405,6 +412,8 @@
                                   <object class="GtkEntry" id="entry_x_escal">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="margin_top">2</property>
+                                    <property name="margin_bottom">2</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -456,6 +465,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
+                                <property name="margin_top">6</property>
                                 <signal name="clicked" handler="on_but_escal_clicked" swapped="no"/>
                               </object>
                               <packing>
