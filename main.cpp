@@ -1,6 +1,5 @@
-#include <gtk/gtk.h>
-#include <iostream>
 #include "Figure.h"
+#include <iostream>
 
 GtkWidget* drawing_area;  // canvas de desenho
 std::list<Figure*> figures;  // lista de ponteiros de figuras pra desenhar
@@ -57,6 +56,72 @@ static void add_line(GtkWidget** entries) {
     gtk_widget_queue_draw(drawing_area);
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
+}
+
+static std::vector<std::vector<float> > matrix_mult(std::vector<std::vector<float> > matrix_a, std::vector<std::vector<float> > matrix_b) {
+    std::vector<std::vector<float> > result(3, std::vector<float>(3, 0)); 
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            result[i][j] = 0;                       // multiplica duas matrizes 3x3
+            for (int k = 0; k < 3; k++) {
+            result[i][j] += matrix_a[i][k] * matrix_b[k][j];
+            }
+        }
+    }
+    return result;
+}
+
+static void translate(Figure* figure, Coord vector) {
+    std::vector<std::vector<float> > trans_matrix = {{1, 0, 0}, {0, 1, 0},{vector.getX(), vector.getY(), 1}};
+    figure->transform(trans_matrix);  // o translate nao precisa daquelas mutiplicação de matriz, é só mover a figura msm
+}
+
+static void escalate(Figure* figure, Coord vector) {
+    auto it_coords = figure->coords.begin();
+
+    std::vector<std::vector<float> > result_matrix;
+
+    Coord geo_middle = Coord(0,0);
+    for (; it_coords != figure->coords.end(); ++it_coords) {
+        geo_middle = geo_middle + *it_coords;
+    }
+    geo_middle = geo_middle / figure->coords.size();  // meio geométrico calculado
+
+    std::vector<std::vector<float> > move_center_matrix;
+    std::vector<std::vector<float> > move_back_matrix;
+    std::vector<std::vector<float> > escalate_matrix;
+    move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-geo_middle.getX(), -geo_middle.getY(), 1}};  // matriz q move a figura pro centro
+    move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {geo_middle.getX(), geo_middle.getY(), 1}};  // move de volta pro lugar
+    escalate_matrix = {{vector.getX(), 0, 0}, {0, vector.getY(), 0}, {0, 0, 1}};  // aplica o escalonamento
+
+    result_matrix = matrix_mult(move_center_matrix, escalate_matrix);
+    result_matrix = matrix_mult(result_matrix, move_back_matrix);  // multiplica as 3
+
+    figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
+}
+
+static void rotate(Figure* figure, Coord vector) {
+    auto it_coords = figure->coords.begin();
+
+    std::vector<std::vector<float> > result_matrix;
+
+    Coord geo_middle = Coord(0,0);
+    for (; it_coords != figure->coords.end(); ++it_coords) {
+        geo_middle = geo_middle + *it_coords;
+    }
+    geo_middle = geo_middle / figure->coords.size();  // meio geométrico calculado
+
+    std::vector<std::vector<float> > move_center_matrix;
+    std::vector<std::vector<float> > move_back_matrix;
+    std::vector<std::vector<float> > escalate_matrix;
+    move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-geo_middle.getX(), -geo_middle.getY(), 1}};  // matriz q move a figura pro centro
+    move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {geo_middle.getX(), geo_middle.getY(), 1}};  // move de volta pro lugar
+    escalate_matrix = {{vector.getX(), 0, 0}, {0, vector.getY(), 0}, {0, 0, 1}};  // aplica o escalonamento
+
+    result_matrix = matrix_mult(move_center_matrix, escalate_matrix);
+    result_matrix = matrix_mult(result_matrix, move_back_matrix);  // multiplica as 3
+
+    figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
 }
 
 /////////////////////////////Funções de controle de botões/////////////////////////////
@@ -183,19 +248,30 @@ static void on_but_polig_clicked() {
     // só na balinha
 }
 
-static void on_but_transform_clicked() {
+static void on_but_translate_clicked() {
+    Coord test_vector = Coord(3, -4);
+
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
-    advance(it, selected_index); //std
-    std::vector<std::vector<float> > trans_mat = {{1, 0, 0}, {0, 1, 0}, {3, 1, 1}};  // matriz para transformação teste
-    (*it)->transform(trans_mat);
+    std::advance(it, selected_index); //std
+    translate(*it, test_vector);
     gtk_widget_queue_draw(drawing_area);
 }
 
-/////////////////////////////Instacia os objetos programa/////////////////////////////
+static void on_but_escalate_clicked() {
+    Coord test_vector = Coord(1.5, 1.5);
+
+    auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
+    auto it = figures.begin();
+    std::advance(it, selected_index); //std
+    escalate(*it, test_vector);
+    gtk_widget_queue_draw(drawing_area);
+}
+
+/////////////////////////////Instacia os objetos/////////////////////////////
 
 static void activate (GtkApplication* app, gpointer user_data) {
-	GtkBuilder* builder;
+    GtkBuilder* builder;
     GtkWidget* window;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
@@ -245,7 +321,8 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_point_clicked", on_but_point_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_line_clicked", on_but_line_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
-    gtk_builder_add_callback_symbol(builder, "on_but_transform_clicked", on_but_transform_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_translate_clicked", on_but_translate_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_escalate_clicked", on_but_escalate_clicked);
     gtk_builder_connect_signals(builder, NULL);
 
     drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // recebe área de desenho do glade
