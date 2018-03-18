@@ -7,8 +7,8 @@ GtkWidget* drawing_area;  // canvas de desenho
 std::list<Figure*> figures;  // lista de ponteiros de figuras pra desenhar
 View* view;  // a câmera
 GtkApplication *app;
-GtkWidget *combo_box;
-
+GtkWidget* combo_box;
+GtkBuilder* builder;
 /////////////////////////////Callback de desenho/////////////////////////////
 
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
@@ -272,9 +272,6 @@ static void on_but_polig_clicked() {
 }
 
 static void on_but_tran_clicked() {
-    GtkBuilder* builder = gtk_builder_new();
-    gtk_builder_add_from_file(builder, "./glade/cg_top_frame.glade", NULL);
-
     GtkWidget* entry_x = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_x_tran"));
     GtkWidget* entry_y = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_y_tran"));
 
@@ -290,13 +287,19 @@ static void on_but_tran_clicked() {
     gtk_widget_queue_draw(drawing_area);
 }
 
-static void on_but_escalate_clicked() {
-    Coord test_vector = Coord(1.5, 1.5);
+static void on_but_escal_clicked() {
+    GtkWidget* entry_x = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_x_escal"));
+    GtkWidget* entry_y = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_y_escal"));
+
+    auto x = gtk_entry_get_text(GTK_ENTRY(entry_x));
+    auto y = gtk_entry_get_text(GTK_ENTRY(entry_y));
+
+    Coord vector = Coord(std::stof(x), std::stof(y));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    escalate(*it, test_vector);
+    escalate(*it, vector);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -313,7 +316,6 @@ static void on_but_rotate_clicked() {
 /////////////////////////////Instacia os objetos/////////////////////////////
 
 static void activate (GtkApplication* app, gpointer user_data) {
-    GtkBuilder* builder;
     GtkWidget* window;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
@@ -363,9 +365,8 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_point_clicked", on_but_point_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_line_clicked", on_but_line_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
-    gtk_builder_add_callback_symbol(builder, "on_but_escalate_clicked", on_but_escalate_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rotate_clicked", on_but_rotate_clicked);
-    //gtk_builder_add_callback_symbol(builder, "on_but_escal_clicked", on_but_escal_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_escal_clicked", on_but_escal_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_tran_clicked", on_but_tran_clicked);
 
     gtk_builder_connect_signals(builder, NULL);
