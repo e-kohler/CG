@@ -274,7 +274,7 @@ static void on_but_escalate_clicked() {
 }
 
 static void on_but_rotate_clicked() {
-    float test_angle = 30;
+    float test_angle = 90;
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
