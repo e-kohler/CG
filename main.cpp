@@ -302,14 +302,46 @@ static void on_but_escal_clicked() {
     gtk_widget_queue_draw(drawing_area);
 }
 
-static void on_but_rotate_clicked() {
-    float test_angle = 30;
-    Coord test_vector = Coord(1,1);
+static void on_but_rot_def_clicked() {
+    GtkWidget* entry_angle = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_rot_def"));
+
+    auto angle = gtk_entry_get_text(GTK_ENTRY(entry_angle));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    rotate_by_point(*it, test_angle, test_vector);
+    rotate(*it, std::stof(angle));
+    gtk_widget_queue_draw(drawing_area);
+}
+
+static void on_but_rot_org_clicked() {
+    GtkWidget* entry_angle = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_rot_org"));
+
+    auto angle = gtk_entry_get_text(GTK_ENTRY(entry_angle));
+
+    auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
+    auto it = figures.begin();
+    std::advance(it, selected_index); //std
+    rotate_by_point(*it, std::stof(angle), Coord(0, 0));
+    gtk_widget_queue_draw(drawing_area);
+}
+
+static void on_but_rot_point_clicked() {
+    GtkWidget* entry_angle = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_rot_point_ang"));
+
+    GtkWidget* entry_x = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_rot_point_x"));
+    GtkWidget* entry_y = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_rot_point_y"));
+
+    auto angle = gtk_entry_get_text(GTK_ENTRY(entry_angle));
+
+    auto x = gtk_entry_get_text(GTK_ENTRY(entry_x));
+    auto y = gtk_entry_get_text(GTK_ENTRY(entry_y));
+    Coord point = Coord(std::stof(x), std::stof(y));
+
+    auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
+    auto it = figures.begin();
+    std::advance(it, selected_index); //std
+    rotate_by_point(*it, std::stof(angle), point);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -365,9 +397,12 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_point_clicked", on_but_point_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_line_clicked", on_but_line_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
-    gtk_builder_add_callback_symbol(builder, "on_but_rotate_clicked", on_but_rotate_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_escal_clicked", on_but_escal_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_tran_clicked", on_but_tran_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_rot_def_clicked", on_but_rot_def_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_rot_org_clicked", on_but_rot_org_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_rot_point_clicked", on_but_rot_point_clicked);
+
 
     gtk_builder_connect_signals(builder, NULL);
 
@@ -383,7 +418,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
 
     window = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "window"));
-    gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
+    //gtk_window_set_default_size(GTK_WINDOW(window), 750, 480);
     
     gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
 
