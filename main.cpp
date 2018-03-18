@@ -129,6 +129,24 @@ static void rotate(Figure* figure, float angle) {
     figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
 }
 
+static void rotate_by_world(Figure* figure, float angle){
+    auto it_coords = figure->coords.begin();
+    std::vector<std::vector<float> > rotate_matrix;
+
+    float cos = std::cos(angle * PI/180);
+    float sin = std::sin(angle * PI/180);
+
+    rotate_matrix = { {cos, sin, 0}, {-sin, cos, 0}, {0, 0, 1} };
+
+    figure->transform(rotate_matrix);
+}
+
+static void rotate_by_point(){
+    
+}
+
+
+
 /////////////////////////////Funções de controle de botões/////////////////////////////
 
 static void on_but_cima_clicked() {
@@ -274,12 +292,12 @@ static void on_but_escalate_clicked() {
 }
 
 static void on_but_rotate_clicked() {
-    float test_angle = 90;
+    float test_angle = 30;
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    rotate(*it, test_angle);
+    rotate_by_world(*it, test_angle);
     gtk_widget_queue_draw(drawing_area);
 }
 
