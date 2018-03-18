@@ -137,7 +137,7 @@ static void rotate_by_point(Figure* figure, float angle, Coord vector){
     float cos = std::cos(angle * PI/180);
     float sin = std::sin(angle * PI/180);
 
-    std::vector<std::vector<float> > move_matrix = {{1, 0, 0}, {0, 1, 0}, {vector.getX(), -vector.getY(), 1}};  // matriz q move a figura pro centro
+    std::vector<std::vector<float> > move_matrix = {{1, 0, 0}, {0, 1, 0}, {-vector.getX(), -vector.getY(), 1}};  // matriz q move a figura pro centro
     rotate_matrix = { {cos, sin, 0}, {-sin, cos, 0}, {0, 0, 1} };
     result_matrix = matrix_mult(move_matrix, rotate_matrix);
 
