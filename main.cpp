@@ -129,20 +129,19 @@ static void rotate(Figure* figure, float angle) {
     figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
 }
 
-static void rotate_by_world(Figure* figure, float angle){
+static void rotate_by_point(Figure* figure, float angle, Coord vector){
     auto it_coords = figure->coords.begin();
     std::vector<std::vector<float> > rotate_matrix;
+    std::vector<std::vector<float> > result_matrix;
 
     float cos = std::cos(angle * PI/180);
     float sin = std::sin(angle * PI/180);
 
+    std::vector<std::vector<float> > move_matrix = {{1, 0, 0}, {0, 1, 0}, {vector.getX(), -vector.getY(), 1}};  // matriz q move a figura pro centro
     rotate_matrix = { {cos, sin, 0}, {-sin, cos, 0}, {0, 0, 1} };
+    result_matrix = matrix_mult(move_matrix, rotate_matrix);
 
-    figure->transform(rotate_matrix);
-}
-
-static void rotate_by_point(){
-    
+    figure->transform(result_matrix);
 }
 
 
@@ -293,11 +292,12 @@ static void on_but_escalate_clicked() {
 
 static void on_but_rotate_clicked() {
     float test_angle = 30;
+    Coord test_vector = Coord(1,1);
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    rotate_by_world(*it, test_angle);
+    rotate_by_point(*it, test_angle, test_vector);
     gtk_widget_queue_draw(drawing_area);
 }
 
