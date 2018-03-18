@@ -304,6 +304,20 @@
                 <property name="position">6</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkButton" id="but_rotate">
+                <property name="label" translatable="yes">Rotacionar</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_but_rotate_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">7</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="resize">False</property>
