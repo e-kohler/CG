@@ -271,13 +271,22 @@ static void on_but_polig_clicked() {
     // só na balinha
 }
 
-static void on_but_translate_clicked() {
-    Coord test_vector = Coord(3, -4);
+static void on_but_tran_clicked() {
+    GtkBuilder* builder = gtk_builder_new();
+    gtk_builder_add_from_file(builder, "./glade/cg_top_frame.glade", NULL);
+
+    GtkWidget* entry_x = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_x_tran"));
+    GtkWidget* entry_y = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_y_tran"));
+
+    auto x = gtk_entry_get_text(GTK_ENTRY(entry_x));
+    auto y = gtk_entry_get_text(GTK_ENTRY(entry_y));
+
+    Coord vector = Coord(std::stof(x), std::stof(y));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    translate(*it, test_vector);
+    translate(*it, vector);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -354,9 +363,11 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_point_clicked", on_but_point_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_line_clicked", on_but_line_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
-    gtk_builder_add_callback_symbol(builder, "on_but_translate_clicked", on_but_translate_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_escalate_clicked", on_but_escalate_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rotate_clicked", on_but_rotate_clicked);
+    //gtk_builder_add_callback_symbol(builder, "on_but_escal_clicked", on_but_escal_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_tran_clicked", on_but_tran_clicked);
+
     gtk_builder_connect_signals(builder, NULL);
 
     drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // recebe área de desenho do glade
