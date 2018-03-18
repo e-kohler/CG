@@ -1,5 +1,7 @@
 #include "Figure.h"
 #include <iostream>
+#include <math.h>
+#define PI 3.14159265
 
 GtkWidget* drawing_area;  // canvas de desenho
 std::list<Figure*> figures;  // lista de ponteiros de figuras pra desenhar
@@ -100,10 +102,13 @@ static void escalate(Figure* figure, Coord vector) {
     figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
 }
 
-static void rotate(Figure* figure, Coord vector) {
+static void rotate(Figure* figure, float angle) {
     auto it_coords = figure->coords.begin();
 
     std::vector<std::vector<float> > result_matrix;
+
+    float cos = std::cos(angle * PI/180);
+    float sin = std::sin(angle * PI/180);
 
     Coord geo_middle = Coord(0,0);
     for (; it_coords != figure->coords.end(); ++it_coords) {
@@ -113,12 +118,12 @@ static void rotate(Figure* figure, Coord vector) {
 
     std::vector<std::vector<float> > move_center_matrix;
     std::vector<std::vector<float> > move_back_matrix;
-    std::vector<std::vector<float> > escalate_matrix;
+    std::vector<std::vector<float> > rotate_matrix;
     move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-geo_middle.getX(), -geo_middle.getY(), 1}};  // matriz q move a figura pro centro
     move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {geo_middle.getX(), geo_middle.getY(), 1}};  // move de volta pro lugar
-    escalate_matrix = {{vector.getX(), 0, 0}, {0, vector.getY(), 0}, {0, 0, 1}};  // aplica o escalonamento
+    rotate_matrix = {{cos, -sin, 0}, {sin, cos, 0}, {0, 0, 1}};  // aplica o escalonamento
 
-    result_matrix = matrix_mult(move_center_matrix, escalate_matrix);
+    result_matrix = matrix_mult(move_center_matrix, rotate_matrix);
     result_matrix = matrix_mult(result_matrix, move_back_matrix);  // multiplica as 3
 
     figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
@@ -268,6 +273,16 @@ static void on_but_escalate_clicked() {
     gtk_widget_queue_draw(drawing_area);
 }
 
+static void on_but_rotate_clicked() {
+    float test_angle = 30;
+
+    auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
+    auto it = figures.begin();
+    std::advance(it, selected_index); //std
+    rotate(*it, test_angle);
+    gtk_widget_queue_draw(drawing_area);
+}
+
 /////////////////////////////Instacia os objetos/////////////////////////////
 
 static void activate (GtkApplication* app, gpointer user_data) {
@@ -323,6 +338,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_polig_clicked", on_but_polig_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_translate_clicked", on_but_translate_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_escalate_clicked", on_but_escalate_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_rotate_clicked", on_but_rotate_clicked);
     gtk_builder_connect_signals(builder, NULL);
 
     drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // recebe área de desenho do glade
