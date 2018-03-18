@@ -100,6 +100,30 @@ static void escalate(Figure* figure, Coord vector) {
     figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
 }
 
+static void rotate(Figure* figure, Coord vector) {
+    auto it_coords = figure->coords.begin();
+
+    std::vector<std::vector<float> > result_matrix;
+
+    Coord geo_middle = Coord(0,0);
+    for (; it_coords != figure->coords.end(); ++it_coords) {
+        geo_middle = geo_middle + *it_coords;
+    }
+    geo_middle = geo_middle / figure->coords.size();  // meio geométrico calculado
+
+    std::vector<std::vector<float> > move_center_matrix;
+    std::vector<std::vector<float> > move_back_matrix;
+    std::vector<std::vector<float> > escalate_matrix;
+    move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-geo_middle.getX(), -geo_middle.getY(), 1}};  // matriz q move a figura pro centro
+    move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {geo_middle.getX(), geo_middle.getY(), 1}};  // move de volta pro lugar
+    escalate_matrix = {{vector.getX(), 0, 0}, {0, vector.getY(), 0}, {0, 0, 1}};  // aplica o escalonamento
+
+    result_matrix = matrix_mult(move_center_matrix, escalate_matrix);
+    result_matrix = matrix_mult(result_matrix, move_back_matrix);  // multiplica as 3
+
+    figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
+}
+
 /////////////////////////////Funções de controle de botões/////////////////////////////
 
 static void on_but_cima_clicked() {
@@ -235,7 +259,7 @@ static void on_but_translate_clicked() {
 }
 
 static void on_but_escalate_clicked() {
-    Coord test_vector = Coord(3, 2);
+    Coord test_vector = Coord(1.5, 1.5);
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
@@ -244,7 +268,7 @@ static void on_but_escalate_clicked() {
     gtk_widget_queue_draw(drawing_area);
 }
 
-/////////////////////////////Instacia os objetos programa/////////////////////////////
+/////////////////////////////Instacia os objetos/////////////////////////////
 
 static void activate (GtkApplication* app, gpointer user_data) {
     GtkBuilder* builder;
