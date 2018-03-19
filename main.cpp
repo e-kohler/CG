@@ -102,7 +102,7 @@ static void escalate(Figure* figure, Coord vector) {
     figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
 }
 
-static void rotate(Figure* figure, float angle) {
+static void rotate_default(Figure* figure, float angle) {
     auto it_coords = figure->coords.begin();
 
     std::vector<std::vector<float> > result_matrix;
@@ -131,15 +131,20 @@ static void rotate(Figure* figure, float angle) {
 
 static void rotate_by_point(Figure* figure, float angle, Coord vector){
     auto it_coords = figure->coords.begin();
-    std::vector<std::vector<float> > rotate_matrix;
     std::vector<std::vector<float> > result_matrix;
 
     float cos = std::cos(angle * PI/180);
     float sin = std::sin(angle * PI/180);
 
-    std::vector<std::vector<float> > move_matrix = {{1, 0, 0}, {0, 1, 0}, {-vector.getX(), -vector.getY(), 1}};  // matriz q move a figura pro centro
+    std::vector<std::vector<float> > move_center_matrix;
+    std::vector<std::vector<float> > move_back_matrix;
+    std::vector<std::vector<float> > rotate_matrix;
+
+    move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-vector.getX(), -vector.getY(), 1}};  // matriz q move a figura pro centro
+    move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {vector.getX(), vector.getY(), 1}};  // move de volta pro lugar
     rotate_matrix = { {cos, sin, 0}, {-sin, cos, 0}, {0, 0, 1} };
-    result_matrix = matrix_mult(move_matrix, rotate_matrix);
+    result_matrix = matrix_mult(move_center_matrix, rotate_matrix);
+    result_matrix = matrix_mult(result_matrix, move_back_matrix);
 
     figure->transform(result_matrix);
 }
@@ -310,7 +315,7 @@ static void on_but_rot_def_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    rotate(*it, std::stof(angle));
+    rotate_default(*it, std::stof(angle));
     gtk_widget_queue_draw(drawing_area);
 }
 
