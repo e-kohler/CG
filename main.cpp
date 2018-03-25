@@ -9,14 +9,15 @@ View* view;  // a câmera
 GtkApplication *app;
 GtkWidget* combo_box;
 GtkBuilder* builder;
+
 /////////////////////////////Callback de desenho/////////////////////////////
 
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
-    cairo_set_source_rgb(cr, 1, 1, 1);  //fundo preto
+    cairo_set_source_rgb(cr, 1, 1, 1);  //fundo branco
     cairo_paint(cr);
 
     cairo_set_line_width(cr, 1);
-    cairo_set_source_rgb(cr, 0, 0, 0);  // linha branca
+    cairo_set_source_rgb(cr, 0, 0, 0);  // linha preta
 
     for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
         (*iterator)->draw(cr, view);
@@ -148,8 +149,6 @@ static void rotate_by_point(Figure* figure, float angle, Coord vector){
 
     figure->transform(result_matrix);
 }
-
-
 
 /////////////////////////////Funções de controle de botões/////////////////////////////
 
@@ -407,7 +406,6 @@ static void activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_rot_def_clicked", on_but_rot_def_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rot_org_clicked", on_but_rot_org_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rot_point_clicked", on_but_rot_point_clicked);
-
 
     gtk_builder_connect_signals(builder, NULL);
 
