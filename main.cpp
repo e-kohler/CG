@@ -13,11 +13,11 @@ GtkBuilder* builder;
 /////////////////////////////Callback de desenho/////////////////////////////
 
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
-    cairo_set_source_rgb(cr, 1, 1, 1);  //fundo branco
+    cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_paint(cr);
 
     cairo_set_line_width(cr, 1);
-    cairo_set_source_rgb(cr, 0, 0, 0);  // linha preta
+    cairo_set_source_rgb(cr, 0, 0, 0);
 
     for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
         (*iterator)->draw(cr, view);
@@ -391,7 +391,7 @@ static void activate (GtkApplication* app, gpointer user_data) {
     view = new View();
     
     builder = gtk_builder_new();
-    gtk_builder_add_from_file(builder, "./glade/cg_top_frame.glade", NULL);
+    gtk_builder_add_from_file(builder, "./glade/cg_top_frame.glade", NULL);  // tem que mudar isso pra rodar no moodle
     gtk_builder_add_callback_symbol(builder, "on_but_baix_clicked", on_but_baix_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_cima_clicked", on_but_cima_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_dir_clicked", on_but_dir_clicked);
@@ -409,6 +409,9 @@ static void activate (GtkApplication* app, gpointer user_data) {
 
     gtk_builder_connect_signals(builder, NULL);
 
+    window = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "window"));
+    //gtk_window_set_default_size(GTK_WINDOW(window), 750, 480);
+
     drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // recebe área de desenho do glade
     gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // bota o tamanho de acordo com o viewport
     g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
@@ -419,9 +422,6 @@ static void activate (GtkApplication* app, gpointer user_data) {
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome);
     } 
     gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
-
-    window = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "window"));
-    //gtk_window_set_default_size(GTK_WINDOW(window), 750, 480);
     
     gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
 
@@ -432,8 +432,6 @@ static void activate (GtkApplication* app, gpointer user_data) {
 
 int main (int argc, char **argv) {
     int status;
-
-    gtk_init(&argc, &argv);
 
     app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
     g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
