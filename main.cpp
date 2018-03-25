@@ -108,8 +108,8 @@ static void rotate_default(Figure* figure, float angle) {
 
     std::vector<std::vector<float> > result_matrix;
 
-    float cos = std::cos(angle * PI/180);
-    float sin = std::sin(angle * PI/180);
+    float cos_ang = cos(angle * PI/180);
+    float sin_ang = sin(angle * PI/180);
 
     Coord geo_middle = Coord(0,0);
     for (; it_coords != figure->coords.end(); ++it_coords) {
@@ -122,7 +122,7 @@ static void rotate_default(Figure* figure, float angle) {
     std::vector<std::vector<float> > rotate_matrix;
     move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-geo_middle.getX(), -geo_middle.getY(), 1}};  // matriz q move a figura pro centro
     move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {geo_middle.getX(), geo_middle.getY(), 1}};  // move de volta pro lugar
-    rotate_matrix = {{cos, -sin, 0}, {sin, cos, 0}, {0, 0, 1}};  // aplica o escalonamento
+    rotate_matrix = {{cos_ang, -sin_ang, 0}, {sin_ang, cos_ang, 0}, {0, 0, 1}};  // aplica o escalonamento
 
     result_matrix = matrix_mult(move_center_matrix, rotate_matrix);
     result_matrix = matrix_mult(result_matrix, move_back_matrix);  // multiplica as 3
@@ -134,8 +134,8 @@ static void rotate_by_point(Figure* figure, float angle, Coord vector){
     auto it_coords = figure->coords.begin();
     std::vector<std::vector<float> > result_matrix;
 
-    float cos = std::cos(angle * PI/180);
-    float sin = std::sin(angle * PI/180);
+    float cos_ang = cos(angle * PI/180);
+    float sin_ang = sin(angle * PI/180);
 
     std::vector<std::vector<float> > move_center_matrix;
     std::vector<std::vector<float> > move_back_matrix;
@@ -143,7 +143,7 @@ static void rotate_by_point(Figure* figure, float angle, Coord vector){
 
     move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-vector.getX(), -vector.getY(), 1}};  // matriz q move a figura pro centro
     move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {vector.getX(), vector.getY(), 1}};  // move de volta pro lugar
-    rotate_matrix = { {cos, sin, 0}, {-sin, cos, 0}, {0, 0, 1} };
+    rotate_matrix = { {cos_ang, sin_ang, 0}, {-sin_ang, cos_ang, 0}, {0, 0, 1} };
     result_matrix = matrix_mult(move_center_matrix, rotate_matrix);
     result_matrix = matrix_mult(result_matrix, move_back_matrix);
 
