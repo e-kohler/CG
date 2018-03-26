@@ -1,7 +1,7 @@
 #ifndef TRANS_H
 #define TRANS_H
 
-#include "Figure.h"
+#include "Shape.h"
 
 namespace Trans {
     std::vector<std::vector<float> > translating_matrix(Vector2z vector);
@@ -10,13 +10,13 @@ namespace Trans {
 
     std::vector<std::vector<float> > rotating_matrix(float angle, Vector2z point);
 
-    void translate(Figure* figure, Vector2z vector);
+    void translate(Shape* shape, Vector2z vector);
 
-    void scale(Figure* figure, Vector2z vector);
+    void scale(Shape* shape, Vector2z vector);
 
-    void rotate_default(Figure* figure, float angle);
+    void rotate_default(Shape* shape, float angle);
 
-    void rotate_by_point(Figure* figure, float angle, Vector2z vector);
+    void rotate_by_point(Shape* shape, float angle, Vector2z vector);
 
 }
 

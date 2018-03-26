@@ -1,13 +1,13 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include "Figure.h"
+#include "Shape.h"
 
 namespace GUI {
 
     extern GtkWidget* drawing_area;  // canvas de desenho
-    extern std::list<Figure*> figures;  // lista de ponteiros de figuras pra desenhar
-    extern View* view;  // a câmera
+    extern std::list<Shape*> shapes;  // lista de ponteiros de figuras pra desenhar
+    extern Camera* camera;  // a câmera
     extern GtkApplication *app;
     extern GtkWidget* combo_box;
     extern GtkBuilder* builder;
@@ -24,13 +24,13 @@ namespace GUI {
 
     std::vector<std::vector<float> > translating_matrix(Vector2z vector);
 
-    void translate(Figure* figure, Vector2z vector);
+    void translate(Shape* shape, Vector2z vector);
 
-    void scale(Figure* figure, Vector2z vector);
+    void scale(Shape* shape, Vector2z vector);
 
-    void rotate_default(Figure* figure, float angle);
+    void rotate_default(Shape* shape, float angle);
 
-    void rotate_by_point(Figure* figure, float angle, Vector2z vector);
+    void rotate_by_point(Shape* shape, float angle, Vector2z vector);
 
     /////////////////////////////Funções de controle de botões/////////////////////////////
 

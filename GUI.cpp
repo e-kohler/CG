@@ -2,8 +2,8 @@
 #include "Trans.h"
 
 GtkWidget* GUI::drawing_area;  // canvas de desenho
-std::list<Figure*> GUI::figures;  // lista de ponteiros de figuras pra desenhar
-View* GUI::view;  // a câmera
+std::list<Shape*> GUI::shapes;  // lista de ponteiros de figuras pra desenhar
+Camera* GUI::camera;  // a câmera
 GtkApplication* GUI::app;
 GtkWidget* GUI::combo_box;
 GtkBuilder* GUI::builder;
@@ -17,8 +17,8 @@ gboolean GUI::draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_set_line_width(cr, 1);
     cairo_set_source_rgb(cr, 0, 0, 0);
 
-    for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
-        (*iterator)->draw(cr, view);
+    for (auto iterator = shapes.begin(); iterator != shapes.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
+        (*iterator)->draw(cr, camera);
     }
     cairo_stroke(cr);
     return FALSE;
@@ -32,7 +32,7 @@ void GUI::add_ponto(GtkWidget** entries) {
     Point* point = new Point(nome);
     point->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
     std::string nome_string(nome);
-    figures.push_back(point);
+    shapes.push_back(point);
     gtk_widget_queue_draw(drawing_area);
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
 
@@ -51,7 +51,7 @@ void GUI::add_line(GtkWidget** entries) {
     Line* line = new Line(nome);
     line->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
     line->coords.push_back(Vector2z(std::stof(x2), std::stof(y2)));
-    figures.push_back(line);
+    shapes.push_back(line);
     gtk_widget_queue_draw(drawing_area);
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
@@ -60,32 +60,32 @@ void GUI::add_line(GtkWidget** entries) {
 /////////////////////////////Funções de controle de botões/////////////////////////////
 
 void GUI::on_but_cima_clicked() {
-    view->pos = view->pos + Vector2z(0, 1);
+    camera->pos = camera->pos + Vector2z(0, 1);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_baix_clicked() {
-    view->pos = view->pos + Vector2z(0, -1);
+    camera->pos = camera->pos + Vector2z(0, -1);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_esq_clicked() {
-    view->pos = view->pos + Vector2z(-1, 0);
+    camera->pos = camera->pos + Vector2z(-1, 0);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_dir_clicked() {
-    view->pos = view->pos + Vector2z(1, 0);
+    camera->pos = camera->pos + Vector2z(1, 0);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_in_clicked() {
-    view->size = view->size - Vector2z(1, 1);
+    camera->size = camera->size - Vector2z(1, 1);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_out_clicked() {
-    view->size = view->size - Vector2z(-1, -1);
+    camera->size = camera->size - Vector2z(-1, -1);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -191,7 +191,7 @@ void GUI::on_but_tran_clicked() {
     Vector2z vector = Vector2z(std::stof(x), std::stof(y));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
-    auto it = figures.begin();
+    auto it = shapes.begin();
     std::advance(it, selected_index); //std
     Trans::translate(*it, vector);
     gtk_widget_queue_draw(drawing_area);
@@ -207,7 +207,7 @@ void GUI::on_but_escal_clicked() {
     Vector2z vector = Vector2z(std::stof(x), std::stof(y));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
-    auto it = figures.begin();
+    auto it = shapes.begin();
     std::advance(it, selected_index); //std
     Trans::scale(*it, vector);
     gtk_widget_queue_draw(drawing_area);
@@ -219,7 +219,7 @@ void GUI::on_but_rot_def_clicked() {
     auto angle = gtk_entry_get_text(GTK_ENTRY(entry_angle));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
-    auto it = figures.begin();
+    auto it = shapes.begin();
     std::advance(it, selected_index); //std
     Trans::rotate_default(*it, std::stof(angle));
     gtk_widget_queue_draw(drawing_area);
@@ -231,7 +231,7 @@ void GUI::on_but_rot_org_clicked() {
     auto angle = gtk_entry_get_text(GTK_ENTRY(entry_angle));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
-    auto it = figures.begin();
+    auto it = shapes.begin();
     std::advance(it, selected_index); //std
     Trans::rotate_by_point(*it, std::stof(angle), Vector2z(0, 0));
     gtk_widget_queue_draw(drawing_area);
@@ -250,7 +250,7 @@ void GUI::on_but_rot_point_clicked() {
     Vector2z point = Vector2z(std::stof(x), std::stof(y));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
-    auto it = figures.begin();
+    auto it = shapes.begin();
     std::advance(it, selected_index); //std
     Trans::rotate_by_point(*it, std::stof(angle), point);
     gtk_widget_queue_draw(drawing_area);
@@ -288,14 +288,14 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     point->coords.push_back(Vector2z(0, 0));
     point2->coords.push_back(Vector2z(3, 3));
 
-    figures.push_back(linha);  // coloca na lista global
-    figures.push_back(polig);
-    figures.push_back(polig2);
-    figures.push_back(triang);
-    figures.push_back(point);
-    figures.push_back(point2);
+    shapes.push_back(linha);  // coloca na lista global
+    shapes.push_back(polig);
+    shapes.push_back(polig2);
+    shapes.push_back(triang);
+    shapes.push_back(point);
+    shapes.push_back(point2);
 
-    view = new View();
+    camera = new Camera();
     
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "./glade/cg_top_frame.glade", NULL);  // tem que mudar isso pra rodar no moodle
@@ -320,11 +320,11 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     //gtk_window_set_default_size(GTK_WINDOW(window), 750, 480);
 
     drawing_area = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "drawing_area"));  // recebe área de desenho do glade
-    gtk_widget_set_size_request (drawing_area, view->viewport.getX(), view->viewport.getY());  // bota o tamanho de acordo com o viewport
+    gtk_widget_set_size_request (drawing_area, camera->viewport.getX(), camera->viewport.getY());  // bota o tamanho de acordo com o viewport
     g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
 
     combo_box = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "combo_box"));
-    for (auto iterator = figures.begin(); iterator != figures.end(); ++iterator) {
+    for (auto iterator = shapes.begin(); iterator != shapes.end(); ++iterator) {
         const char *nome = (*iterator)->getName().c_str();
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome);
     } 

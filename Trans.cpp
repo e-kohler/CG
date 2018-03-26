@@ -39,46 +39,46 @@ std::vector<std::vector<float> > Trans::rotating_matrix(float angle, Vector2z po
     return transform_matrix;
 }
 
-void Trans::translate(Figure* figure, Vector2z vector) {
+void Trans::translate(Shape* shape, Vector2z vector) {
     auto trans_matrix = translating_matrix(vector);
-    figure->transform(trans_matrix);  // o translate nao precisa daquelas mutiplicação de matriz, é só mover a figura msm
+    shape->transform(trans_matrix);  // o translate nao precisa daquelas mutiplicação de matriz, é só mover a figura msm
 }
 
-void Trans::scale(Figure* figure, Vector2z vector) {
-    auto it_coords = figure->coords.begin();
+void Trans::scale(Shape* shape, Vector2z vector) {
+    auto it_coords = shape->coords.begin();
 
     Vector2z geo_middle = Vector2z(0,0);
-    for (; it_coords != figure->coords.end(); ++it_coords) {
+    for (; it_coords != shape->coords.end(); ++it_coords) {
         geo_middle = geo_middle + *it_coords;
     }
-    geo_middle = geo_middle / figure->coords.size();  // meio geométrico calculado
+    geo_middle = geo_middle / shape->coords.size();  // meio geométrico calculado
 
     auto scal_matrix = scaling_matrix(vector, geo_middle);
     
-    figure->transform(scal_matrix);
+    shape->transform(scal_matrix);
 }
 
-void Trans::rotate_default(Figure* figure, float angle) {
-    auto it_coords = figure->coords.begin();
+void Trans::rotate_default(Shape* shape, float angle) {
+    auto it_coords = shape->coords.begin();
 
     Vector2z geo_middle = Vector2z(0,0);
-    for (; it_coords != figure->coords.end(); ++it_coords) {
+    for (; it_coords != shape->coords.end(); ++it_coords) {
         geo_middle = geo_middle + *it_coords;
     }
-    geo_middle = geo_middle / figure->coords.size();  // meio geométrico calculado
+    geo_middle = geo_middle / shape->coords.size();  // meio geométrico calculado
 
     auto rot_matrix = rotating_matrix(angle, geo_middle);
 
-    figure->transform(rot_matrix);  // aplica a transformação na figura com a matriz resultante
+    shape->transform(rot_matrix);  // aplica a transformação na figura com a matriz resultante
 }
 
-void Trans::rotate_by_point(Figure* figure, float angle, Vector2z vector){
-    auto it_coords = figure->coords.begin();
+void Trans::rotate_by_point(Shape* shape, float angle, Vector2z vector){
+    auto it_coords = shape->coords.begin();
 
     float cos_ang = cos(angle * PI/180);
     float sin_ang = sin(angle * PI/180);
     
     auto rot_matrix = rotating_matrix(angle, vector);
 
-    figure->transform(rot_matrix);
+    shape->transform(rot_matrix);
 }

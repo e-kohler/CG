@@ -1,10 +1,10 @@
-#ifndef VIEW_H
+#ifndef CAMERA_H
 #define CAMERA_H
 
 #include "Vector2z.h"
 
-struct View{
-    View();
+struct Camera{
+    Camera();
     Vector2z pos;
     Vector2z viewport;
     Vector2z size;
