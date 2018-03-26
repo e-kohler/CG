@@ -4,9 +4,13 @@ View::View() {
     pos = Coord(0, 0);
     viewport = Coord(480, 480);  // propriedades da camera que limita o mundo
     size = Coord(35, 35);
+    angle = 0;
 }
 
 Coord View::world_to_viewport(Coord coord) {
+    
+
+
     Coord wmin = pos - (size/2);
     Coord output = coord - wmin;
     output = Coord(output.getX()/size.getX(), 1 - (output.getY()/size.getY()));  // isso é aquelas contas dos slides

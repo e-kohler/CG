@@ -8,6 +8,7 @@ struct View{
     Coord pos;
     Coord viewport;
     Coord size;
+    float angle;
     Coord world_to_viewport(Coord coord);
 };
 #endif
