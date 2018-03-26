@@ -2,7 +2,6 @@
 #define GUI_H
 
 #include "Figure.h"
-#include <math.h>
 
 namespace GUI {
 
@@ -19,11 +18,15 @@ namespace GUI {
 
     void add_line(GtkWidget** entries);
 
-    std::vector<std::vector<float> > matrix_mult(std::vector<std::vector<float> > matrix_a, std::vector<std::vector<float> > matrix_b);
+    std::vector<std::vector<float> > rotating_matrix(float angle, Coord point);
+
+    std::vector<std::vector<float> > scaling_matrix(Coord vector, Coord point);
+
+    std::vector<std::vector<float> > translating_matrix(Coord vector);
 
     void translate(Figure* figure, Coord vector);
 
-    void escalate(Figure* figure, Coord vector);
+    void scale(Figure* figure, Coord vector);
 
     void rotate_default(Figure* figure, float angle);
 

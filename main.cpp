@@ -1,4 +1,4 @@
-#include "gui.h"
+#include "GUI.h"
 #include <iostream>
 
 static void activateGUI(GtkApplication* app, gpointer user_data) {

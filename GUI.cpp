@@ -1,6 +1,5 @@
-#include <iostream>
-#include "gui.h"
-#define PI 3.14159265
+#include "GUI.h"
+#include "Trans.h"
 
 GtkWidget* GUI::drawing_area;  // canvas de desenho
 std::list<Figure*> GUI::figures;  // lista de ponteiros de figuras pra desenhar
@@ -24,8 +23,6 @@ gboolean GUI::draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_stroke(cr);
     return FALSE;
 }
-
-/////////////////////////////Funções estáticas/////////////////////////////
 
 void GUI::add_ponto(GtkWidget** entries) {
     auto nome = gtk_entry_get_text(GTK_ENTRY(entries[3]));
@@ -58,95 +55,6 @@ void GUI::add_line(GtkWidget** entries) {
     gtk_widget_queue_draw(drawing_area);
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
-}
-
-std::vector<std::vector<float> > GUI::matrix_mult(std::vector<std::vector<float> > matrix_a, std::vector<std::vector<float> > matrix_b) {
-    std::vector<std::vector<float> > result(3, std::vector<float>(3, 0)); 
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            result[i][j] = 0;                       // multiplica duas matrizes 3x3
-            for (int k = 0; k < 3; k++) {
-            result[i][j] += matrix_a[i][k] * matrix_b[k][j];
-            }
-        }
-    }
-    return result;
-}
-
-void GUI::translate(Figure* figure, Coord vector) {
-    std::vector<std::vector<float> > trans_matrix = {{1, 0, 0}, {0, 1, 0},{vector.getX(), vector.getY(), 1}};
-    figure->transform(trans_matrix);  // o translate nao precisa daquelas mutiplicação de matriz, é só mover a figura msm
-}
-
-void GUI::escalate(Figure* figure, Coord vector) {
-    auto it_coords = figure->coords.begin();
-
-    std::vector<std::vector<float> > result_matrix;
-
-    Coord geo_middle = Coord(0,0);
-    for (; it_coords != figure->coords.end(); ++it_coords) {
-        geo_middle = geo_middle + *it_coords;
-    }
-    geo_middle = geo_middle / figure->coords.size();  // meio geométrico calculado
-
-    std::vector<std::vector<float> > move_center_matrix;
-    std::vector<std::vector<float> > move_back_matrix;
-    std::vector<std::vector<float> > escalate_matrix;
-    move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-geo_middle.getX(), -geo_middle.getY(), 1}};  // matriz q move a figura pro centro
-    move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {geo_middle.getX(), geo_middle.getY(), 1}};  // move de volta pro lugar
-    escalate_matrix = {{vector.getX(), 0, 0}, {0, vector.getY(), 0}, {0, 0, 1}};  // aplica o escalonamento
-
-    result_matrix = matrix_mult(move_center_matrix, escalate_matrix);
-    result_matrix = matrix_mult(result_matrix, move_back_matrix);  // multiplica as 3
-
-    figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
-}
-
-void GUI::rotate_default(Figure* figure, float angle) {
-    auto it_coords = figure->coords.begin();
-
-    std::vector<std::vector<float> > result_matrix;
-
-    float cos_ang = cos(angle * PI/180);
-    float sin_ang = sin(angle * PI/180);
-
-    Coord geo_middle = Coord(0,0);
-    for (; it_coords != figure->coords.end(); ++it_coords) {
-        geo_middle = geo_middle + *it_coords;
-    }
-    geo_middle = geo_middle / figure->coords.size();  // meio geométrico calculado
-
-    std::vector<std::vector<float> > move_center_matrix;
-    std::vector<std::vector<float> > move_back_matrix;
-    std::vector<std::vector<float> > rotate_matrix;
-    move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-geo_middle.getX(), -geo_middle.getY(), 1}};  // matriz q move a figura pro centro
-    move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {geo_middle.getX(), geo_middle.getY(), 1}};  // move de volta pro lugar
-    rotate_matrix = {{cos_ang, -sin_ang, 0}, {sin_ang, cos_ang, 0}, {0, 0, 1}};  // aplica o escalonamento
-
-    result_matrix = matrix_mult(move_center_matrix, rotate_matrix);
-    result_matrix = matrix_mult(result_matrix, move_back_matrix);  // multiplica as 3
-
-    figure->transform(result_matrix);  // aplica a transformação na figura com a matriz resultante
-}
-
-void GUI::rotate_by_point(Figure* figure, float angle, Coord vector){
-    auto it_coords = figure->coords.begin();
-    std::vector<std::vector<float> > result_matrix;
-
-    float cos_ang = cos(angle * PI/180);
-    float sin_ang = sin(angle * PI/180);
-
-    std::vector<std::vector<float> > move_center_matrix;
-    std::vector<std::vector<float> > move_back_matrix;
-    std::vector<std::vector<float> > rotate_matrix;
-
-    move_center_matrix = {{1, 0, 0}, {0, 1, 0}, {-vector.getX(), -vector.getY(), 1}};  // matriz q move a figura pro centro
-    move_back_matrix = {{1, 0, 0}, {0, 1, 0}, {vector.getX(), vector.getY(), 1}};  // move de volta pro lugar
-    rotate_matrix = { {cos_ang, sin_ang, 0}, {-sin_ang, cos_ang, 0}, {0, 0, 1} };
-    result_matrix = matrix_mult(move_center_matrix, rotate_matrix);
-    result_matrix = matrix_mult(result_matrix, move_back_matrix);
-
-    figure->transform(result_matrix);
 }
 
 /////////////////////////////Funções de controle de botões/////////////////////////////
@@ -285,7 +193,7 @@ void GUI::on_but_tran_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    translate(*it, vector);
+    Trans::translate(*it, vector);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -301,7 +209,7 @@ void GUI::on_but_escal_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    escalate(*it, vector);
+    Trans::scale(*it, vector);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -313,7 +221,7 @@ void GUI::on_but_rot_def_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    rotate_default(*it, std::stof(angle));
+    Trans::rotate_default(*it, std::stof(angle));
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -325,7 +233,7 @@ void GUI::on_but_rot_org_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    rotate_by_point(*it, std::stof(angle), Coord(0, 0));
+    Trans::rotate_by_point(*it, std::stof(angle), Coord(0, 0));
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -344,7 +252,7 @@ void GUI::on_but_rot_point_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    rotate_by_point(*it, std::stof(angle), point);
+    Trans::rotate_by_point(*it, std::stof(angle), point);
     gtk_widget_queue_draw(drawing_area);
 }
 

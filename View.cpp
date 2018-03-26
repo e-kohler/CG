@@ -8,7 +8,6 @@ View::View() {
 }
 
 Coord View::world_to_viewport(Coord coord) {
-    
 
 
     Coord wmin = pos - (size/2);
