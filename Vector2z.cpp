@@ -40,6 +40,17 @@ Vector2z Vector2z::operator*(float number) {
     return Vector2z(this->coords[0] * number, this->coords[1] * number);
 }
 
+Vector2z Vector2z::operator*(std::vector<std::vector<float> > matrix) {
+    std::vector<float> result(3);
+    for (int i = 0; i < 3; i++) {
+        result[i] = 0;
+        for (int j = 0; j < 3; j++) {
+            result[i] += coords[j] * matrix[j][i];
+        }
+    }
+    return Vector2z(result[0], result[1]);
+}
+
 Vector2z Vector2z::operator/(float number) {
     return Vector2z(this->coords[0] / number, this->coords[1] / number);
 }

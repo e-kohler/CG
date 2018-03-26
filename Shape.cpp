@@ -14,16 +14,9 @@ std::string Shape::getName() {
 
 void Shape::transform(std::vector<std::vector<float> > matrix) {
     for (auto iterator = coords.begin(); iterator != coords.end(); ++iterator) {
-        std::vector<float> current_coord = iterator->getCoords();
-        std::vector<float> result(3);
-        for (int i = 0; i < 3; i++) {
-            result[i] = 0;
-            for (int j = 0; j < 3; j++) {
-                result[i] += current_coord[j] * matrix[j][i];
-            }
-        }
-        iterator->setX(result[0]);
-        iterator->setY(result[1]);
+        auto result = (*iterator) * matrix;
+        iterator->setX(result.getX());
+        iterator->setY(result.getY());
     }
 }
 

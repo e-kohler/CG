@@ -89,6 +89,11 @@ void GUI::on_but_out_clicked() {
     gtk_widget_queue_draw(drawing_area);
 }
 
+void GUI::on_but_rot_cam_clicked() {
+    camera->angle = camera->angle + 1;
+    gtk_widget_queue_draw(drawing_area);
+}
+
 void GUI::on_but_point_clicked() {
     GtkWidget* window;
     GtkWidget* grid;
@@ -313,6 +318,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_rot_def_clicked", on_but_rot_def_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rot_org_clicked", on_but_rot_org_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rot_point_clicked", on_but_rot_point_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_but_rot_cam_clicked", on_but_rot_cam_clicked);
 
     gtk_builder_connect_signals(builder, NULL);
 

@@ -15,6 +15,7 @@ class Vector2z {  // essa classe é só um vetor 2d
         Vector2z operator+(Vector2z vector);
         Vector2z operator-(Vector2z vector); 
         Vector2z operator*(float number);
+        Vector2z operator*(std::vector<std::vector<float> > matrix);
         Vector2z operator/(float number);
             
     private:

@@ -62,6 +62,8 @@ namespace GUI {
 
     void on_but_rot_point_clicked();
 
+    void on_but_rot_cam_clicked();
+
     /////////////////////////////Instacia os objetos/////////////////////////////
 
     void activate (GtkApplication* app, gpointer user_data);
