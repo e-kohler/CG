@@ -30,7 +30,7 @@ void GUI::add_ponto(GtkWidget** entries) {
     auto y = gtk_entry_get_text(GTK_ENTRY(entries[2]));
 
     Point* point = new Point(nome);
-    point->coords.push_back(Coord(std::stof(x), std::stof(y)));
+    point->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
     std::string nome_string(nome);
     figures.push_back(point);
     gtk_widget_queue_draw(drawing_area);
@@ -49,8 +49,8 @@ void GUI::add_line(GtkWidget** entries) {
     std::string nome_string(nome);
 
     Line* line = new Line(nome);
-    line->coords.push_back(Coord(std::stof(x), std::stof(y)));
-    line->coords.push_back(Coord(std::stof(x2), std::stof(y2)));
+    line->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
+    line->coords.push_back(Vector2z(std::stof(x2), std::stof(y2)));
     figures.push_back(line);
     gtk_widget_queue_draw(drawing_area);
     gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
@@ -60,32 +60,32 @@ void GUI::add_line(GtkWidget** entries) {
 /////////////////////////////Funções de controle de botões/////////////////////////////
 
 void GUI::on_but_cima_clicked() {
-    view->pos = view->pos + Coord(0, 1);
+    view->pos = view->pos + Vector2z(0, 1);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_baix_clicked() {
-    view->pos = view->pos + Coord(0, -1);
+    view->pos = view->pos + Vector2z(0, -1);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_esq_clicked() {
-    view->pos = view->pos + Coord(-1, 0);
+    view->pos = view->pos + Vector2z(-1, 0);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_dir_clicked() {
-    view->pos = view->pos + Coord(1, 0);
+    view->pos = view->pos + Vector2z(1, 0);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_in_clicked() {
-    view->size = view->size - Coord(1, 1);
+    view->size = view->size - Vector2z(1, 1);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_out_clicked() {
-    view->size = view->size - Coord(-1, -1);
+    view->size = view->size - Vector2z(-1, -1);
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -188,7 +188,7 @@ void GUI::on_but_tran_clicked() {
     auto x = gtk_entry_get_text(GTK_ENTRY(entry_x));
     auto y = gtk_entry_get_text(GTK_ENTRY(entry_y));
 
-    Coord vector = Coord(std::stof(x), std::stof(y));
+    Vector2z vector = Vector2z(std::stof(x), std::stof(y));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
@@ -204,7 +204,7 @@ void GUI::on_but_escal_clicked() {
     auto x = gtk_entry_get_text(GTK_ENTRY(entry_x));
     auto y = gtk_entry_get_text(GTK_ENTRY(entry_y));
 
-    Coord vector = Coord(std::stof(x), std::stof(y));
+    Vector2z vector = Vector2z(std::stof(x), std::stof(y));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
@@ -233,7 +233,7 @@ void GUI::on_but_rot_org_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
     std::advance(it, selected_index); //std
-    Trans::rotate_by_point(*it, std::stof(angle), Coord(0, 0));
+    Trans::rotate_by_point(*it, std::stof(angle), Vector2z(0, 0));
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -247,7 +247,7 @@ void GUI::on_but_rot_point_clicked() {
 
     auto x = gtk_entry_get_text(GTK_ENTRY(entry_x));
     auto y = gtk_entry_get_text(GTK_ENTRY(entry_y));
-    Coord point = Coord(std::stof(x), std::stof(y));
+    Vector2z point = Vector2z(std::stof(x), std::stof(y));
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = figures.begin();
@@ -268,25 +268,25 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     Point* point = new Point("ponto");
     Point* point2 = new Point("ponto2");
 
-    linha->coords.push_back(Coord(-5, 0));
-    linha->coords.push_back(Coord(0, 5));
+    linha->coords.push_back(Vector2z(-5, 0));
+    linha->coords.push_back(Vector2z(0, 5));
 
-    polig->coords.push_back(Coord(1, 1));
-    polig->coords.push_back(Coord(1, -1));
-    polig->coords.push_back(Coord(-1, -1));
-    polig->coords.push_back(Coord(-1, 1));
+    polig->coords.push_back(Vector2z(1, 1));
+    polig->coords.push_back(Vector2z(1, -1));
+    polig->coords.push_back(Vector2z(-1, -1));
+    polig->coords.push_back(Vector2z(-1, 1));
 
-    polig2->coords.push_back(Coord(-2, -2));
-    polig2->coords.push_back(Coord(-3, -4));
-    polig2->coords.push_back(Coord(-5, -4));
-    polig2->coords.push_back(Coord(-4, -2));
+    polig2->coords.push_back(Vector2z(-2, -2));
+    polig2->coords.push_back(Vector2z(-3, -4));
+    polig2->coords.push_back(Vector2z(-5, -4));
+    polig2->coords.push_back(Vector2z(-4, -2));
 
-    triang->coords.push_back(Coord(1, 2));
-    triang->coords.push_back(Coord(3, 1));
-    triang->coords.push_back(Coord(4, 4));
+    triang->coords.push_back(Vector2z(1, 2));
+    triang->coords.push_back(Vector2z(3, 1));
+    triang->coords.push_back(Vector2z(4, 4));
 
-    point->coords.push_back(Coord(0, 0));
-    point2->coords.push_back(Coord(3, 3));
+    point->coords.push_back(Vector2z(0, 0));
+    point2->coords.push_back(Vector2z(3, 3));
 
     figures.push_back(linha);  // coloca na lista global
     figures.push_back(polig);

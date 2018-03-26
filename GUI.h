@@ -18,19 +18,19 @@ namespace GUI {
 
     void add_line(GtkWidget** entries);
 
-    std::vector<std::vector<float> > rotating_matrix(float angle, Coord point);
+    std::vector<std::vector<float> > rotating_matrix(float angle, Vector2z point);
 
-    std::vector<std::vector<float> > scaling_matrix(Coord vector, Coord point);
+    std::vector<std::vector<float> > scaling_matrix(Vector2z vector, Vector2z point);
 
-    std::vector<std::vector<float> > translating_matrix(Coord vector);
+    std::vector<std::vector<float> > translating_matrix(Vector2z vector);
 
-    void translate(Figure* figure, Coord vector);
+    void translate(Figure* figure, Vector2z vector);
 
-    void scale(Figure* figure, Coord vector);
+    void scale(Figure* figure, Vector2z vector);
 
     void rotate_default(Figure* figure, float angle);
 
-    void rotate_by_point(Figure* figure, float angle, Coord vector);
+    void rotate_by_point(Figure* figure, float angle, Vector2z vector);
 
     /////////////////////////////Funções de controle de botões/////////////////////////////
 

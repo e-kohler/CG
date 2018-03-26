@@ -3,7 +3,7 @@
 
 #define PI 3.14159265
 
-std::vector<std::vector<float> > Trans::translating_matrix(Coord vector) {
+std::vector<std::vector<float> > Trans::translating_matrix(Vector2z vector) {
     std::vector<std::vector<float> > transform_matrix;
 
     transform_matrix = {{1, 0, 0},
@@ -14,7 +14,7 @@ std::vector<std::vector<float> > Trans::translating_matrix(Coord vector) {
     return transform_matrix;
 }
 
-std::vector<std::vector<float> > Trans::scaling_matrix(Coord vector, Coord point) {
+std::vector<std::vector<float> > Trans::scaling_matrix(Vector2z vector, Vector2z point) {
     std::vector<std::vector<float> > transform_matrix;
 
     transform_matrix = {{vector.getX(), 0, 0},
@@ -25,7 +25,7 @@ std::vector<std::vector<float> > Trans::scaling_matrix(Coord vector, Coord point
     return transform_matrix;
 }
 
-std::vector<std::vector<float> > Trans::rotating_matrix(float angle, Coord point) {
+std::vector<std::vector<float> > Trans::rotating_matrix(float angle, Vector2z point) {
     std::vector<std::vector<float> > transform_matrix;
 
     float cos_ang = cos(angle * PI/180);
@@ -39,15 +39,15 @@ std::vector<std::vector<float> > Trans::rotating_matrix(float angle, Coord point
     return transform_matrix;
 }
 
-void Trans::translate(Figure* figure, Coord vector) {
+void Trans::translate(Figure* figure, Vector2z vector) {
     auto trans_matrix = translating_matrix(vector);
     figure->transform(trans_matrix);  // o translate nao precisa daquelas mutiplicação de matriz, é só mover a figura msm
 }
 
-void Trans::scale(Figure* figure, Coord vector) {
+void Trans::scale(Figure* figure, Vector2z vector) {
     auto it_coords = figure->coords.begin();
 
-    Coord geo_middle = Coord(0,0);
+    Vector2z geo_middle = Vector2z(0,0);
     for (; it_coords != figure->coords.end(); ++it_coords) {
         geo_middle = geo_middle + *it_coords;
     }
@@ -61,7 +61,7 @@ void Trans::scale(Figure* figure, Coord vector) {
 void Trans::rotate_default(Figure* figure, float angle) {
     auto it_coords = figure->coords.begin();
 
-    Coord geo_middle = Coord(0,0);
+    Vector2z geo_middle = Vector2z(0,0);
     for (; it_coords != figure->coords.end(); ++it_coords) {
         geo_middle = geo_middle + *it_coords;
     }
@@ -72,7 +72,7 @@ void Trans::rotate_default(Figure* figure, float angle) {
     figure->transform(rot_matrix);  // aplica a transformação na figura com a matriz resultante
 }
 
-void Trans::rotate_by_point(Figure* figure, float angle, Coord vector){
+void Trans::rotate_by_point(Figure* figure, float angle, Vector2z vector){
     auto it_coords = figure->coords.begin();
 
     float cos_ang = cos(angle * PI/180);

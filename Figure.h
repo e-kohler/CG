@@ -1,7 +1,7 @@
 #ifndef FIGURE_H
 #define FIGURE_H
 
-#include "Coord.h"
+#include "Vector2z.h"
 #include "View.h"
 #include <gtk/gtk.h>
 #include <list>
@@ -13,7 +13,7 @@ class Figure {
         std::string name;
            
     public:
-        std::list<Coord> coords;
+        std::list<Vector2z> coords;
         Figure(std::string name);
         ~Figure();
         virtual void draw(cairo_t* cr, View* view);  // o draw depende do view, pois a cada redesenho, as propriedades da câmera sao levadas em conta

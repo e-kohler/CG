@@ -1,14 +1,14 @@
 #ifndef VIEW_H
 #define CAMERA_H
 
-#include "Coord.h"
+#include "Vector2z.h"
 
 struct View{
     View();
-    Coord pos;
-    Coord viewport;
-    Coord size;
+    Vector2z pos;
+    Vector2z viewport;
+    Vector2z size;
     float angle;
-    Coord world_to_viewport(Coord coord);
+    Vector2z world_to_viewport(Vector2z coord);
 };
 #endif
