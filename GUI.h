@@ -62,7 +62,9 @@ namespace GUI {
 
     void on_but_rot_point_clicked();
 
-    void on_but_rot_cam_clicked();
+    void on_but_rot_cam_dir_clicked();
+
+    void on_but_rot_cam_esq_clicked();
 
     /////////////////////////////Instacia os objetos/////////////////////////////
 
