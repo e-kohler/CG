@@ -2,6 +2,7 @@
 #define TRANS_H
 
 #include "Shape.h"
+#include <math.h>
 
 namespace Trans {
     std::vector<std::vector<float> > translating_matrix(Vector2z vector);
