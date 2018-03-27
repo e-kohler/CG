@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Trans.h"
+#include <math.h>
 
 Camera::Camera() {
     pos = Vector2z(0, 0);
