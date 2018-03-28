@@ -34,6 +34,10 @@ namespace GUI {
 
     /////////////////////////////Funções de controle de botões/////////////////////////////
 
+    void on_import_obj();
+
+    void on_save_obj();
+
     void on_but_cima_clicked();
 
     void on_but_baix_clicked();

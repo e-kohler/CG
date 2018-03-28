@@ -99,6 +99,14 @@ void GUI::on_but_rot_cam_esq_clicked() {
     gtk_widget_queue_draw(drawing_area);
 }
 
+void GUI::on_import_obj(){
+    
+}
+
+void GUI::on_save_obj(){
+    
+}
+
 void GUI::on_but_point_clicked() {
     GtkWidget* window;
     GtkWidget* grid;
