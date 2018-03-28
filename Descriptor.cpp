@@ -1,16 +1,10 @@
 #include "Descriptor.h"
 
-Descriptor::importObject(){
-	ofstream myfile;
-
-	myfile.open ("example.txt");
-	
+void Descriptor::importObject(){
 
 }
 
-Descriptor::exportObject(){
-	ofstream myfile;
+void Descriptor::exportObject(){
 
-	myfile << "Writing this to a file.\n";
-	myfile.close();
+	
 }
