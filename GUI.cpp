@@ -275,6 +275,8 @@ void GUI::on_but_rot_point_clicked() {
 /////////////////////////////Instacia os objetos/////////////////////////////
 
 void GUI::activate (GtkApplication* app, gpointer user_data) {
+	GUI::app = app;
+	
     GtkWidget* window;
     
     Polygon* polig = new Polygon("tetra");  // cria as formas
