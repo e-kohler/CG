@@ -1,5 +1,7 @@
 #include "GUI.h"
 #include "Trans.h"
+#include <iostream>
+#define PI 3.14159265
 
 GtkWidget* GUI::drawing_area;  // canvas de desenho
 std::list<Shape*> GUI::shapes;  // lista de ponteiros de figuras pra desenhar
@@ -60,22 +62,26 @@ void GUI::add_line(GtkWidget** entries) {
 /////////////////////////////Funções de controle de botões/////////////////////////////
 
 void GUI::on_but_cima_clicked() {
-    camera->pos = camera->pos + Vector2z(0, 1);
+	auto matrix = Trans::rotating_matrix(-camera->angle, Vector2z(0, 0));
+    camera->pos = camera->pos + Vector2z(0, 1) * matrix;
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_baix_clicked() {
-    camera->pos = camera->pos + Vector2z(0, -1);
+	auto matrix = Trans::rotating_matrix(-camera->angle, Vector2z(0, 0));
+    camera->pos = camera->pos + Vector2z(0, -1) * matrix;
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_esq_clicked() {
-    camera->pos = camera->pos + Vector2z(-1, 0);
+	auto matrix = Trans::rotating_matrix(-camera->angle, Vector2z(0, 0));
+    camera->pos = camera->pos + Vector2z(-1, 0) * matrix;
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_dir_clicked() {
-    camera->pos = camera->pos + Vector2z(1, 0);
+	auto matrix = Trans::rotating_matrix(-camera->angle, Vector2z(0, 0));
+    camera->pos = camera->pos + Vector2z(1, 0) * matrix;
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -226,24 +232,24 @@ void GUI::on_but_escal_clicked() {
 void GUI::on_but_rot_def_clicked() {
     GtkWidget* entry_angle = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_rot_def"));
 
-    auto angle = gtk_entry_get_text(GTK_ENTRY(entry_angle));
+    auto angle = std::stof(gtk_entry_get_text(GTK_ENTRY(entry_angle))) * PI/180;
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = shapes.begin();
     std::advance(it, selected_index); //std
-    Trans::rotate_default(*it, std::stof(angle));
+    Trans::rotate_default(*it, angle);
     gtk_widget_queue_draw(drawing_area);
 }
 
 void GUI::on_but_rot_org_clicked() {
     GtkWidget* entry_angle = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_rot_org"));
 
-    auto angle = gtk_entry_get_text(GTK_ENTRY(entry_angle));
+    auto angle = std::stof(gtk_entry_get_text(GTK_ENTRY(entry_angle))) * PI/180;
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = shapes.begin();
     std::advance(it, selected_index); //std
-    Trans::rotate_by_point(*it, std::stof(angle), Vector2z(0, 0));
+    Trans::rotate_by_point(*it, angle, Vector2z(0, 0));
     gtk_widget_queue_draw(drawing_area);
 }
 
@@ -253,7 +259,7 @@ void GUI::on_but_rot_point_clicked() {
     GtkWidget* entry_x = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_rot_point_x"));
     GtkWidget* entry_y = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_rot_point_y"));
 
-    auto angle = gtk_entry_get_text(GTK_ENTRY(entry_angle));
+    auto angle = std::stof(gtk_entry_get_text(GTK_ENTRY(entry_angle))) * PI/180;
 
     auto x = gtk_entry_get_text(GTK_ENTRY(entry_x));
     auto y = gtk_entry_get_text(GTK_ENTRY(entry_y));
@@ -262,7 +268,7 @@ void GUI::on_but_rot_point_clicked() {
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = shapes.begin();
     std::advance(it, selected_index); //std
-    Trans::rotate_by_point(*it, std::stof(angle), point);
+    Trans::rotate_by_point(*it, angle, point);
     gtk_widget_queue_draw(drawing_area);
 }
 

@@ -1,7 +1,5 @@
 #include "Trans.h"
 
-#define PI 3.14159265
-
 std::vector<std::vector<float> > Trans::translating_matrix(Vector2z vector) {
     std::vector<std::vector<float> > transform_matrix;
 
@@ -27,8 +25,8 @@ std::vector<std::vector<float> > Trans::scaling_matrix(Vector2z vector, Vector2z
 std::vector<std::vector<float> > Trans::rotating_matrix(float angle, Vector2z point) {
     std::vector<std::vector<float> > transform_matrix;
 
-    float cos_ang = cos(angle * PI/180);
-    float sin_ang = sin(angle * PI/180);
+    float cos_ang = cos(angle);
+    float sin_ang = sin(angle);
 
     transform_matrix = {{cos_ang, -sin_ang, 0},
     {sin_ang, cos_ang, 0},
@@ -74,8 +72,8 @@ void Trans::rotate_default(Shape* shape, float angle) {
 void Trans::rotate_by_point(Shape* shape, float angle, Vector2z vector){
     auto it_coords = shape->coords.begin();
 
-    float cos_ang = cos(angle * PI/180);
-    float sin_ang = sin(angle * PI/180);
+    float cos_ang = cos(angle);
+    float sin_ang = sin(angle);
     
     auto rot_matrix = rotating_matrix(angle, vector);
 
