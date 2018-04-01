@@ -1,16 +1,15 @@
 #ifndef DESCRIPTOR_H
 #define DESCRIPTOR_H
 
-#include <iostream>
 #include <fstream>
+#include <sstream>
+#include <string>
 
+namespace Descriptor{
 
-class Descriptor{
+	void importObject();
+	void exportObject();
 
-	public:
-		void importObject();
-		void exportObject();
-
-};
+}
 
 #endif
