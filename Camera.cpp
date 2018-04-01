@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Trans.h"
 #include <math.h>
+#define PI 3.14159265
 
 Camera::Camera() {
     pos = Vector2z(0, 0);
@@ -12,8 +13,8 @@ Camera::Camera() {
 Vector2z Camera::world_to_viewport(Vector2z coord) {
     std::vector<std::vector<float> > matrix;
 
-    float cos_ang  = cos(-angle);
-    float sin_ang = sin(-angle);
+    float cos_ang  = cos(angle);
+    float sin_ang = sin(angle);
     float size_x = 2 / size.getX();
     float size_y = 2 / size.getY();
     float pos_x = pos.getX();
@@ -23,7 +24,7 @@ Vector2z Camera::world_to_viewport(Vector2z coord) {
 
     matrix = {  {cos_ang * size_x, -sin_ang * size_y, 0},   // translada, rotaciona e escalona
                 {sin_ang * size_x, cos_ang * size_y,  0},   // transforma em coordenada normalizada
-                {(pos_x * -cos_ang + pos_y * sin_ang) * size_x, (sin_ang * pos_x - pos_y * cos_ang) * size_y, 1}};
+                {(pos_x * -cos_ang - pos_y * sin_ang) * size_x, (sin_ang * pos_x - pos_y * cos_ang) * size_y, 1}};
 
     coord = coord * matrix;
 
@@ -35,8 +36,6 @@ Vector2z Camera::world_to_viewport(Vector2z coord) {
     coord = coord * matrix;
 
     return coord;
-
-
 
     /**Vector2z wmin = pos - (size/2);
     Vector2z output = coord - wmin;
