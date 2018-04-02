@@ -1,5 +1,6 @@
 #include "GUI.h"
 #include "Trans.h"
+#include "Descriptor.h"
 
 #include <iostream>
 #define PI 3.14159265
@@ -10,6 +11,8 @@ Camera* GUI::camera;  // a câmera
 GtkApplication* GUI::app;
 GtkWidget* GUI::combo_box;
 GtkBuilder* GUI::builder;
+GtkWidget* window;
+
 
 /////////////////////////////Callback de desenho/////////////////////////////
 
@@ -61,6 +64,32 @@ void GUI::add_line(GtkWidget** entries) {
 }
 
 /////////////////////////////Funções de controle de botões/////////////////////////////
+
+void GUI::on_open_file_dialog(){
+    GtkWidget *dialog;
+    GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
+    gint res;
+
+    dialog = gtk_file_chooser_dialog_new ("Open File", GTK_WINDOW(window),action,("_Cancel"),GTK_RESPONSE_CANCEL,("_Open"),GTK_RESPONSE_ACCEPT,NULL);
+
+    res = gtk_dialog_run (GTK_DIALOG (dialog));
+
+    if (res == GTK_RESPONSE_ACCEPT){
+        char *filename;
+        GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+        filename = gtk_file_chooser_get_filename (chooser);
+        Descriptor::importObject(filename);
+        
+        g_free (filename);
+    }
+
+    gtk_widget_destroy (dialog);
+}
+
+void GUI::on_save_file_dialog(){
+    std::cout << "SAVE" << std::endl;
+    
+}
 
 void GUI::on_but_cima_clicked() {
 	auto matrix = Trans::rotating_matrix(-camera->angle, Vector2z(0, 0));
@@ -286,8 +315,7 @@ void GUI::on_but_rot_point_clicked() {
 void GUI::activate (GtkApplication* app, gpointer user_data) {
 	GUI::app = app;
 	
-    GtkWidget* window;
-    
+        
     Polygon* polig = new Polygon("tetra");  // cria as formas
     Polygon* polig2 = new Polygon("tetra2");
     Polygon* triang = new Polygon("tri");
@@ -342,6 +370,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_rot_point_clicked", on_but_rot_point_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rot_cam_dir_clicked", on_but_rot_cam_dir_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rot_cam_esq_clicked", on_but_rot_cam_esq_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_open_file_dialog", on_open_file_dialog);
+    gtk_builder_add_callback_symbol(builder, "on_save_file_dialog", on_save_file_dialog);
 
     gtk_builder_connect_signals(builder, NULL);
 

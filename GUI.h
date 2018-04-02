@@ -34,6 +34,10 @@ namespace GUI {
 
     /////////////////////////////Funções de controle de botões/////////////////////////////
 
+    void on_open_file_dialog();
+
+    void on_save_file_dialog();
+
     void on_import_obj();
 
     void on_save_obj();
@@ -71,7 +75,7 @@ namespace GUI {
     void on_but_rot_cam_esq_clicked();
 
     /////////////////////////////Instacia os objetos/////////////////////////////
-
+    
     void activate (GtkApplication* app, gpointer user_data);
 }
 #endif

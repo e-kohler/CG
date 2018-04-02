@@ -7,7 +7,7 @@
 
 namespace Descriptor{
 
-	void importObject();
+	void importObject(char* filename);
 	void exportObject();
 
 }
