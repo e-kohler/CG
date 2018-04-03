@@ -1,8 +1,11 @@
 #include "GUI.h"
 #include <iostream>
+#include "Descriptor.h"
+
 
 static void runGUI(GtkApplication* app, gpointer user_data) {
     GUI::activate(app, user_data);
+    
 }
 
 int main (int argc, char **argv) {
@@ -15,4 +18,4 @@ int main (int argc, char **argv) {
     g_object_unref (app);
 
     return status;
-}
+}   

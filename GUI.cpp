@@ -1,6 +1,13 @@
 #include "GUI.h"
 #include "Trans.h"
+<<<<<<< HEAD
 #include <gtk/gtk.h>
+=======
+#include "Descriptor.h"
+#include <stdlib.h>
+#include <list>
+
+>>>>>>> master
 #include <iostream>
 #define PI 3.14159265
 
@@ -10,8 +17,16 @@ Camera* GUI::camera;  // a câmera
 GtkApplication* GUI::app;
 GtkWidget* GUI::combo_box;
 GtkBuilder* GUI::builder;
+GtkWidget* window;
 
+// add polig vector //
+std::list<Vector2z> GUI::polig_points;
 /////////////////////////////Callback de desenho/////////////////////////////
+
+void GUI::test_merge(std::list<Shape*> shapes_merge){
+    shapes.merge(shapes_merge);
+    gtk_widget_queue_draw(drawing_area);
+}
 
 gboolean GUI::draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_set_source_rgb(cr, 1, 1, 1);
@@ -60,7 +75,36 @@ void GUI::add_line(GtkWidget** entries) {
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
+
+
+
 /////////////////////////////Funções de controle de botões/////////////////////////////
+
+void GUI::on_open_file_dialog(){
+    GtkWidget *dialog;
+    GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
+    gint res;
+
+    dialog = gtk_file_chooser_dialog_new ("Open File", GTK_WINDOW(window),action,("_Cancel"),GTK_RESPONSE_CANCEL,("_Open"),GTK_RESPONSE_ACCEPT,NULL);
+
+    res = gtk_dialog_run (GTK_DIALOG (dialog));
+
+    if (res == GTK_RESPONSE_ACCEPT){
+        char *filename;
+        GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+        filename = gtk_file_chooser_get_filename (chooser);
+        Descriptor::importObject(filename);
+
+        g_free (filename);
+    }
+
+    gtk_widget_destroy (dialog);
+}
+
+void GUI::on_save_file_dialog(){
+    std::cout << "SAVE" << std::endl;
+    
+}
 
 void GUI::on_but_cima_clicked() {
 	auto matrix = Trans::rotating_matrix(-camera->angle, Vector2z(0, 0));
@@ -104,6 +148,14 @@ void GUI::on_but_rot_cam_dir_clicked() {
 void GUI::on_but_rot_cam_esq_clicked() {
     camera->angle = camera->angle - 0.1;
     gtk_widget_queue_draw(drawing_area);
+}
+
+void GUI::on_import_obj(){
+    
+}
+
+void GUI::on_save_obj(){
+    
 }
 
 void GUI::on_but_point_clicked() {
@@ -191,12 +243,101 @@ void GUI::on_but_line_clicked() {
     gtk_grid_attach(GTK_GRID(grid), label_y2, 0, 4, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), entry_y2, 1, 4, 1, 1);
     gtk_grid_attach (GTK_GRID (grid), button, 0, 5, 3, 3);
+
     gtk_widget_show_all(window);
 }
 
 void GUI::on_but_polig_clicked() {
-    // só na balinha
+    GtkWidget* window;
+    GtkWidget* grid;
+    GtkWidget* confirm;
+    GtkWidget* add_point;
+
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Poligono");
+    gtk_window_set_default_size (GTK_WINDOW(window), 100, 100);
+
+    grid = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    auto label_x = gtk_label_new("X");
+    auto label_y = gtk_label_new("Y");
+    
+    auto label_nome = gtk_label_new("Nome");
+
+    auto entry_x = gtk_entry_new();
+    auto entry_y = gtk_entry_new();
+
+    auto entry_nome = gtk_entry_new();
+
+    static GtkWidget* entries[4];
+    entries[0] = window;
+    entries[1] = entry_x;
+    entries[2] = entry_y;
+    entries[3] = entry_nome;
+
+    confirm = gtk_button_new_with_label ("Ok");
+    add_point = gtk_button_new_with_label ("Adicionar Ponto");
+    g_signal_connect_swapped (confirm, "clicked", G_CALLBACK (add_polig), entries);
+    g_signal_connect_swapped (add_point, "clicked", G_CALLBACK (add_point_polig), entries);
+    
+    gtk_grid_attach(GTK_GRID(grid), label_nome, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), entry_nome, 1, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), label_x, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), entry_x, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), label_y, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), entry_y, 1, 2, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), confirm, 1, 3, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), add_point, 0, 3, 1, 1);
+
+    gtk_widget_show_all(window);
 }
+
+void GUI::add_polig(GtkWidget** entries){
+    auto nome = gtk_entry_get_text(GTK_ENTRY(entries[3]));
+    auto x_entry = gtk_entry_get_text(GTK_ENTRY(entries[1]));
+    auto y_entry = gtk_entry_get_text(GTK_ENTRY(entries[2]));
+
+    try {
+        auto x = std::stof(x_entry);
+        auto y = std::stof(y_entry);
+        std::string nome_string(nome);
+
+        Polygon* poly = new Polygon(nome);
+        for(auto it = polig_points.begin(); it != polig_points.end(); it++){
+            poly->coords.push_back(*it);
+            std::cout << "X: " << it->getX() << "Y:" << it->getY() << std::endl;
+        }        
+        shapes.push_back(poly);
+
+        polig_points.clear();
+
+        gtk_widget_queue_draw(drawing_area);
+        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+        
+    }catch(std::exception& e){
+        std::cout << "Standard exception: " << e.what() << std::endl;
+    }
+
+    gtk_widget_destroy(GTK_WIDGET(entries[0]));
+    
+}
+
+void GUI::add_point_polig(GtkWidget** entries){
+    auto x_entry = gtk_entry_get_text(GTK_ENTRY(entries[1]));
+    auto y_entry = gtk_entry_get_text(GTK_ENTRY(entries[2]));
+
+    try{
+        auto x = std::stof(x_entry);
+        auto y = std::stof(y_entry);
+
+        polig_points.push_back(Vector2z(x, y));
+        std::cout << "X: " << x << "Y: " << y << std::endl;
+    } catch (std::exception& e){
+        std::cout << "Standard exception: " << e.what() << std::endl;
+    }
+}
+
 
 void GUI::on_but_tran_clicked() {
     GtkWidget* entry_x = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_x_tran"));
@@ -278,8 +419,7 @@ void GUI::on_but_rot_point_clicked() {
 void GUI::activate (GtkApplication* app, gpointer user_data) {
 	GUI::app = app;
 	
-    GtkWidget* window;
-    
+        
     Polygon* polig = new Polygon("tetra");  // cria as formas
     Polygon* polig2 = new Polygon("tetra2");
     Polygon* triang = new Polygon("tri");
@@ -304,9 +444,12 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     triang->coords.push_back(Vector2z(3, 1));
     triang->coords.push_back(Vector2z(4, 4));
 
+
     point->coords.push_back(Vector2z(0, 0));
     point2->coords.push_back(Vector2z(3, 3));
 
+    
+    
     shapes.push_back(linha);  // coloca na lista global
     shapes.push_back(polig);
     shapes.push_back(polig2);
@@ -334,6 +477,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_rot_point_clicked", on_but_rot_point_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rot_cam_dir_clicked", on_but_rot_cam_dir_clicked);
     gtk_builder_add_callback_symbol(builder, "on_but_rot_cam_esq_clicked", on_but_rot_cam_esq_clicked);
+    gtk_builder_add_callback_symbol(builder, "on_open_file_dialog", on_open_file_dialog);
+    gtk_builder_add_callback_symbol(builder, "on_save_file_dialog", on_save_file_dialog);
 
     gtk_builder_connect_signals(builder, NULL);
 

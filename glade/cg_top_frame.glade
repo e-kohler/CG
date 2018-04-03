@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 -->
+<!-- Generated with glade 3.20.3 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkWindow" id="window">
@@ -252,7 +252,6 @@
                         <property name="can_focus">False</property>
                         <property name="margin_bottom">6</property>
                         <property name="active">0</property>
-                        <signal name="changed" handler="on_but_polig_clicked" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -799,7 +798,69 @@
       </object>
     </child>
     <child type="titlebar">
-      <placeholder/>
+      <object class="GtkMenuBar">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkMenuItem">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">_Arquivo</property>
+            <property name="use_underline">True</property>
+            <child type="submenu">
+              <object class="GtkMenu">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkImageMenuItem">
+                    <property name="label">gtk-new</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImageMenuItem">
+                    <property name="label">gtk-open</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
+                    <signal name="activate" handler="on_open_file_dialog" swapped="no"/>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImageMenuItem">
+                    <property name="label">gtk-save</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
+                    <signal name="activate" handler="on_save_file_dialog" swapped="no"/>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSeparatorMenuItem">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImageMenuItem">
+                    <property name="label">gtk-quit</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="use_underline">True</property>
+                    <property name="use_stock">True</property>
+                    <signal name="activate" handler="gtk_widget_destroy" swapped="no"/>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
     </child>
   </object>
 </interface>

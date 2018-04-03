@@ -11,12 +11,18 @@ namespace GUI {
     extern GtkApplication *app;
     extern GtkWidget* combo_box;
     extern GtkBuilder* builder;
+    extern std::list<Vector2z> polig_points;
 
     gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data);
 
     void add_ponto(GtkWidget** entries);
 
     void add_line(GtkWidget** entries);
+
+    void add_polig(GtkWidget** entries);
+
+    void add_point_polig(GtkWidget** entries);
+
 
     std::vector<std::vector<float> > rotating_matrix(float angle, Vector2z point);
 
@@ -33,6 +39,15 @@ namespace GUI {
     void rotate_by_point(Shape* shape, float angle, Vector2z vector);
 
     /////////////////////////////Funções de controle de botões/////////////////////////////
+    void test_merge(std::list<Shape*> shapes_merge);
+
+    void on_open_file_dialog();
+
+    void on_save_file_dialog();
+
+    void on_import_obj();
+
+    void on_save_obj();
 
     void on_but_cima_clicked();
 
