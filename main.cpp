@@ -1,5 +1,6 @@
 #include "GUI.h"
 #include <iostream>
+#include "Descriptor.h"
 
 
 static void runGUI(GtkApplication* app, gpointer user_data) {

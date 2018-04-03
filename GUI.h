@@ -18,6 +18,8 @@ namespace GUI {
 
     void add_line(GtkWidget** entries);
 
+    void add_polig(GtkWidget** entries);
+
     std::vector<std::vector<float> > rotating_matrix(float angle, Vector2z point);
 
     std::vector<std::vector<float> > scaling_matrix(Vector2z vector, Vector2z point);
@@ -33,6 +35,8 @@ namespace GUI {
     void rotate_by_point(Shape* shape, float angle, Vector2z vector);
 
     /////////////////////////////Funções de controle de botões/////////////////////////////
+
+    void polig_manager(GtkWidget** entries);
 
     void on_open_file_dialog();
 
@@ -75,7 +79,7 @@ namespace GUI {
     void on_but_rot_cam_esq_clicked();
 
     /////////////////////////////Instacia os objetos/////////////////////////////
-    
+
     void activate (GtkApplication* app, gpointer user_data);
 }
 #endif

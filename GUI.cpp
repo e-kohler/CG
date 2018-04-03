@@ -1,6 +1,7 @@
 #include "GUI.h"
 #include "Trans.h"
 #include "Descriptor.h"
+#include <stdlib.h>
 
 #include <iostream>
 #define PI 3.14159265
@@ -63,6 +64,11 @@ void GUI::add_line(GtkWidget** entries) {
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
+void GUI::add_polig(GtkWidget** entries) {
+    
+}
+
+
 /////////////////////////////Funções de controle de botões/////////////////////////////
 
 void GUI::on_open_file_dialog(){
@@ -79,7 +85,7 @@ void GUI::on_open_file_dialog(){
         GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
         filename = gtk_file_chooser_get_filename (chooser);
         Descriptor::importObject(filename);
-        
+
         g_free (filename);
     }
 
@@ -232,8 +238,10 @@ void GUI::on_but_line_clicked() {
 }
 
 void GUI::on_but_polig_clicked() {
-    // só na balinha
+
+    
 }
+
 
 void GUI::on_but_tran_clicked() {
     GtkWidget* entry_x = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_x_tran"));
@@ -322,6 +330,12 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     Line* linha = new Line("linha");
     Point* point = new Point("ponto");
     Point* point2 = new Point("ponto2");
+    Polygon* teste = new Polygon("Teste");
+
+    teste->coords.push_back(Vector2z(0,0));
+    teste->coords.push_back(Vector2z(0,1));
+    teste->coords.push_back(Vector2z(1,0));
+    teste->coords.push_back(Vector2z(1,1));
 
     linha->coords.push_back(Vector2z(-5, 0));
     linha->coords.push_back(Vector2z(0, 5));
@@ -340,6 +354,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     triang->coords.push_back(Vector2z(3, 1));
     triang->coords.push_back(Vector2z(4, 4));
 
+
+
     point->coords.push_back(Vector2z(0, 0));
     point2->coords.push_back(Vector2z(3, 3));
 
@@ -349,6 +365,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     shapes.push_back(triang);
     shapes.push_back(point);
     shapes.push_back(point2);
+    shapes.push_back(teste);
 
     camera = new Camera();
     
