@@ -14,7 +14,7 @@ namespace Descriptor{
 
 
 	void importObject(char* filename);
-	std::list<Shape> translator();
+	std::list<Shape*> translator();
 	void exportObject();
 
 	const std::vector<std::string> split(const std::string &s, char c);

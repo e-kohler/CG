@@ -17,6 +17,11 @@ GtkWidget* window;
 
 /////////////////////////////Callback de desenho/////////////////////////////
 
+void GUI::test_merge(std::list<Shape*> shapes_merge){
+    shapes.merge(shapes_merge);
+    gtk_widget_queue_draw(drawing_area);
+}
+
 gboolean GUI::draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_paint(cr);
@@ -330,12 +335,6 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     Line* linha = new Line("linha");
     Point* point = new Point("ponto");
     Point* point2 = new Point("ponto2");
-    Polygon* teste = new Polygon("Teste");
-
-    teste->coords.push_back(Vector2z(0,0));
-    teste->coords.push_back(Vector2z(0,1));
-    teste->coords.push_back(Vector2z(1,0));
-    teste->coords.push_back(Vector2z(1,1));
 
     linha->coords.push_back(Vector2z(-5, 0));
     linha->coords.push_back(Vector2z(0, 5));
@@ -355,7 +354,6 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     triang->coords.push_back(Vector2z(4, 4));
 
 
-
     point->coords.push_back(Vector2z(0, 0));
     point2->coords.push_back(Vector2z(3, 3));
 
@@ -367,7 +365,6 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     shapes.push_back(triang);
     shapes.push_back(point);
     shapes.push_back(point2);
-    shapes.push_back(teste);
 
     camera = new Camera();
     

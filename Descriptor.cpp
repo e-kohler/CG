@@ -5,9 +5,9 @@
 #include <sstream>
 #include <list>
 #include "Shape.h"
+#include "GUI.h"
 
 std::vector<std::string> Descriptor::lines;
-
 
 
 void Descriptor::importObject(char* filename){
@@ -18,11 +18,11 @@ void Descriptor::importObject(char* filename){
 		 lines.push_back(line);
 	}
 
-	Descriptor::translator();
+	GUI::test_merge(translator());
 }
 
-std::list<Shape> Descriptor::translator(){
-	std::list<Shape> shapes;
+std::list<Shape*> Descriptor::translator(){
+	std::list<Shape*> shapes;
 	std::vector<Vector2z> vertices;
 
 	for(auto it = lines.begin(); it != lines.end(); ++it) {
@@ -41,8 +41,18 @@ std::list<Shape> Descriptor::translator(){
 				
 				break;
 			case 'l':
-				Line linha("line");
+				Line* linha = new Line("line");
 				
+				auto ind_fcoord = std::stof(pieces[1]) - 1; // -1 para considerar a linha correta quando dentro do vetor
+				auto ind_scoord = std::stof(pieces[2]) - 1;
+
+				// std::cout << vertices[ind_fcoord].getX() << " " << vertices[ind_fcoord].getY() << std::endl;
+
+				linha->coords.push_back(vertices[ind_fcoord]);
+				linha->coords.push_back(vertices[ind_scoord]);
+
+				shapes.push_back(linha);
+
 				/*
 				Deveria pegar o vertice da linha piece[1] e piece[2]
 				e adcionar em Shape.

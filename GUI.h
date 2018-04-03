@@ -35,6 +35,7 @@ namespace GUI {
     void rotate_by_point(Shape* shape, float angle, Vector2z vector);
 
     /////////////////////////////Funções de controle de botões/////////////////////////////
+    void test_merge(std::list<Shape*> shapes_merge);
 
     void polig_manager(GtkWidget** entries);
 
