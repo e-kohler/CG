@@ -2,6 +2,7 @@
 #include "Trans.h"
 #include "Descriptor.h"
 #include <stdlib.h>
+#include <list>
 
 #include <iostream>
 #define PI 3.14159265
@@ -14,7 +15,8 @@ GtkWidget* GUI::combo_box;
 GtkBuilder* GUI::builder;
 GtkWidget* window;
 
-
+// add polig vector //
+std::list<Vector2z> GUI::polig_points;
 /////////////////////////////Callback de desenho/////////////////////////////
 
 void GUI::test_merge(std::list<Shape*> shapes_merge){
@@ -69,9 +71,7 @@ void GUI::add_line(GtkWidget** entries) {
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
-void GUI::add_polig(GtkWidget** entries) {
-    
-}
+
 
 
 /////////////////////////////Funções de controle de botões/////////////////////////////
@@ -239,12 +239,99 @@ void GUI::on_but_line_clicked() {
     gtk_grid_attach(GTK_GRID(grid), label_y2, 0, 4, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), entry_y2, 1, 4, 1, 1);
     gtk_grid_attach (GTK_GRID (grid), button, 0, 5, 3, 3);
+
     gtk_widget_show_all(window);
 }
 
 void GUI::on_but_polig_clicked() {
+    GtkWidget* window;
+    GtkWidget* grid;
+    GtkWidget* confirm;
+    GtkWidget* add_point;
 
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Poligono");
+    gtk_window_set_default_size (GTK_WINDOW(window), 100, 100);
+
+    grid = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(window), grid);
+
+    auto label_x = gtk_label_new("X");
+    auto label_y = gtk_label_new("Y");
     
+    auto label_nome = gtk_label_new("Nome");
+
+    auto entry_x = gtk_entry_new();
+    auto entry_y = gtk_entry_new();
+
+    auto entry_nome = gtk_entry_new();
+
+    static GtkWidget* entries[4];
+    entries[0] = window;
+    entries[1] = entry_x;
+    entries[2] = entry_y;
+    entries[3] = entry_nome;
+
+    confirm = gtk_button_new_with_label ("Ok");
+    add_point = gtk_button_new_with_label ("Adicionar Ponto");
+    g_signal_connect_swapped (confirm, "clicked", G_CALLBACK (add_polig), entries);
+    g_signal_connect_swapped (add_point, "clicked", G_CALLBACK (add_point_polig), entries);
+    
+    gtk_grid_attach(GTK_GRID(grid), label_nome, 0, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), entry_nome, 1, 0, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), label_x, 0, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), entry_x, 1, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), label_y, 0, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), entry_y, 1, 2, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), confirm, 1, 3, 1, 1);
+    gtk_grid_attach (GTK_GRID (grid), add_point, 0, 3, 1, 1);
+
+    gtk_widget_show_all(window);
+}
+
+void GUI::add_polig(GtkWidget** entries){
+    auto nome = gtk_entry_get_text(GTK_ENTRY(entries[3]));
+    auto x_entry = gtk_entry_get_text(GTK_ENTRY(entries[1]));
+    auto y_entry = gtk_entry_get_text(GTK_ENTRY(entries[2]));
+
+    try {
+        auto x = std::stof(x_entry);
+        auto y = std::stof(y_entry);
+        std::string nome_string(nome);
+
+        Polygon* poly = new Polygon(nome);
+        for(auto it = polig_points.begin(); it != polig_points.end(); it++){
+            poly->coords.push_back(*it);
+            std::cout << "X: " << it->getX() << "Y:" << it->getY() << std::endl;
+        }        
+        shapes.push_back(poly);
+
+        polig_points.clear();
+
+        gtk_widget_queue_draw(drawing_area);
+        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+        
+    }catch(std::exception& e){
+        std::cout << "Standard exception: " << e.what() << std::endl;
+    }
+
+    gtk_widget_destroy(GTK_WIDGET(entries[0]));
+    
+}
+
+void GUI::add_point_polig(GtkWidget** entries){
+    auto x_entry = gtk_entry_get_text(GTK_ENTRY(entries[1]));
+    auto y_entry = gtk_entry_get_text(GTK_ENTRY(entries[2]));
+
+    try{
+        auto x = std::stof(x_entry);
+        auto y = std::stof(y_entry);
+
+        polig_points.push_back(Vector2z(x, y));
+        std::cout << "X: " << x << "Y: " << y << std::endl;
+    } catch (std::exception& e){
+        std::cout << "Standard exception: " << e.what() << std::endl;
+    }
 }
 
 

@@ -252,7 +252,6 @@
                         <property name="can_focus">False</property>
                         <property name="margin_bottom">6</property>
                         <property name="active">0</property>
-                        <signal name="changed" handler="on_but_polig_clicked" swapped="no"/>
                       </object>
                     </child>
                   </object>
