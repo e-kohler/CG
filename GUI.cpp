@@ -1,13 +1,11 @@
 #include "GUI.h"
 #include "Trans.h"
-<<<<<<< HEAD
+
 #include <gtk/gtk.h>
-=======
 #include "Descriptor.h"
 #include <stdlib.h>
 #include <list>
 
->>>>>>> master
 #include <iostream>
 #define PI 3.14159265
 
