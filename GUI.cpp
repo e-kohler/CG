@@ -1,5 +1,6 @@
 #include "GUI.h"
 #include "Trans.h"
+#include <gtk/gtk.h>
 #include <iostream>
 #define PI 3.14159265
 
@@ -15,14 +16,14 @@ GtkBuilder* GUI::builder;
 gboolean GUI::draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_paint(cr);
-
+    
     cairo_set_line_width(cr, 1);
     cairo_set_source_rgb(cr, 0, 0, 0);
 
     for (auto iterator = shapes.begin(); iterator != shapes.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
         (*iterator)->draw(cr, camera);
     }
-    cairo_stroke(cr);
+    cairo_stroke(cr);    
     return FALSE;
 }
 

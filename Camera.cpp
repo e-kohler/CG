@@ -1,6 +1,6 @@
 #include "Camera.h"
-#include "Trans.h"
 #include <math.h>
+#include <iostream>
 #define PI 3.14159265
 
 Camera::Camera() {
@@ -36,10 +36,91 @@ Vector2z Camera::world_to_viewport(Vector2z coord) {
     coord = coord * matrix;
 
     return coord;
+}
 
-    /**Vector2z wmin = pos - (size/2);
-    Vector2z output = coord - wmin;
-    output = Vector2z(output.getX()/size.getX(), 1 - (output.getY()/size.getY()));  // isso é aquelas contas dos slides
-    output = Vector2z(output.getX() * viewport.getX(), output.getY() * viewport.getY());
-    return output;**/
+int Camera::get_rcode(Vector2z point) {
+    float yu = pos.getY() + size.getY()/2;
+    float yd = pos.getY() - size.getY()/2;
+    float xl = pos.getX() - size.getX()/2;  // determinando os limites do clip
+    float xr = pos.getX() + size.getX()/2;
+
+    float x = point.getX();
+    float y = point.getY();
+
+    int reg_code = 0;  // cada ponto tem um codigo, (CIMA, BAIXO, DIREITA, ESQUERDA), sendo cada 1 ou 0.
+
+    if (x < xl)
+        reg_code |= 1;
+
+    if (x > xr)
+        reg_code |= 2;
+
+    if (y < yd)
+        reg_code |= 4;
+
+    if (y > yu)
+        reg_code |= 8;
+    
+    return reg_code;
+}
+
+std::vector<Vector2z> Camera::clip_line(Vector2z point1, Vector2z point2) {
+    int rcode1 = get_rcode(point1);
+    int rcode2 = get_rcode(point2);
+
+    std::vector<Vector2z> clipped_coords;
+
+    if (rcode1 == rcode2 == 0) {  // está totalmente dentro da window
+        clipped_coords = {point1, point2};
+        return clipped_coords;
+    }
+
+    if ((rcode1 & rcode2) != 0) {  // está totalmente fora da window
+        clipped_coords = {Vector2z(0, 0), Vector2z(0, 0)};
+        return clipped_coords;
+    }
+}
+
+Vector2z Camera::clip_point(Vector2z point, float m) {
+    int rcode = get_rcode(point);
+    
+    Vector2z clipped_point;
+    
+    float yu = pos.getY() + size.getY()/2;
+    float yd = pos.getY() - size.getY()/2;
+    float xl = pos.getX() - size.getX()/2;  // determinando os limites do clip
+    float xr = pos.getX() + size.getX()/2;
+
+    if (!rcode) {
+        return point;
+    }
+
+    if (rcode & 1) {
+        float y = m * (xl - point.getX()) + point.getY();  // esquerda
+        if (y < yu && y > yd) {
+            clipped_point = Vector2z(xl, y);
+        }
+    }
+
+    if (rcode & 2) {
+        float y = m * (xr - point.getX()) + point.getY();  // direita
+        if (y < yu && y > yd) {
+            clipped_point = Vector2z(xr, y);
+        }
+    }
+
+    if (rcode & 4) {
+        float x = point.getX() + 1/m * (yd - point.getY());  // baixo
+        if (x < xr && x > xl) {
+            clipped_point = Vector2z(x, yd);
+        }
+    }
+
+    if (rcode & 8) {
+        float x = point.getX() + 1/m * (yu - point.getY()); 
+        if (x < xr && x > xl) {
+            clipped_point = Vector2z(x, yu);
+        }
+    }
+    return clipped_point;
 }
