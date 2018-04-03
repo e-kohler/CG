@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <list>
+#include "Shape.h"
 
 namespace Descriptor{
 
@@ -12,7 +14,7 @@ namespace Descriptor{
 
 
 	void importObject(char* filename);
-	void translator();
+	std::list<Shape> translator();
 	void exportObject();
 
 	const std::vector<std::string> split(const std::string &s, char c);

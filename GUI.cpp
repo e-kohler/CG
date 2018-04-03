@@ -359,6 +359,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     point->coords.push_back(Vector2z(0, 0));
     point2->coords.push_back(Vector2z(3, 3));
 
+    
+    
     shapes.push_back(linha);  // coloca na lista global
     shapes.push_back(polig);
     shapes.push_back(polig2);
