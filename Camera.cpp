@@ -8,7 +8,7 @@ Camera::Camera() {
     viewport = Vector2z(480, 480);  // propriedades da camera que limita o mundo
     size = Vector2z(20, 20);
     angle = 0;
-    clip = Vector2z(1.8, 1.8);
+    clip = Vector2z(1, 1);
 }
 
 Vector2z Camera::world_to_norm(Vector2z coord) {
