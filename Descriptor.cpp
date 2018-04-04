@@ -32,14 +32,12 @@ std::list<Shape*> Descriptor::translator(){
 
 		switch(inst){
 			case 'v':
-				vertices.push_back(Vector2z(std::stof(pieces[1]), std::stof(pieces[2])));
-				break;
-			case 'o':
-			
-				break;
+				{
+					vertices.push_back(Vector2z(std::stof(pieces[1]), std::stof(pieces[2])));
+					break;
+				}
 			case 'f':
 				{
-
 					Polygon* poly = new Polygon("tetra");
 					
 					for(auto i = 1; i < pieces.size(); i++){
@@ -55,24 +53,27 @@ std::list<Shape*> Descriptor::translator(){
 					break;
 				}
 			case 'l':
-				Line* linha = new Line("line");
-				
-				auto ind_fcoord = std::stof(pieces[1]) - 1; // -1 para considerar a linha correta quando dentro do vetor
-				auto ind_scoord = std::stof(pieces[2]) - 1;
+				{
 
-				// std::cout << vertices[ind_fcoord].getX() << " " << vertices[ind_fcoord].getY() << std::endl;
+					Line* linha = new Line("line");
+					
+					auto ind_fcoord = std::stof(pieces[1]) - 1; // -1 para considerar a linha correta quando dentro do vetor
+					auto ind_scoord = std::stof(pieces[2]) - 1;
 
-				linha->coords.push_back(vertices[ind_fcoord]);
-				linha->coords.push_back(vertices[ind_scoord]);
+					// std::cout << vertices[ind_fcoord].getX() << " " << vertices[ind_fcoord].getY() << std::endl;
 
-				shapes.push_back(linha);
+					linha->coords.push_back(vertices[ind_fcoord]);
+					linha->coords.push_back(vertices[ind_scoord]);
 
-				/*
-				Deveria pegar o vertice da linha piece[1] e piece[2]
-				e adcionar em Shape.
-				E então, retornar para a GUI somar a lista de shapes.
-				*/
-				break;
+					shapes.push_back(linha);
+
+					/*
+					Deveria pegar o vertice da linha piece[1] e piece[2]
+					e adcionar em Shape.
+					E então, retornar para a GUI somar a lista de shapes.
+					*/
+					break;
+				}
 		}
 
 	}
