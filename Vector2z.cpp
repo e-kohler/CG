@@ -36,6 +36,14 @@ Vector2z Vector2z::operator-(Vector2z vector) {
     return Vector2z(this->coords[0] - vector.getX(), this->coords[1] - vector.getY());
 }
 
+bool Vector2z::operator==(Vector2z vector) {
+    if ((this->coords[0] == vector.getX()) && (this->coords[1] == vector.getY())) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 Vector2z Vector2z::operator*(float number) {
     return Vector2z(this->coords[0] * number, this->coords[1] * number);
 }

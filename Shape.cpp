@@ -24,15 +24,24 @@ void Shape::draw(cairo_t* cr, Camera* camera) {
 
     auto iterator = coords.begin();  // cada figura tem uma lista de coordenadas (vertices) chamada coords
 
-    Vector2z coord = camera->world_to_viewport(*iterator);  // coord recebe a primeira coordenada da figura transformada
-    cairo_move_to(cr, coord.getX(), coord.getY());  // move pra coordenada
+    Vector2z coord1 = *iterator;  // coord recebe a primeira coordenada da figura transformada
+    //Vector2z coord = camera->world_to_viewport(*iterator);
+    //cairo_move_to(cr, coord.getX(), coord.getY());  // move pra coordenada
     for (; iterator != coords.end(); ++iterator) {  // percorre toda a lista de coordenadas, aplicando a transformação para viewport e desenhando as linhas nos resultados
-        coord = camera->world_to_viewport(*iterator); 
-        cairo_line_to(cr, coord.getX(), coord.getY());
+        /*Vector2z coord2 = camera->world_to_norm(*iterator);
+        auto clipped_coords = camera->clip_line(coord1, coord2);
+        if (clipped_coords != {Vector2z(123, 123), Vector2z(123, 123)}){
+            auto coord1_view = camera->norm_to_view(coord1);
+            auto coord2_view = camera->norm_to_view(coord2);
+            cairo_move_to(cr, coord1_view.getX(), coord1_view.getY());
+        }*/
+        Clipped clipped = Clipped(coord1, *iterator);
+        camera->draw_clipped(clipped, cr);
+        coord1 = *iterator;
         if (iterator == prev(coords.end())) {  // isso aqui é pra "fechar" a forma, quando chega na última coordenada, liga com a primeira
-            coord = coords.front();  // pega os valoroes da primeira coordenada
-            coord = camera->world_to_viewport(coord);
-            cairo_line_to(cr, coord.getX(), coord.getY());
+            auto first_coord = coords.front();  // pega os valoroes da primeira coordenada
+            Clipped clipped_close = Clipped(coord1, first_coord);
+            camera->draw_clipped(clipped_close, cr);
         }
     }
 }
@@ -42,10 +51,10 @@ Point::Point(std::string name)
         {}
 
 void Point::draw(cairo_t* cr, Camera* camera) {
-    Vector2z coord = *coords.begin();
+    /**Vector2z coord = *coords.begin();
     coord = camera->world_to_viewport(coord);
     cairo_move_to(cr, coord.getX(), coord.getY());
-    cairo_arc(cr, coord.getX(), coord.getY(), 1, 0, 2*M_PI);
+    cairo_arc(cr, coord.getX(), coord.getY(), 1, 0, 2*M_PI);**/
 }
 
 Line::Line(std::string name)
