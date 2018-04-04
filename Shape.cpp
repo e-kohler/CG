@@ -4,6 +4,7 @@
 
 Shape::Shape(std::string name) {
     this->name = name;
+    this->filled = false;
 }
 
 Shape::~Shape() {}
@@ -23,7 +24,7 @@ void Shape::transform(std::vector<std::vector<float> > matrix) {
 void Shape::draw(cairo_t* cr, Camera* camera) {
 
     auto iterator = coords.begin();  // cada figura tem uma lista de coordenadas (vertices) chamada coords
-
+    std::cout << filled << std::endl; 
     Vector2z coord = camera->world_to_viewport(*iterator);  // coord recebe a primeira coordenada da figura transformada
     cairo_move_to(cr, coord.getX(), coord.getY());  // move pra coordenada
     for (; iterator != coords.end(); ++iterator) {  // percorre toda a lista de coordenadas, aplicando a transformação para viewport e desenhando as linhas nos resultados
@@ -34,7 +35,16 @@ void Shape::draw(cairo_t* cr, Camera* camera) {
             coord = camera->world_to_viewport(coord);
             cairo_line_to(cr, coord.getX(), coord.getY());
         }
+
     }
+
+    if(this->filled){
+        
+        cairo_fill(cr);
+    } else {
+        cairo_stroke(cr);
+    }
+
 }
 
 Point::Point(std::string name)
@@ -46,6 +56,7 @@ void Point::draw(cairo_t* cr, Camera* camera) {
     coord = camera->world_to_viewport(coord);
     cairo_move_to(cr, coord.getX(), coord.getY());
     cairo_arc(cr, coord.getX(), coord.getY(), 1, 0, 2*M_PI);
+    cairo_stroke(cr);
 }
 
 Line::Line(std::string name)
@@ -53,5 +64,6 @@ Line::Line(std::string name)
         {}
 
 Polygon::Polygon(std::string name)
-        :Shape(name)
-        {}
+        :Shape(name){
+        }
+

@@ -430,22 +430,23 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     polig->coords.push_back(Vector2z(1, -1));
     polig->coords.push_back(Vector2z(-1, -1));
     polig->coords.push_back(Vector2z(-1, 1));
+    polig->filled = false;
 
     polig2->coords.push_back(Vector2z(-2, -2));
     polig2->coords.push_back(Vector2z(-3, -4));
     polig2->coords.push_back(Vector2z(-5, -4));
     polig2->coords.push_back(Vector2z(-4, -2));
+    polig2->filled = false;
 
     triang->coords.push_back(Vector2z(1, 2));
     triang->coords.push_back(Vector2z(3, 1));
     triang->coords.push_back(Vector2z(4, 4));
+    triang->filled = true;
 
 
     point->coords.push_back(Vector2z(0, 0));
     point2->coords.push_back(Vector2z(3, 3));
 
-    
-    
     shapes.push_back(linha);  // coloca na lista global
     shapes.push_back(polig);
     shapes.push_back(polig2);
