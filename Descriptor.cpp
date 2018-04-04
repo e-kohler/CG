@@ -35,11 +35,25 @@ std::list<Shape*> Descriptor::translator(){
 				vertices.push_back(Vector2z(std::stof(pieces[1]), std::stof(pieces[2])));
 				break;
 			case 'o':
-
+			
 				break;
 			case 'f':
-				
-				break;
+				{
+
+					Polygon* poly = new Polygon("tetra");
+					
+					for(auto i = 1; i < pieces.size(); i++){
+						auto piece_index = std::stof(pieces[i]) - 1;
+						poly->coords.push_back(vertices[piece_index]);
+					}
+					shapes.push_back(poly);
+
+					if(pieces[0] == "ff") {
+						poly->filled = true;
+					}
+
+					break;
+				}
 			case 'l':
 				Line* linha = new Line("line");
 				
@@ -58,6 +72,7 @@ std::list<Shape*> Descriptor::translator(){
 				e adcionar em Shape.
 				E então, retornar para a GUI somar a lista de shapes.
 				*/
+				break;
 		}
 
 	}
