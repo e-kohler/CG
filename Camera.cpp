@@ -8,7 +8,7 @@ Camera::Camera() {
     viewport = Vector2z(480, 480);  // propriedades da camera que limita o mundo
     size = Vector2z(20, 20);
     angle = 0;
-    clip = Vector2z(1, 1);
+    clip = Vector2z(0.5, 0.5);
 }
 
 Vector2z Camera::world_to_norm(Vector2z coord) {
@@ -62,33 +62,31 @@ int Camera::get_rcode(Vector2z point) {
 
     int reg_code = 0;  // cada ponto tem um codigo, (CIMA, BAIXO, DIREITA, ESQUERDA), sendo cada 1 ou 0.
 
-    if (x < xl)
-        reg_code |= 1;
-
-    if (x > xr)
-        reg_code |= 2;
-
-    if (y < yd)
-        reg_code |= 4;
-
-    if (y > yu)
-        reg_code |= 8;
+    reg_code |= (x < xl) << 0;
+    reg_code |= (x > xr) << 1;
+    reg_code |= (y < yd) << 2;
+    reg_code |= (y > yu) << 3;
     
     return reg_code;
 }
 
 void Camera::draw_clipped (Clipped clipped, cairo_t* cr) {
+    std::cout << "world" << std::endl;
+    std::cout << clipped.coord1.getX() << "  " << clipped.coord1.getY() << std::endl;
+    std::cout << clipped.coord2.getX() << "  " << clipped.coord2.getY() << std::endl;
     clipped.coord1 = world_to_norm(clipped.coord1);
     clipped.coord2 = world_to_norm(clipped.coord2);
+    std::cout << "norm" << std::endl;
+    std::cout << clipped.coord1.getX() << "  " << clipped.coord1.getY() << std::endl;
+    std::cout << clipped.coord2.getX() << "  " << clipped.coord2.getY() << std::endl;
 
     clipped = clip_line(clipped.coord1, clipped.coord2);
 
     if (clipped.draw) {
+
         clipped.coord1 = norm_to_view(clipped.coord1);
         clipped.coord2 = norm_to_view(clipped.coord2);
-            
-        std::cout << "teste7" << std::endl;
-
+  
         cairo_move_to(cr, clipped.coord1.getX(), clipped.coord2.getY());
         cairo_line_to(cr, clipped.coord2.getX(), clipped.coord2.getY());
         cairo_stroke(cr);
@@ -99,11 +97,15 @@ Clipped Camera::clip_line(Vector2z point1, Vector2z point2) {
     int rcode1 = get_rcode(point1);
     int rcode2 = get_rcode(point2);
 
-    if (rcode1 == rcode2 == 0) {  // está totalmente dentro da window
+    std::cout << "region code" << std::endl;
+    std::cout << rcode1 << std::endl;
+    std::cout << rcode2 << std::endl;
+
+    if (!rcode1 && !rcode2) {  // está totalmente dentro da window
         return Clipped(point1, point2);
     }
 
-    if ((rcode1 & rcode2) != 0) {  // está totalmente fora da window
+    if (rcode1 & rcode2) {  // está totalmente fora da window
         return Clipped();// nao desenha
     }
 
@@ -111,6 +113,10 @@ Clipped Camera::clip_line(Vector2z point1, Vector2z point2) {
 
     auto clipped_coord1 = clip_line_point(point1, m);
     auto clipped_coord2 = clip_line_point(point2, m);
+
+    std::cout << "clipped" << std::endl;
+    std::cout << clipped_coord1.getX() << "  " << clipped_coord1.getY() << std::endl;
+    std::cout << clipped_coord2.getX() << "  " << clipped_coord2.getY() << std::endl;
 
     if (clipped_coord1 == point1 && clipped_coord2 == point2) {
         return Clipped();
@@ -136,7 +142,7 @@ Vector2z Camera::clip_line_point(Vector2z point, float m) {
         return point;
     }
 
-    if (rcode & 1) {
+    if (rcode & (1 << 0)) {
         float y = m * (xl - point.getX()) + point.getY();  // esquerda
         if (y < yu && y > yd) {
             clipped_point = Vector2z(xl, y);
@@ -144,7 +150,7 @@ Vector2z Camera::clip_line_point(Vector2z point, float m) {
         }
     }
 
-    if (rcode & 2) {
+    if (rcode & (1 << 1)) {
         float y = m * (xr - point.getX()) + point.getY();  // direita
         if (y < yu && y > yd) {
             clipped_point = Vector2z(xr, y);
@@ -152,7 +158,7 @@ Vector2z Camera::clip_line_point(Vector2z point, float m) {
         }
     }
 
-    if (rcode & 4) {
+    if (rcode & (1 << 2)) {
         float x = point.getX() + 1/m * (yd - point.getY());  // baixo
         if (x < xr && x > xl) {
             clipped_point = Vector2z(x, yd);
@@ -160,7 +166,7 @@ Vector2z Camera::clip_line_point(Vector2z point, float m) {
         }
     }
 
-    if (rcode & 8) {
+    if (rcode & (1 << 3)) {
         float x = point.getX() + 1/m * (yu - point.getY()); 
         if (x < xr && x > xl) {
             clipped_point = Vector2z(x, yu);
