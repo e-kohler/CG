@@ -39,7 +39,6 @@ void Shape::draw(cairo_t* cr, Camera* camera) {
     }
 
     if(this->filled){
-        
         cairo_fill(cr);
     } else {
         cairo_stroke(cr);
