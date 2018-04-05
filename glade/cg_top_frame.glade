@@ -258,6 +258,8 @@
                       <object class="GtkAlignment" id="alig_combo">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="left_padding">15</property>
+                        <property name="right_padding">15</property>
                         <child>
                           <object class="GtkComboBoxText" id="combo_box">
                             <property name="visible">True</property>
@@ -374,8 +376,11 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="margin_left">80</property>
+                                    <property name="margin_right">80</property>
                                     <property name="margin_top">6</property>
                                     <property name="margin_bottom">6</property>
+                                    <property name="xalign">0.50999999046325684</property>
                                     <signal name="clicked" handler="on_but_tran_clicked" swapped="no"/>
                                   </object>
                                   <packing>
@@ -810,7 +815,7 @@
           </object>
         </child>
         <child type="label">
-          <object class="GtkMenuBar" id="menubar2">
+          <object class="GtkMenuBar" id="menubar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -843,15 +848,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem14">
-                        <property name="label">gtk-save-as</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkSeparatorMenuItem" id="separatormenuitem2">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -859,7 +855,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="imagemenuitem15">
-                        <property name="label">gtk-quit</property>
+                        <property name="label">gtk-about</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
