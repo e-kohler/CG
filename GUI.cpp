@@ -26,7 +26,7 @@ void GUI::test_merge(std::list<Shape*> shapes_merge){
 
 gboolean GUI::draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
     cairo_set_source_rgb(cr, 1, 1, 1);
-    cairo_paint(cr);
+    cairo_paint(cr);    
 
     cairo_set_line_width(cr, 1);
     cairo_set_source_rgb(cr, 0, 0, 0);
