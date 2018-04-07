@@ -27,16 +27,41 @@ void GUI::test_merge(std::list<Shape*> shapes_merge){
 }
 
 gboolean GUI::draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
-    cairo_set_source_rgb(cr, 1, 1, 1);
-    cairo_paint(cr);
     
+    ///////////////// desenha a borda vermelha do clip //////////////////////
+
+    auto clip = camera->clip/2;
+
+    cairo_set_source_rgb(cr, 1, 0, 0);
     cairo_set_line_width(cr, 1);
+
+    Vector2z left_up = camera->norm_to_view(Vector2z(-clip.getX(), clip.getY()));
+    Vector2z left_down = camera->norm_to_view(Vector2z(-clip.getX(), -clip.getY()));
+
+    cairo_move_to(cr, left_up.getX(), left_up.getY());
+    cairo_line_to(cr, left_down.getX(), left_down.getY());
+
+    Vector2z down_right = camera->norm_to_view(Vector2z(clip.getX(), -clip.getY()));
+
+    cairo_line_to(cr, down_right.getX(), down_right.getY());
+
+    Vector2z right_up = camera->norm_to_view(Vector2z(clip.getX(), clip.getY()));
+
+    cairo_line_to(cr, right_up.getX(), right_up.getY());
+
+    Vector2z up_left = camera->norm_to_view(Vector2z(-clip.getX(), clip.getY()));
+
+    cairo_line_to(cr, up_left.getX(), up_left.getY());
+
+    cairo_stroke(cr);
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     cairo_set_source_rgb(cr, 0, 0, 0);
 
     for (auto iterator = shapes.begin(); iterator != shapes.end(); ++iterator) { // percorre a lista de figuras e invoca o draw de cada uma
         (*iterator)->draw(cr, camera);
     }
-    cairo_stroke(cr);    
     return FALSE;
 }
 
