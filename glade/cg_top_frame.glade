@@ -24,6 +24,7 @@
               <object class="GtkBox" id="box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="margin_right">15</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkFrame" id="frame_flechas">
