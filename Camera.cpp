@@ -94,7 +94,7 @@ void Camera::draw_clipped (Clipped to_be_clipped, cairo_t* cr) {
         auto coord1_clipped_view = norm_to_view(clipped.coord1);
         auto coord2_clipped_view = norm_to_view(clipped.coord2);
   
-        cairo_move_to(cr, coord1_clipped_view.getX(), coord2_clipped_view.getY());
+        cairo_move_to(cr, coord1_clipped_view.getX(), coord1_clipped_view.getY());
         cairo_line_to(cr, coord2_clipped_view.getX(), coord2_clipped_view.getY());
         cairo_stroke(cr);
     }
