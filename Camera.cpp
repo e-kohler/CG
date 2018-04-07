@@ -6,9 +6,9 @@
 Camera::Camera() {
     pos = Vector2z(0, 0);
     viewport = Vector2z(480, 480);  // propriedades da camera que limita o mundo
-    size = Vector2z(20, 20);
+    size = Vector2z(10, 10);
     angle = 0;
-    clip = Vector2z(0.5, 0.5);
+    clip = Vector2z(1, 1);
 }
 
 Vector2z Camera::world_to_norm(Vector2z coord) {
@@ -62,121 +62,113 @@ int Camera::get_rcode(Vector2z point) {
 
     int reg_code = 0;  // cada ponto tem um codigo, (CIMA, BAIXO, DIREITA, ESQUERDA), sendo cada 1 ou 0.
 
-    reg_code |= (x < xl) << 0;
-    reg_code |= (x > xr) << 1;
-    reg_code |= (y < yd) << 2;
-    reg_code |= (y > yu) << 3;
+    if (x < xl)
+         reg_code |= 1;
+ 
+    if (x > xr)
+         reg_code |= 2;
+ 
+    if (y < yd)
+         reg_code |= 4;
+ 
+    if (y > yu)
+         reg_code |= 8;
     
     return reg_code;
 }
 
-void Camera::draw_clipped (Clipped clipped, cairo_t* cr) {
+void Camera::draw_clipped (Clipped to_be_clipped, cairo_t* cr) {
     std::cout << "world" << std::endl;
-    std::cout << clipped.coord1.getX() << "  " << clipped.coord1.getY() << std::endl;
-    std::cout << clipped.coord2.getX() << "  " << clipped.coord2.getY() << std::endl;
-    clipped.coord1 = world_to_norm(clipped.coord1);
-    clipped.coord2 = world_to_norm(clipped.coord2);
+    std::cout << to_be_clipped.coord1.getX() << "  " << to_be_clipped.coord1.getY() << std::endl;
+    std::cout << to_be_clipped.coord2.getX() << "  " << to_be_clipped.coord2.getY() << std::endl;
+    auto coord1_normed = world_to_norm(to_be_clipped.coord1);
+    auto coord2_normed = world_to_norm(to_be_clipped.coord2);
     std::cout << "norm" << std::endl;
-    std::cout << clipped.coord1.getX() << "  " << clipped.coord1.getY() << std::endl;
-    std::cout << clipped.coord2.getX() << "  " << clipped.coord2.getY() << std::endl;
+    std::cout << to_be_clipped.coord1.getX() << "  " << to_be_clipped.coord1.getY() << std::endl;
+    std::cout << to_be_clipped.coord2.getX() << "  " << to_be_clipped.coord2.getY() << std::endl;
 
-    clipped = clip_line(clipped.coord1, clipped.coord2);
+    auto clipped = clip_line(coord1_normed, coord2_normed);
 
     if (clipped.draw) {
 
-        clipped.coord1 = norm_to_view(clipped.coord1);
-        clipped.coord2 = norm_to_view(clipped.coord2);
+        auto coord1_clipped_view = norm_to_view(clipped.coord1);
+        auto coord2_clipped_view = norm_to_view(clipped.coord2);
   
-        cairo_move_to(cr, clipped.coord1.getX(), clipped.coord2.getY());
-        cairo_line_to(cr, clipped.coord2.getX(), clipped.coord2.getY());
+        cairo_move_to(cr, coord1_clipped_view.getX(), coord2_clipped_view.getY());
+        cairo_line_to(cr, coord2_clipped_view.getX(), coord2_clipped_view.getY());
         cairo_stroke(cr);
     }
 }
 
-Clipped Camera::clip_line(Vector2z point1, Vector2z point2) {
-    int rcode1 = get_rcode(point1);
-    int rcode2 = get_rcode(point2);
-
-    std::cout << "region code" << std::endl;
-    std::cout << rcode1 << std::endl;
-    std::cout << rcode2 << std::endl;
-
-    if (!rcode1 && !rcode2) {  // está totalmente dentro da window
-        return Clipped(point1, point2);
-    }
-
-    if (rcode1 & rcode2) {  // está totalmente fora da window
-        return Clipped();// nao desenha
-    }
-
-    float m = (point1.getY() - point2.getY()) / (point1.getX() - point2.getX());
-
-    auto clipped_coord1 = clip_line_point(point1, m);
-    auto clipped_coord2 = clip_line_point(point2, m);
-
-    std::cout << "clipped" << std::endl;
-    std::cout << clipped_coord1.getX() << "  " << clipped_coord1.getY() << std::endl;
-    std::cout << clipped_coord2.getX() << "  " << clipped_coord2.getY() << std::endl;
-
-    if (clipped_coord1 == point1 && clipped_coord2 == point2) {
-        return Clipped();
-    } 
-    else {
-        return Clipped(clipped_coord1, clipped_coord2);
-    }
-}
-
-Vector2z Camera::clip_line_point(Vector2z point, float m) {
-    int rcode = get_rcode(point);
-    
-    Vector2z clipped_point;
-    
-    float yu = clip.getY()/2; 
-    float yd = -clip.getY()/2; 
+Clipped Camera::clip_line(Vector2z point0, Vector2z point1) {
+    float yu = clip.getY()/2;
+    float yd = -clip.getY()/2;
     float xl = -clip.getX()/2;  // determinando os limites do clip
     float xr = clip.getX()/2;
 
-    bool clipped = false;
+    float x0 = point0.getX();
+    float y0 = point0.getY();
+    float x1 = point1.getX();
+    float y1 = point1.getY();
 
-    if (!rcode) {  // se code for 0000, já esta dentro
-        return point;
-    }
+    // compute outcodes for P0, P1, and whatever point lies outside the clip rectangle
+	int outcode0 = get_rcode(Vector2z(x0, y0));
+	int outcode1 = get_rcode(Vector2z(x1, y1));
+	bool accept = false;
 
-    if (rcode & (1 << 0)) {
-        float y = m * (xl - point.getX()) + point.getY();  // esquerda
-        if (y < yu && y > yd) {
-            clipped_point = Vector2z(xl, y);
-            clipped = true;
-        }
-    }
+	while (true) {
+		if (!(outcode0 | outcode1)) {
+			// bitwise OR is 0: both points inside window; trivially accept and exit loop
+			accept = true;
+			break;
+		} else if (outcode0 & outcode1) {
+			// bitwise AND is not 0: both points share an outside zone (LEFT, RIGHT, TOP,
+			// or BOTTOM), so both must be outside window; exit loop (accept is false)
+            return Clipped();
+			break;
+		} else {
+			// failed both tests, so calculate the line segment to clip
+			// from an outside point to an intersection with clip edge
+			float x, y;
 
-    if (rcode & (1 << 1)) {
-        float y = m * (xr - point.getX()) + point.getY();  // direita
-        if (y < yu && y > yd) {
-            clipped_point = Vector2z(xr, y);
-            clipped = true;
-        }
-    }
+			// At least one endpoint is outside the clip rectangle; pick it.
+			int outcodeOut = outcode0 ? outcode0 : outcode1;
 
-    if (rcode & (1 << 2)) {
-        float x = point.getX() + 1/m * (yd - point.getY());  // baixo
-        if (x < xr && x > xl) {
-            clipped_point = Vector2z(x, yd);
-            clipped = true;
-        }
-    }
+			// Now find the intersection point;
+			// use formulas:
+			//   slope = (y1 - y0) / (x1 - x0)
+			//   x = x0 + (1 / slope) * (ym - y0), where ym is ymin or ymax
+			//   y = y0 + slope * (xm - x0), where xm is xmin or xmax
+			// No need to worry about divide-by-zero because, in each case, the
+			// outcode bit being tested guarantees the denominator is non-zero
+			if (outcodeOut & 8) {           // point is above the clip window
+				x = x0 + (x1 - x0) * (yu - y0) / (y1 - y0);
+				y = yu;
+			} else if (outcodeOut & 4) { // point is below the clip window
+				x = x0 + (x1 - x0) * (yd - y0) / (y1 - y0);
+				y = yd;
+			} else if (outcodeOut & 2) {  // point is to the right of clip window
+				y = y0 + (y1 - y0) * (xr - x0) / (x1 - x0);
+				x = xr;
+			} else if (outcodeOut & 1) {   // point is to the left of clip window
+				y = y0 + (y1 - y0) * (xl - x0) / (x1 - x0);
+				x = xl;
+			}
 
-    if (rcode & (1 << 3)) {
-        float x = point.getX() + 1/m * (yu - point.getY()); 
-        if (x < xr && x > xl) {
-            clipped_point = Vector2z(x, yu);
-            clipped = true;
-        }
-    }
-
-    if (!clipped) {
-        return point;
-    }
-
-    return clipped_point;
+			// Now we move outside point to intersection point to clip
+			// and get ready for next pass.
+			if (outcodeOut == outcode0) {
+				x0 = x;
+				y0 = y;
+				outcode0 = get_rcode(Vector2z(x0, y0));
+			} else {
+				x1 = x;
+				y1 = y;
+				outcode1 = get_rcode(Vector2z(x1, y1));
+			}
+		}
+	}
+	if (accept) {
+		return Clipped(Vector2z(x0, y0), Vector2z(x1, y1));
+	}
 }

@@ -452,8 +452,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     shapes.push_back(polig);
     shapes.push_back(polig2);
     shapes.push_back(triang);
-    shapes.push_back(point);
-    shapes.push_back(point2);
+    //shapes.push_back(point);
+    //shapes.push_back(point2);
 
     camera = new Camera();
     
