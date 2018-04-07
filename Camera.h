@@ -18,6 +18,6 @@ struct Camera{
     int get_rcode(Vector2z point);
     Clipped clip_line(Vector2z point1, Vector2z point2);
     void draw_clipped(Clipped clipped, cairo_t* cr);
-    Vector2z clip_line_point(Vector2z point, float m);
+    void clip_and_draw_point(Vector2z point, cairo_t* cr);
 };
 #endif

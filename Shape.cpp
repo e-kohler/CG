@@ -38,7 +38,6 @@ void Shape::draw(cairo_t* cr, Camera* camera) {
             Clipped clipped_close = Clipped(coord1, first_coord);
             camera->draw_clipped(clipped_close, cr);
         }
-
     }
 
     if(this->filled){
@@ -54,10 +53,8 @@ Point::Point(std::string name)
         {}
 
 void Point::draw(cairo_t* cr, Camera* camera) {
-    /**Vector2z coord = *coords.begin();
-    coord = camera->world_to_viewport(coord);
-    cairo_move_to(cr, coord.getX(), coord.getY());
-    cairo_arc(cr, coord.getX(), coord.getY(), 1, 0, 2*M_PI);**/
+    Vector2z point = *coords.begin();
+    camera->clip_and_draw_point(point, cr);
 }
 
 Line::Line(std::string name)

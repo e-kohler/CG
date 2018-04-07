@@ -150,3 +150,21 @@ Clipped Camera::clip_line(Vector2z point0, Vector2z point1) {
 		return Clipped(Vector2z(x0, y0), Vector2z(x1, y1));
 	}
 }
+
+void Camera::clip_and_draw_point(Vector2z point, cairo_t* cr) {
+    float yu = clip.getY()/2;
+    float yd = -clip.getY()/2;
+    float xl = -clip.getX()/2;  // determinando os limites do clip
+    float xr = clip.getX()/2;
+
+    point = world_to_norm(point);
+
+    if ((point.getX() < xl || point.getX() > xr || point.getY() < yd || point.getY() > yu)) {
+        return;
+    }
+
+    point = norm_to_view(point);
+    cairo_move_to(cr, point.getX(), point.getY());
+    cairo_arc(cr, point.getX(), point.getY(), 1, 0, 2*M_PI);
+    cairo_stroke(cr);
+}
