@@ -4,6 +4,7 @@
 
 Shape::Shape(std::string name) {
     this->name = name;
+    this->filled = false;
 }
 
 Shape::~Shape() {}
@@ -27,6 +28,7 @@ void Shape::draw(cairo_t* cr, Camera* camera) {
     Vector2z coord1 = *iterator;  // coord recebe a primeira coordenada da figura transformada
 
     ++iterator;
+
     for (; iterator != coords.end(); ++iterator) {  // percorre toda a lista de coordenadas, aplicando a transformação para viewport e desenhando as linhas nos resultados
         Clipped clipped = Clipped(coord1, *iterator);
         camera->draw_clipped(clipped, cr);
@@ -36,7 +38,15 @@ void Shape::draw(cairo_t* cr, Camera* camera) {
             Clipped clipped_close = Clipped(coord1, first_coord);
             camera->draw_clipped(clipped_close, cr);
         }
+
     }
+
+    if(this->filled){
+        cairo_fill(cr);
+    } else {
+        cairo_stroke(cr);
+    }
+
 }
 
 Point::Point(std::string name)
@@ -55,5 +65,6 @@ Line::Line(std::string name)
         {}
 
 Polygon::Polygon(std::string name)
-        :Shape(name)
-        {}
+        :Shape(name){
+        }
+

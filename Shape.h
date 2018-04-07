@@ -13,6 +13,7 @@ class Shape {
         std::string name;
            
     public:
+        gboolean filled;
         std::list<Vector2z> coords;
         Shape(std::string name);
         ~Shape();
