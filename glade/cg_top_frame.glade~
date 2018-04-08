@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.18.3 -->
+<!-- Generated with glade 3.20.2 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkWindow" id="window">
@@ -24,6 +24,7 @@
               <object class="GtkBox" id="box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="margin_right">15</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkFrame" id="frame_flechas">
@@ -298,11 +299,12 @@
                           <object class="GtkNotebook" id="note_transforms">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="margin_bottom">6</property>
+                            <property name="valign">start</property>
                             <child>
                               <object class="GtkBox" id="box_transl">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="valign">start</property>
                                 <property name="orientation">vertical</property>
                                 <child>
                                   <object class="GtkGrid" id="grid_tranls_x">
@@ -376,9 +378,11 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="margin_left">60</property>
+                                    <property name="margin_right">60</property>
                                     <property name="margin_top">6</property>
                                     <property name="margin_bottom">6</property>
-                                    <property name="xalign">0.50999999046325684</property>
+                                    <property name="xalign">0.5</property>
                                     <signal name="clicked" handler="on_but_tran_clicked" swapped="no"/>
                                   </object>
                                   <packing>
@@ -476,6 +480,8 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="margin_left">60</property>
+                                    <property name="margin_right">60</property>
                                     <property name="margin_top">6</property>
                                     <property name="margin_bottom">6</property>
                                     <signal name="clicked" handler="on_but_escal_clicked" swapped="no"/>
@@ -549,6 +555,8 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="margin_left">60</property>
+                                        <property name="margin_right">60</property>
                                         <signal name="clicked" handler="on_but_rot_def_clicked" swapped="no"/>
                                       </object>
                                       <packing>
@@ -612,6 +620,8 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="margin_left">60</property>
+                                        <property name="margin_right">60</property>
                                         <signal name="clicked" handler="on_but_rot_org_clicked" swapped="no"/>
                                       </object>
                                       <packing>
@@ -732,6 +742,8 @@
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="margin_left">60</property>
+                                        <property name="margin_right">60</property>
                                         <signal name="clicked" handler="on_but_rot_point_clicked" swapped="no"/>
                                       </object>
                                       <packing>
@@ -792,6 +804,36 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton">
+                    <property name="label" translatable="yes">Liang-Barsky</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton">
+                    <property name="label" translatable="yes">Cohen-Sutherland</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
               </object>
@@ -867,6 +909,9 @@
           </object>
         </child>
       </object>
+    </child>
+    <child type="titlebar">
+      <placeholder/>
     </child>
   </object>
 </interface>
