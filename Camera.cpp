@@ -1,6 +1,8 @@
 #include "Camera.h"
 #include <math.h>
 #include <iostream>
+#include <algorithm>
+
 #define PI 3.14159265
 
 Camera::Camera() {
@@ -9,6 +11,7 @@ Camera::Camera() {
     size = Vector2z(10, 10);
     angle = 0;
     clip = Vector2z(1.6, 1.6);
+    clip_method = true;  // true: cohen-sutherland, false: liang-barsky
 }
 
 Vector2z Camera::world_to_norm(Vector2z coord) {
@@ -81,7 +84,12 @@ void Camera::draw_clipped (Clipped to_be_clipped, cairo_t* cr) {
     auto coord1_normed = world_to_norm(to_be_clipped.coord1);
     auto coord2_normed = world_to_norm(to_be_clipped.coord2);
 
-    auto clipped = clip_line(coord1_normed, coord2_normed);
+    Clipped clipped;
+    
+    if (clip_method)
+        clipped = cohen_sutherland_clipper(coord1_normed, coord2_normed);
+    else
+        clipped = liang_barsky_clipper(coord1_normed, coord2_normed);
 
     if (clipped.draw) {
 
@@ -94,7 +102,7 @@ void Camera::draw_clipped (Clipped to_be_clipped, cairo_t* cr) {
     }
 }
 
-Clipped Camera::clip_line(Vector2z point0, Vector2z point1) {
+Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
     float yu = clip.getY()/2;
     float yd = -clip.getY()/2;
     float xl = -clip.getX()/2;  // determinando os limites do clip
@@ -147,14 +155,81 @@ Clipped Camera::clip_line(Vector2z point0, Vector2z point1) {
 		}
 	}
 	if (accept) {
+        std::cout << "usando cohen-sutherland" << std::endl;
 		return Clipped(Vector2z(x0, y0), Vector2z(x1, y1));
 	}
+}
+
+Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
+    float yu = clip.getY()/2;
+    float yd = -clip.getY()/2;
+    float xl = -clip.getX()/2;  // determinando os limites do clip
+    float xr = clip.getX()/2;
+
+    float p1 = -(point1.getX() - point0.getX());
+    float p2 = -p1;
+    float p3 = -(point1.getY() - point0.getY());
+    float p4 = -p3;
+
+    float q1 = point0.getX() - xl;
+    float q2 = xr - point0.getX();
+    float q3 = point0.getY() - yd;
+    float q4 = yu - point0.getY();
+
+    float posarr[5], negarr[5];
+    int posind = 1, negind = 1;
+    posarr[0] = 1;
+    negarr[0] = 0;
+
+    if ((p1 == 0 && q1 < 0) || (p2 == 0 && q2 < 0) || (p3 == 0 && q3 < 0) || (p4 == 0 && q4 < 0)) {
+        return Clipped();
+    }
+    if (p1 != 0) {
+        float r1 = q1 / p1;
+        float r2 = q2 / p2;
+        if (p1 < 0) {
+        negarr[negind++] = r1;
+        posarr[posind++] = r2;
+        } else {
+        negarr[negind++] = r2;
+        posarr[posind++] = r1;
+        }
+    }
+    if (p3 != 0) {
+        float r3 = q3 / p3;
+        float r4 = q4 / p4;
+        if (p3 < 0) {
+        negarr[negind++] = r3;
+        posarr[posind++] = r4;
+        } else {
+        negarr[negind++] = r4;
+        posarr[posind++] = r3;
+        }
+    }
+
+    float xn1, yn1, xn2, yn2;
+    float rn1, rn2;
+    rn1 = *std::max_element(negarr, negarr + negind);
+    rn2 = *std::min_element(posarr, posarr + posind);
+
+    if (rn1 > rn2)  {
+        return Clipped();
+    }
+
+    xn1 = point0.getX() + p2 * rn1;
+    yn1 = point0.getY() + p4 * rn1;
+
+    xn2 = point0.getX() + p2 * rn2;
+    yn2 = point0.getY() + p4 * rn2;
+
+    std::cout << "usando liang-barsky" << std::endl;
+    return Clipped(Vector2z(xn1, yn1), Vector2z(xn2, yn2));
 }
 
 void Camera::clip_and_draw_point(Vector2z point, cairo_t* cr) {
     float yu = clip.getY()/2;
     float yd = -clip.getY()/2;
-    float xl = -clip.getX()/2;  // determinando os limites do clip
+    float xl = -clip.getX()/2;
     float xr = clip.getX()/2;
 
     point = world_to_norm(point);
