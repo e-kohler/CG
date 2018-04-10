@@ -12,6 +12,10 @@ Camera::Camera() {
     angle = 0;
     clip = Vector2z(1.6, 1.6);
     clip_method = true;  // true: cohen-sutherland, false: liang-barsky
+    clip_yu = clip.getY()/2;
+    clip_yd = -clip.getY()/2;
+    clip_xl = -clip.getX()/2;  // determinando os limites do clip
+    clip_xr = clip.getX()/2;
 }
 
 Vector2z Camera::world_to_norm(Vector2z coord) {
@@ -55,26 +59,21 @@ Vector2z Camera::world_to_viewport(Vector2z coord) {
 }
 
 int Camera::get_rcode(Vector2z point) {
-    float yu = clip.getY()/2;
-    float yd = -clip.getY()/2;
-    float xl = -clip.getX()/2;  // determinando os limites do clip
-    float xr = clip.getX()/2;
-
     float x = point.getX();
     float y = point.getY();
 
     int reg_code = 0;  // cada ponto tem um codigo, (CIMA, BAIXO, DIREITA, ESQUERDA), sendo cada 1 ou 0.
 
-    if (x < xl)
+    if (x < clip_xl)
          reg_code |= 1;
  
-    if (x > xr)
+    if (x > clip_xr)
          reg_code |= 2;
  
-    if (y < yd)
+    if (y < clip_yd)
          reg_code |= 4;
  
-    if (y > yu)
+    if (y > clip_yu)
          reg_code |= 8;
     
     return reg_code;
@@ -103,11 +102,6 @@ void Camera::draw_clipped (Clipped to_be_clipped, cairo_t* cr) {
 }
 
 Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
-    float yu = clip.getY()/2;
-    float yd = -clip.getY()/2;
-    float xl = -clip.getX()/2;  // determinando os limites do clip
-    float xr = clip.getX()/2;
-
     float x0 = point0.getX();
     float y0 = point0.getY();
     float x1 = point1.getX();
@@ -130,17 +124,17 @@ Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
 			int outcodeOut = outcode0 ? outcode0 : outcode1;
 
 			if (outcodeOut & 8) {
-				x = x0 + (x1 - x0) * (yu - y0) / (y1 - y0);
-				y = yu;
+				x = x0 + (x1 - x0) * (clip_yu - y0) / (y1 - y0);
+				y = clip_yu;
 			} else if (outcodeOut & 4) {
-				x = x0 + (x1 - x0) * (yd - y0) / (y1 - y0);
-				y = yd;
+				x = x0 + (x1 - x0) * (clip_yd - y0) / (y1 - y0);
+				y = clip_yd;
 			} else if (outcodeOut & 2) {
-				y = y0 + (y1 - y0) * (xr - x0) / (x1 - x0);
-				x = xr;
+				y = y0 + (y1 - y0) * (clip_xr - x0) / (x1 - x0);
+				x = clip_xr;
 			} else if (outcodeOut & 1) {
-				y = y0 + (y1 - y0) * (xl - x0) / (x1 - x0);
-				x = xl;
+				y = y0 + (y1 - y0) * (clip_xl - x0) / (x1 - x0);
+				x = clip_xl;
 			}
 
 			if (outcodeOut == outcode0) {
@@ -161,20 +155,15 @@ Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
 }
 
 Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
-    float yu = clip.getY()/2;
-    float yd = -clip.getY()/2;
-    float xl = -clip.getX()/2;  // determinando os limites do clip
-    float xr = clip.getX()/2;
-
     float p1 = -(point1.getX() - point0.getX());
     float p2 = -p1;
     float p3 = -(point1.getY() - point0.getY());
     float p4 = -p3;
 
-    float q1 = point0.getX() - xl;
-    float q2 = xr - point0.getX();
-    float q3 = point0.getY() - yd;
-    float q4 = yu - point0.getY();
+    float q1 = point0.getX() - clip_xl;
+    float q2 = clip_xr - point0.getX();
+    float q3 = point0.getY() - clip_yd;
+    float q4 = clip_yu - point0.getY();
 
     float posarr[5], negarr[5];
     int posind = 1, negind = 1;
@@ -227,14 +216,9 @@ Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
 }
 
 void Camera::clip_and_draw_point(Vector2z point, cairo_t* cr) {
-    float yu = clip.getY()/2;
-    float yd = -clip.getY()/2;
-    float xl = -clip.getX()/2;
-    float xr = clip.getX()/2;
-
     point = world_to_norm(point);
 
-    if ((point.getX() < xl || point.getX() > xr || point.getY() < yd || point.getY() > yu)) {
+    if ((point.getX() < clip_xl || point.getX() > clip_xr || point.getY() < clip_yd || point.getY() > clip_yu)) {
         return;
     }
 
@@ -242,4 +226,81 @@ void Camera::clip_and_draw_point(Vector2z point, cairo_t* cr) {
     cairo_move_to(cr, point.getX(), point.getY());
     cairo_arc(cr, point.getX(), point.getY(), 1, 0, 2*M_PI);
     cairo_stroke(cr);
+}
+
+float x_intersect(float x1, float y1, float x2, float y2,
+                float x3, float y3, float x4, float y4) {
+    float num = (x1*y2 - y1*x2) * (x3-x4) -
+              (x1-x2) * (x3*y4 - y3*x4);
+    float den = (x1-x2) * (y3-y4) - (y1-y2) * (x3-x4);
+    return num/den;
+}
+ 
+float y_intersect(float x1, float y1, float x2, float y2,
+                float x3, float y3, float x4, float y4) {
+    float num = (x1*y2 - y1*x2) * (y3-y4) -
+              (y1-y2) * (x3*y4 - y3*x4);
+    float den = (x1-x2) * (y3-y4) - (y1-y2) * (x3-x4);
+    return num/den;
+}
+ 
+// This functions clips all the edges w.r.t one clip
+// edge of clipping area
+void poly_clipper(std::list<Vector2z> coords, float x1, float y1, float x2, float y2) {
+    
+    std::list<Vector2z> new_points;
+ 
+    // (ix,iy),(kx,ky) are the co-ordinate values of
+    // the points
+    for (auto it = coords.begin(); it != coords.end(); ++it) {
+        Vector2z i = *it;
+
+        auto it2 = ++it;
+
+        Vector2z k = *(it2);
+        if (it == prev(coords.end()))
+            k = *coords.begin();
+
+        float i_pos = (x2 - x1) * (i.getY() - y1) - (y2 - y1) * (i.getX() - x1);
+        float k_pos = (x2 - x1) * (k.getY() - y1) - (y2 - y1) * (k.getX() - x1);
+
+        if (i_pos < 0 && k_pos < 0) {
+            new_points.push_back(k);
+
+        } else if (i_pos >= 0 && k_pos < 0) {
+
+            float inter_xi = x_intersect(x1, y1, x2, y2, i.getX(), i.getY(), k.getX(), k.getY());
+            float inter_yi = y_intersect(x1, y1, x2, y2, i.getX(), i.getY(), k.getX(), k.getY());
+            new_points.push_back(Vector2z(inter_xi, inter_yi));
+            new_points.push_back(k);
+
+        } else if (i_pos < 0 && k_pos >= 0) {
+            float inter_xi = x_intersect(x1, y1, x2, y2, i.getX(), i.getY(), k.getX(), k.getY());
+            float inter_yi = y_intersect(x1, y1, x2, y2, i.getX(), i.getY(), k.getX(), k.getY());
+            new_points.push_back(Vector2z(inter_xi, inter_yi));
+
+        } else {
+
+        }
+    }
+    coords = new_points;
+}
+
+// Implements Sutherland–Hodgman algorithm
+void sutherland_hodgeman_clipper(std::list<Vector2z> poly_coords) {
+    /*for (int i=0; i<clipper_size; i++)
+    {
+        int k = (i+1) % clipper_size;
+ 
+        // We pass the current array of vertices, it's size
+        // and the end points of the selected clipper line
+        clip(poly_points, poly_size, clipper_points[i][0],
+             clipper_points[i][1], clipper_points[k][0],
+             clipper_points[k][1]);
+    }
+ 
+    // Printing vertices of clipped polygon
+    for (int i=0; i < poly_size; i++)
+        cout << '(' << poly_points[i][0] <<
+                ", " << poly_points[i][1] << ") ";*/
 }
