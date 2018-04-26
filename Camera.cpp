@@ -12,6 +12,10 @@ Camera::Camera() {
     angle = 0;
     clip = Vector2z(1.6, 1.6);
     clip_method = true;  // true: cohen-sutherland, false: liang-barsky
+    yu = clip.getY()/2;
+    yd = -clip.getY()/2;
+    xl = -clip.getX()/2;
+    xr = clip.getX()/2;
 }
 
 Vector2z Camera::world_to_norm(Vector2z coord) {
@@ -55,10 +59,6 @@ Vector2z Camera::world_to_viewport(Vector2z coord) {
 }
 
 int Camera::get_rcode(Vector2z point) {
-    float yu = clip.getY()/2;
-    float yd = -clip.getY()/2;
-    float xl = -clip.getX()/2;  // determinando os limites do clip
-    float xr = clip.getX()/2;
 
     float x = point.getX();
     float y = point.getY();
@@ -80,7 +80,7 @@ int Camera::get_rcode(Vector2z point) {
     return reg_code;
 }
 
-void Camera::draw_clipped (Clipped to_be_clipped, cairo_t* cr) {
+void Camera::draw_clipped_line (Clipped to_be_clipped, cairo_t* cr) {
     auto coord1_normed = world_to_norm(to_be_clipped.coord1);
     auto coord2_normed = world_to_norm(to_be_clipped.coord2);
 
@@ -103,11 +103,6 @@ void Camera::draw_clipped (Clipped to_be_clipped, cairo_t* cr) {
 }
 
 Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
-    float yu = clip.getY()/2;
-    float yd = -clip.getY()/2;
-    float xl = -clip.getX()/2;  // determinando os limites do clip
-    float xr = clip.getX()/2;
-
     float x0 = point0.getX();
     float y0 = point0.getY();
     float x1 = point1.getX();
@@ -155,16 +150,11 @@ Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
 		}
 	}
 	if (accept) {
-        std::cout << "usando cohen-sutherland" << std::endl;
 		return Clipped(Vector2z(x0, y0), Vector2z(x1, y1));
 	}
 }
 
 Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
-    float yu = clip.getY()/2;
-    float yd = -clip.getY()/2;
-    float xl = -clip.getX()/2;  // determinando os limites do clip
-    float xr = clip.getX()/2;
 
     float p1 = -(point1.getX() - point0.getX());
     float p2 = -p1;
@@ -222,15 +212,10 @@ Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
     xn2 = point0.getX() + p2 * rn2;
     yn2 = point0.getY() + p4 * rn2;
 
-    std::cout << "usando liang-barsky" << std::endl;
     return Clipped(Vector2z(xn1, yn1), Vector2z(xn2, yn2));
 }
 
 void Camera::clip_and_draw_point(Vector2z point, cairo_t* cr) {
-    float yu = clip.getY()/2;
-    float yd = -clip.getY()/2;
-    float xl = -clip.getX()/2;
-    float xr = clip.getX()/2;
 
     point = world_to_norm(point);
 
@@ -242,4 +227,93 @@ void Camera::clip_and_draw_point(Vector2z point, cairo_t* cr) {
     cairo_move_to(cr, point.getX(), point.getY());
     cairo_arc(cr, point.getX(), point.getY(), 1, 0, 2*M_PI);
     cairo_stroke(cr);
+}
+
+Vector2z Camera::intersection(Vector2z e1, Vector2z e2, Vector2z a, Vector2z b) {
+    double x = (e1.getX()*e2.getY() - e1.getY()*e2.getX()) * (a.getX() - b.getX()) - (e1.getX() - e2.getX()) * (a.getX()*b.getY() - a.getY()*b.getX());
+    x /= (e1.getX() - e2.getX()) * (a.getY() - b.getY()) - (e1.getY() - e2.getY()) * (a.getX() - b.getX());
+
+    double y = (e1.getX()*e2.getY() - e1.getY()*e2.getX()) * (a.getY() - b.getY()) - (e1.getY() - e2.getY()) * (a.getX()*b.getY() - a.getY()*b.getX());
+    y /= (e1.getX() - e2.getX()) * (a.getY() - b.getY()) - (e1.getY() - e2.getY()) * (a.getX() - b.getX());
+
+    return Vector2z(x, y);
+}
+
+void Camera::clip_pol_aux(std::vector<Vector2z>& new_polygon, Vector2z e1, Vector2z e2) {
+    std::vector<Vector2z> new_points{};
+
+    for (auto i = 0u; i < new_polygon.size(); ++i) {
+        auto k = (i+1)%new_polygon.size();
+        
+        Vector2z a = Vector2z(new_polygon[i]);
+        Vector2z b = Vector2z(new_polygon[k]);
+
+        double a_pos = (e2.getX()-e1.getX()) * (a.getY()-e1.getY()) - (e2.getY()-e1.getY()) * (a.getX()-e1.getX());
+        double b_pos = (e2.getX()-e1.getX()) * (b.getY()-e1.getY()) - (e2.getY()-e1.getY()) * (b.getX()-e1.getX());
+        
+        if (a_pos >= 0 && b_pos >= 0) { // If both points are inside
+            new_points.push_back(b);
+        }
+        else if (a_pos < 0 && b_pos >= 0) { // only A is outside
+            new_points.push_back(intersection(e1, e2, a, b));
+            new_points.push_back(b);
+        }
+        else if (a_pos >= 0 && b_pos < 0) { // only B is outside
+            new_points.push_back(intersection(e1, e2, a, b));
+        }
+    }
+
+    if (new_points.size() == 0) {
+        new_polygon.clear();
+        new_polygon.push_back(Vector2z(0,0));
+    } else {
+        new_polygon = new_points;
+    }
+}
+
+void Camera::clip_and_draw_polygon(std::vector<Vector2z> points, cairo_t* cr, gboolean filled) {  // primeiro testar com vetor parâmetro, depois com lista se pa
+    std::vector<Vector2z> clip_window{
+        Vector2z(xl, yu),
+        Vector2z(xr, yu),
+        Vector2z(xr, yd),
+        Vector2z(xl, yd)
+    };
+
+    std::vector<Vector2z> new_polygon{points};
+
+    for (int i = 0; i < points.size(); i++) {
+        new_polygon[i] = world_to_norm(new_polygon[i]);
+    }
+
+    // For each edge apply clipping
+    for (auto i = 0u; i < clip_window.size(); ++i) {
+        auto k = (i+1)%clip_window.size();
+        clip_pol_aux(new_polygon, clip_window[i], clip_window[k]);
+    }
+
+    std::cout << "clipou" << std::endl;
+
+    //std::vector<Vector2z> clipped = camera->clip_polygon(points);
+
+    if (new_polygon.size() > 0) {
+        // Move to first point
+        auto va = norm_to_view(new_polygon[0]);
+        cairo_move_to(cr, va.getX(), va.getY());
+        // Iterate through every point
+        for (auto i = 1u; i < new_polygon.size(); ++i) {
+            auto vb = norm_to_view(new_polygon[i]);
+
+            cairo_line_to(cr, vb.getX(), vb.getY());
+        }
+        // Go back to first point to close polygon
+        cairo_line_to(cr, va.getX(), va.getY());
+
+        std::cout << "desenhou" << std::endl;
+
+        if (filled) {
+            cairo_fill(cr);
+        } else {
+            cairo_stroke(cr);
+        }
+    }
 }

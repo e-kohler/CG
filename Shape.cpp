@@ -31,12 +31,12 @@ void Shape::draw(cairo_t* cr, Camera* camera) {
 
     for (; iterator != coords.end(); ++iterator) {  // percorre toda a lista de coordenadas, aplicando a transformação para viewport e desenhando as linhas nos resultados
         Clipped clipped = Clipped(coord1, *iterator);
-        camera->draw_clipped(clipped, cr);
+        camera->draw_clipped_line(clipped, cr);
         coord1 = *iterator;
         if (iterator == prev(coords.end())) {  // isso aqui é pra "fechar" a forma, quando chega na última coordenada, liga com a primeira
             auto first_coord = coords.front();
             Clipped clipped_close = Clipped(coord1, first_coord);
-            camera->draw_clipped(clipped_close, cr);
+            camera->draw_clipped_line(clipped_close, cr);
         }
     }
 
@@ -62,6 +62,17 @@ Line::Line(std::string name)
         {}
 
 Polygon::Polygon(std::string name)
-        :Shape(name){
-        }
+        :Shape(name)
+        {}
+
+void Polygon::draw(cairo_t* cr, Camera* camera) {
+    std::vector<Vector2z> points{};
+    for (auto it = coords.begin(); it != coords.end(); it++) {
+        points.push_back(*it);
+    }
+    for (int i = 0; i < points.size(); i++) {
+        std::cout << points[i] << std::endl;
+    }
+    camera->clip_and_draw_polygon(points, cr, filled);
+}
 

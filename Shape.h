@@ -25,7 +25,7 @@ class Shape {
 class Point : public Shape {
     public:
         Point(std::string name);
-        void draw(cairo_t* cr, Camera* camera) override;  // só point da override pq é diferente
+        void draw(cairo_t* cr, Camera* camera) override;
 };
 
 class Line : public Shape {
@@ -36,5 +36,6 @@ class Line : public Shape {
 class Polygon : public Shape {
     public:
         Polygon(std::string name);
+        void draw(cairo_t* cr, Camera* camera) override;
 };
 #endif
