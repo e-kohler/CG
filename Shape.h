@@ -17,7 +17,7 @@ class Shape {
         std::list<Vector2z> coords;
         Shape(std::string name);
         ~Shape();
-        virtual void draw(cairo_t* cr, Camera* camera);  // o draw depende da camera, pois a cada redesenho, as propriedades da câmera sao levadas em conta
+        virtual void draw(cairo_t* cr, Camera* camera) = 0;  // o draw depende da camera, pois a cada redesenho, as propriedades da câmera sao levadas em conta
         std::string getName();
         virtual void transform(std::vector<std::vector<float> > matrix);
 };
@@ -25,16 +25,18 @@ class Shape {
 class Point : public Shape {
     public:
         Point(std::string name);
-        void draw(cairo_t* cr, Camera* camera) override;  // só point da override pq é diferente
+        void draw(cairo_t* cr, Camera* camera) override;
 };
 
 class Line : public Shape {
     public:
         Line(std::string name);
+        void draw(cairo_t* cr, Camera* camera) override;
 };
 
 class Polygon : public Shape {
     public:
         Polygon(std::string name);
+        void draw(cairo_t* cr, Camera* camera) override;
 };
 #endif
