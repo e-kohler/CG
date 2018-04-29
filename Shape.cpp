@@ -70,9 +70,6 @@ void Polygon::draw(cairo_t* cr, Camera* camera) {
     for (auto it = coords.begin(); it != coords.end(); it++) {
         points.push_back(*it);
     }
-    for (int i = 0; i < points.size(); i++) {
-        std::cout << points[i] << std::endl;
-    }
     camera->clip_and_draw_polygon(points, cr, filled);
 }
 

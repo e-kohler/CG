@@ -155,7 +155,6 @@ Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
 }
 
 Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
-
     float p1 = -(point1.getX() - point0.getX());
     float p2 = -p1;
     float p3 = -(point1.getY() - point0.getY());
@@ -252,13 +251,13 @@ void Camera::clip_pol_aux(std::vector<Vector2z>& new_polygon, Vector2z e1, Vecto
         double b_pos = (e2.getX()-e1.getX()) * (b.getY()-e1.getY()) - (e2.getY()-e1.getY()) * (b.getX()-e1.getX());
         
         if (a_pos >= 0 && b_pos >= 0) { // If both points are inside
-            new_points.push_back(b);
+            new_points.push_back(a);
         }
         else if (a_pos < 0 && b_pos >= 0) { // only A is outside
             new_points.push_back(intersection(e1, e2, a, b));
-            new_points.push_back(b);
         }
         else if (a_pos >= 0 && b_pos < 0) { // only B is outside
+            new_points.push_back(a);
             new_points.push_back(intersection(e1, e2, a, b));
         }
     }
@@ -273,10 +272,10 @@ void Camera::clip_pol_aux(std::vector<Vector2z>& new_polygon, Vector2z e1, Vecto
 
 void Camera::clip_and_draw_polygon(std::vector<Vector2z> points, cairo_t* cr, gboolean filled) {  // primeiro testar com vetor parâmetro, depois com lista se pa
     std::vector<Vector2z> clip_window{
-        Vector2z(xl, yu),
-        Vector2z(xr, yu),
+        Vector2z(xl, yd),
         Vector2z(xr, yd),
-        Vector2z(xl, yd)
+        Vector2z(xr, yu),
+        Vector2z(xl, yu)
     };
 
     std::vector<Vector2z> new_polygon{points};
@@ -285,30 +284,20 @@ void Camera::clip_and_draw_polygon(std::vector<Vector2z> points, cairo_t* cr, gb
         new_polygon[i] = world_to_norm(new_polygon[i]);
     }
 
-    // For each edge apply clipping
     for (auto i = 0u; i < clip_window.size(); ++i) {
         auto k = (i+1)%clip_window.size();
         clip_pol_aux(new_polygon, clip_window[i], clip_window[k]);
     }
 
-    std::cout << "clipou" << std::endl;
-
-    //std::vector<Vector2z> clipped = camera->clip_polygon(points);
-
     if (new_polygon.size() > 0) {
-        // Move to first point
         auto va = norm_to_view(new_polygon[0]);
         cairo_move_to(cr, va.getX(), va.getY());
-        // Iterate through every point
         for (auto i = 1u; i < new_polygon.size(); ++i) {
             auto vb = norm_to_view(new_polygon[i]);
 
             cairo_line_to(cr, vb.getX(), vb.getY());
         }
-        // Go back to first point to close polygon
         cairo_line_to(cr, va.getX(), va.getY());
-
-        std::cout << "desenhou" << std::endl;
 
         if (filled) {
             cairo_fill(cr);
