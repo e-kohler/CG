@@ -80,21 +80,21 @@ int Camera::get_rcode(Vector2z point) {
     return reg_code;
 }
 
-void Camera::draw_clipped_line (Clipped to_be_clipped, cairo_t* cr) {
-    auto coord1_normed = world_to_norm(to_be_clipped.coord1);
-    auto coord2_normed = world_to_norm(to_be_clipped.coord2);
-
-    Clipped clipped;
+void Camera::clip_draw_line (cairo_t* cr, std::vector<Vector2z> points) {
+    auto point1_norm = world_to_norm(points[0]);
+    auto point2_norm = world_to_norm(points[1]);
     
+    std::vector<Vector2z> clipped;
+
     if (clip_method)
-        clipped = cohen_sutherland_clipper(coord1_normed, coord2_normed);
+        clipped = cohen_sutherland_clipper(point1_norm, point2_norm);
     else
-        clipped = liang_barsky_clipper(coord1_normed, coord2_normed);
+        clipped = liang_barsky_clipper(point1_norm, point2_norm);
 
-    if (clipped.draw) {
+    if (clipped.size() > 0) {
 
-        auto coord1_clipped_view = norm_to_view(clipped.coord1);
-        auto coord2_clipped_view = norm_to_view(clipped.coord2);
+        auto coord1_clipped_view = norm_to_view(clipped[0]);
+        auto coord2_clipped_view = norm_to_view(clipped[1]);
   
         cairo_move_to(cr, coord1_clipped_view.getX(), coord1_clipped_view.getY());
         cairo_line_to(cr, coord2_clipped_view.getX(), coord2_clipped_view.getY());
@@ -102,7 +102,7 @@ void Camera::draw_clipped_line (Clipped to_be_clipped, cairo_t* cr) {
     }
 }
 
-Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
+std::vector<Vector2z> Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
     float x0 = point0.getX();
     float y0 = point0.getY();
     float x1 = point1.getX();
@@ -117,7 +117,7 @@ Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
 			accept = true;
 			break;
 		} else if (outcode0 & outcode1) {
-            return Clipped();
+            return std::vector<Vector2z>{};
 			break;
 		} else {
 			float x, y;
@@ -150,11 +150,11 @@ Clipped Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z point1) {
 		}
 	}
 	if (accept) {
-		return Clipped(Vector2z(x0, y0), Vector2z(x1, y1));
+            return std::vector<Vector2z>{Vector2z(x0, y0), Vector2z(x1, y1)};
 	}
 }
 
-Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
+std::vector<Vector2z> Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
     float p1 = -(point1.getX() - point0.getX());
     float p2 = -p1;
     float p3 = -(point1.getY() - point0.getY());
@@ -171,7 +171,7 @@ Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
     negarr[0] = 0;
 
     if ((p1 == 0 && q1 < 0) || (p2 == 0 && q2 < 0) || (p3 == 0 && q3 < 0) || (p4 == 0 && q4 < 0)) {
-        return Clipped();
+        return std::vector<Vector2z>{};
     }
     if (p1 != 0) {
         float r1 = q1 / p1;
@@ -202,7 +202,7 @@ Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
     rn2 = *std::min_element(posarr, posarr + posind);
 
     if (rn1 > rn2)  {
-        return Clipped();
+        std::vector<Vector2z>{};
     }
 
     xn1 = point0.getX() + p2 * rn1;
@@ -211,10 +211,10 @@ Clipped Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
     xn2 = point0.getX() + p2 * rn2;
     yn2 = point0.getY() + p4 * rn2;
 
-    return Clipped(Vector2z(xn1, yn1), Vector2z(xn2, yn2));
+    return std::vector<Vector2z>{Vector2z(xn1, yn1), Vector2z(xn2, yn2)};
 }
 
-void Camera::clip_and_draw_point(Vector2z point, cairo_t* cr) {
+void Camera::clip_draw_point(cairo_t* cr, Vector2z point) {
 
     point = world_to_norm(point);
 
@@ -250,13 +250,13 @@ void Camera::clip_pol_aux(std::vector<Vector2z>& new_polygon, Vector2z e1, Vecto
         double a_pos = (e2.getX()-e1.getX()) * (a.getY()-e1.getY()) - (e2.getY()-e1.getY()) * (a.getX()-e1.getX());
         double b_pos = (e2.getX()-e1.getX()) * (b.getY()-e1.getY()) - (e2.getY()-e1.getY()) * (b.getX()-e1.getX());
         
-        if (a_pos >= 0 && b_pos >= 0) { // If both points are inside
+        if (a_pos >= 0 && b_pos >= 0) { // se os dois pontos tao dentro
             new_points.push_back(a);
         }
-        else if (a_pos < 0 && b_pos >= 0) { // only A is outside
+        else if (a_pos < 0 && b_pos >= 0) { // se só o 'a' estiver fora
             new_points.push_back(intersection(e1, e2, a, b));
         }
-        else if (a_pos >= 0 && b_pos < 0) { // only B is outside
+        else if (a_pos >= 0 && b_pos < 0) { // se só o 'b' estiver fora
             new_points.push_back(a);
             new_points.push_back(intersection(e1, e2, a, b));
         }
@@ -270,7 +270,7 @@ void Camera::clip_pol_aux(std::vector<Vector2z>& new_polygon, Vector2z e1, Vecto
     }
 }
 
-void Camera::clip_and_draw_polygon(std::vector<Vector2z> points, cairo_t* cr, gboolean filled) {  // primeiro testar com vetor parâmetro, depois com lista se pa
+void Camera::clip_draw_polygon(cairo_t* cr, std::vector<Vector2z> points, gboolean filled) {
     std::vector<Vector2z> clip_window{
         Vector2z(xl, yd),
         Vector2z(xr, yd),

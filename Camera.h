@@ -2,7 +2,6 @@
 #define CAMERA_H
 
 #include "Vector2z.h"
-#include "Clipped.h"
 #include <gtk/gtk.h>
 
 struct Camera{
@@ -18,11 +17,11 @@ struct Camera{
     Vector2z norm_to_view(Vector2z coord);
     Vector2z world_to_viewport(Vector2z coord);
     int get_rcode(Vector2z point);
-    Clipped cohen_sutherland_clipper(Vector2z point1, Vector2z point2);
-    Clipped liang_barsky_clipper(Vector2z point0, Vector2z point1);
-    void draw_clipped_line(Clipped clipped, cairo_t* cr);
-    void clip_and_draw_point(Vector2z point, cairo_t* cr);
-    void clip_and_draw_polygon(std::vector<Vector2z> points, cairo_t* cr, gboolean filled);
+    std::vector<Vector2z> cohen_sutherland_clipper(Vector2z point1, Vector2z point2);
+    std::vector<Vector2z> liang_barsky_clipper(Vector2z point0, Vector2z point1);
+    void clip_draw_line(cairo_t* cr, std::vector<Vector2z> points);
+    void clip_draw_point(cairo_t* cr, Vector2z point);
+    void clip_draw_polygon(cairo_t* cr, std::vector<Vector2z> points, gboolean filled);
     void clip_pol_aux(std::vector<Vector2z>& new_polygon, Vector2z e1, Vector2z e2);
     Vector2z intersection(Vector2z e1, Vector2z e2, Vector2z a, Vector2z b);
 };
