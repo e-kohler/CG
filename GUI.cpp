@@ -17,8 +17,9 @@ GtkWidget* GUI::combo_box;
 GtkBuilder* GUI::builder;
 GtkWidget* window;
 
-// add polig vector //
+// add polig vector
 std::list<Vector2z> GUI::polig_points;
+
 /////////////////////////////Callback de desenho/////////////////////////////
 
 void GUI::test_merge(std::list<Shape*> shapes_merge){
@@ -74,12 +75,16 @@ void GUI::add_ponto(GtkWidget** entries) {
     auto x = gtk_entry_get_text(GTK_ENTRY(entries[1]));
     auto y = gtk_entry_get_text(GTK_ENTRY(entries[2]));
 
-    Point* point = new Point(nome);
-    point->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
-    std::string nome_string(nome);
-    shapes.push_back(point);
-    gtk_widget_queue_draw(drawing_area);
-    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+    try {
+        Point* point = new Point(nome);
+        point->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
+        std::string nome_string(nome);
+        shapes.push_back(point);
+        gtk_widget_queue_draw(drawing_area);
+        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+    } catch (std::exception& e) {
+        std::cout << "Standard exception: " << e.what() << std::endl;
+    }
 
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
@@ -93,17 +98,63 @@ void GUI::add_line(GtkWidget** entries) {
 
     std::string nome_string(nome);
 
-    Line* line = new Line(nome);
-    line->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
-    line->coords.push_back(Vector2z(std::stof(x2), std::stof(y2)));
-    shapes.push_back(line);
-    gtk_widget_queue_draw(drawing_area);
-    gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+    try {
+        Line* line = new Line(nome);
+        line->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
+        line->coords.push_back(Vector2z(std::stof(x2), std::stof(y2)));
+        shapes.push_back(line);
+        gtk_widget_queue_draw(drawing_area);
+        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+    } catch (std::exception& e){
+        std::cout << "Standard exception: " << e.what() << std::endl;
+    }
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
 }
 
+void GUI::add_polig(GtkWidget** entries){
+    auto nome = gtk_entry_get_text(GTK_ENTRY(entries[3]));
+    auto x_entry = gtk_entry_get_text(GTK_ENTRY(entries[1]));
+    auto y_entry = gtk_entry_get_text(GTK_ENTRY(entries[2]));
 
+    try {
+        auto x = std::stof(x_entry);
+        auto y = std::stof(y_entry);
+        std::string nome_string(nome);
 
+        Polygon* poly = new Polygon(nome);
+        for(auto it = polig_points.begin(); it != polig_points.end(); it++){
+            poly->coords.push_back(*it);
+            std::cout << "X: " << it->getX() << "Y:" << it->getY() << std::endl;
+        }        
+        shapes.push_back(poly);
+
+        polig_points.clear();
+
+        gtk_widget_queue_draw(drawing_area);
+        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
+        
+    } catch (std::exception& e){
+        std::cout << "Standard exception: " << e.what() << std::endl;
+    }
+
+    gtk_widget_destroy(GTK_WIDGET(entries[0]));
+    
+}
+
+void GUI::add_point_polig(GtkWidget** entries){
+    auto x_entry = gtk_entry_get_text(GTK_ENTRY(entries[1]));
+    auto y_entry = gtk_entry_get_text(GTK_ENTRY(entries[2]));
+
+    try{
+        auto x = std::stof(x_entry);
+        auto y = std::stof(y_entry);
+
+        polig_points.push_back(Vector2z(x, y));
+        std::cout << "X: " << x << "Y: " << y << std::endl;
+    } catch (std::exception& e){
+        std::cout << "Standard exception: " << e.what() << std::endl;
+    }
+}
 
 /////////////////////////////Funções de controle de botões/////////////////////////////
 
@@ -320,52 +371,6 @@ void GUI::on_but_polig_clicked() {
     gtk_widget_show_all(window);
 }
 
-void GUI::add_polig(GtkWidget** entries){
-    auto nome = gtk_entry_get_text(GTK_ENTRY(entries[3]));
-    auto x_entry = gtk_entry_get_text(GTK_ENTRY(entries[1]));
-    auto y_entry = gtk_entry_get_text(GTK_ENTRY(entries[2]));
-
-    try {
-        auto x = std::stof(x_entry);
-        auto y = std::stof(y_entry);
-        std::string nome_string(nome);
-
-        Polygon* poly = new Polygon(nome);
-        for(auto it = polig_points.begin(); it != polig_points.end(); it++){
-            poly->coords.push_back(*it);
-            std::cout << "X: " << it->getX() << "Y:" << it->getY() << std::endl;
-        }        
-        shapes.push_back(poly);
-
-        polig_points.clear();
-
-        gtk_widget_queue_draw(drawing_area);
-        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
-        
-    }catch(std::exception& e){
-        std::cout << "Standard exception: " << e.what() << std::endl;
-    }
-
-    gtk_widget_destroy(GTK_WIDGET(entries[0]));
-    
-}
-
-void GUI::add_point_polig(GtkWidget** entries){
-    auto x_entry = gtk_entry_get_text(GTK_ENTRY(entries[1]));
-    auto y_entry = gtk_entry_get_text(GTK_ENTRY(entries[2]));
-
-    try{
-        auto x = std::stof(x_entry);
-        auto y = std::stof(y_entry);
-
-        polig_points.push_back(Vector2z(x, y));
-        std::cout << "X: " << x << "Y: " << y << std::endl;
-    } catch (std::exception& e){
-        std::cout << "Standard exception: " << e.what() << std::endl;
-    }
-}
-
-
 void GUI::on_but_tran_clicked() {
     GtkWidget* entry_x = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_x_tran"));
     GtkWidget* entry_y = GTK_WIDGET(gtk_builder_get_object(GTK_BUILDER(builder), "entry_y_tran"));
@@ -377,7 +382,7 @@ void GUI::on_but_tran_clicked() {
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = shapes.begin();
-    std::advance(it, selected_index); //std
+    std::advance(it, selected_index);
     Trans::translate(*it, vector);
     gtk_widget_queue_draw(drawing_area);
 }
@@ -393,7 +398,7 @@ void GUI::on_but_escal_clicked() {
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = shapes.begin();
-    std::advance(it, selected_index); //std
+    std::advance(it, selected_index);
     Trans::scale(*it, vector);
     gtk_widget_queue_draw(drawing_area);
 }
@@ -405,7 +410,7 @@ void GUI::on_but_rot_def_clicked() {
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = shapes.begin();
-    std::advance(it, selected_index); //std
+    std::advance(it, selected_index);
     Trans::rotate_default(*it, angle);
     gtk_widget_queue_draw(drawing_area);
 }
@@ -417,7 +422,7 @@ void GUI::on_but_rot_org_clicked() {
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = shapes.begin();
-    std::advance(it, selected_index); //std
+    std::advance(it, selected_index);
     Trans::rotate_by_point(*it, angle, Vector2z(0, 0));
     gtk_widget_queue_draw(drawing_area);
 }
@@ -436,7 +441,7 @@ void GUI::on_but_rot_point_clicked() {
 
     auto selected_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combo_box));
     auto it = shapes.begin();
-    std::advance(it, selected_index); //std
+    std::advance(it, selected_index);
     Trans::rotate_by_point(*it, angle, point);
     gtk_widget_queue_draw(drawing_area);
 }
@@ -447,12 +452,12 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
 	GUI::app = app;
 	
         
-    Polygon* polig = new Polygon("tetra");  // cria as formas
-    Polygon* polig2 = new Polygon("tetra2");
-    Polygon* triang = new Polygon("tri");
-    Line* linha = new Line("linha");
-    Point* point = new Point("ponto");
-    Point* point2 = new Point("ponto2");
+    Polygon* polig = new Polygon("Quadrado");  // cria as formas
+    Polygon* polig2 = new Polygon("Paralelogramo");
+    Polygon* triang = new Polygon("Triângulo");
+    Line* linha = new Line("Linha");
+    Point* point = new Point("Ponto");
+    Point* point2 = new Point("Ponto2");
 
     linha->coords.push_back(Vector2z(-5, 0));
     linha->coords.push_back(Vector2z(0, 5));
@@ -473,7 +478,6 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     triang->coords.push_back(Vector2z(3, 1));
     triang->coords.push_back(Vector2z(4, 4));
     triang->filled = true;
-
 
     point->coords.push_back(Vector2z(0, 0));
     point2->coords.push_back(Vector2z(3, 3));
