@@ -450,7 +450,6 @@ void GUI::on_but_rot_point_clicked() {
 
 void GUI::activate (GtkApplication* app, gpointer user_data) {
 	GUI::app = app;
-	
         
     Polygon* polig = new Polygon("Quadrado");  // cria as formas
     Polygon* polig2 = new Polygon("Paralelogramo");
@@ -458,6 +457,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     Line* linha = new Line("Linha");
     Point* point = new Point("Ponto");
     Point* point2 = new Point("Ponto2");
+    BezierCurve* curve = new BezierCurve("CurvaBezier", 0.02);
 
     linha->coords.push_back(Vector2z(-5, 0));
     linha->coords.push_back(Vector2z(0, 5));
@@ -482,12 +482,18 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     point->coords.push_back(Vector2z(0, 0));
     point2->coords.push_back(Vector2z(3, 3));
 
+    curve->coords.push_back(Vector2z(0, 0));
+    curve->coords.push_back(Vector2z(1, 1));
+    curve->coords.push_back(Vector2z(2, 0));
+    curve->coords.push_back(Vector2z(3, 1));
+
     shapes.push_back(linha);  // coloca na lista global
     shapes.push_back(polig);
     shapes.push_back(polig2);
     shapes.push_back(triang);
     shapes.push_back(point);
     shapes.push_back(point2);
+    shapes.push_back(curve);
 
     camera = new Camera();
     

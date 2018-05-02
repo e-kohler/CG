@@ -20,9 +20,11 @@ struct Camera{
     std::vector<Vector2z> cohen_sutherland_clipper(Vector2z point1, Vector2z point2);
     std::vector<Vector2z> liang_barsky_clipper(Vector2z point0, Vector2z point1);
     void clip_draw_line(cairo_t* cr, std::vector<Vector2z> points);
+    bool clip_point(Vector2z point);
     void clip_draw_point(cairo_t* cr, Vector2z point);
     void clip_draw_polygon(cairo_t* cr, std::vector<Vector2z> points, gboolean filled);
     void clip_pol_aux(std::vector<Vector2z>& new_polygon, Vector2z e1, Vector2z e2);
     Vector2z intersection(Vector2z e1, Vector2z e2, Vector2z a, Vector2z b);
+    void clip_draw_curve(cairo_t* cr, std::vector<Vector2z> points);
 };
 #endif
