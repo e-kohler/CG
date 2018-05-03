@@ -13,7 +13,6 @@ class Shape {
         std::string name;
            
     public:
-        gboolean filled;
         std::list<Vector2z> coords;
         Shape(std::string name);
         ~Shape();
@@ -38,5 +37,15 @@ class Polygon : public Shape {
     public:
         Polygon(std::string name);
         void draw(cairo_t* cr, Camera* camera) override;
+        gboolean filled;
+};
+
+class BezierCurve : public Shape {
+    public:
+        BezierCurve(std::string name, float step);
+        void draw(cairo_t*cr, Camera* camera) override;
+        std::vector<Vector2z> points{};
+        float step;
+        void generate_curve();
 };
 #endif

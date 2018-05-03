@@ -214,6 +214,10 @@ std::vector<Vector2z> Camera::liang_barsky_clipper(Vector2z point0, Vector2z poi
     return std::vector<Vector2z>{Vector2z(xn1, yn1), Vector2z(xn2, yn2)};
 }
 
+bool Camera::clip_point(Vector2z point) {
+    return ((point.getX() < xl || point.getX() > xr || point.getY() < yd || point.getY() > yu));
+}
+
 void Camera::clip_draw_point(cairo_t* cr, Vector2z point) {
 
     point = world_to_norm(point);
@@ -304,5 +308,53 @@ void Camera::clip_draw_polygon(cairo_t* cr, std::vector<Vector2z> points, gboole
         } else {
             cairo_stroke(cr);
         }
+    }
+}
+
+void Camera::clip_draw_curve(cairo_t* cr, std::vector<Vector2z> points) {
+    std::vector<Vector2z> new_curve{};
+
+    bool went_out = false;
+
+    for (auto i = 0u; i < points.size()-1; ++i) {
+        auto a = points[i];
+        auto b = points[i+1];
+
+        bool clip_a = clip_point(a);
+        bool clip_b = clip_point(b);
+
+        if (!went_out) {
+            if (i != 0 || !clip_a) { // if first point and clipped dont draw it
+                new_curve.push_back(a);
+            }
+        }
+
+        if (!clip_a && clip_b) { // only A is inside
+            new_curve.push_back(b);
+            went_out = true;
+        }
+        else if (clip_a && !clip_b) { // only B is inside
+            new_curve.push_back(a);
+            went_out = false;
+        }
+        else if (clip_a && clip_b) { // both are outside
+            went_out = true;
+        }
+        else if (!clip_a && !clip_b) { // both are inside
+            went_out = false;
+        }
+    }
+    if (!clip_point(points[points.size()-1]))
+        new_curve.push_back(points[points.size()-1]);
+
+    if (new_curve.size() > 0) {
+        auto va = norm_to_view(new_curve[0]);
+        cairo_move_to(cr, va.getX(), va.getY());
+        
+        for (auto i = 1u; i < new_curve.size(); ++i) {
+            auto vb = norm_to_view(new_curve[i]);
+            cairo_line_to(cr, vb.getX(), vb.getY());
+        }
+        cairo_stroke(cr);
     }
 }
