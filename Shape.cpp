@@ -13,10 +13,10 @@ std::string Shape::getName() {
 }
 
 void Shape::transform(std::vector<std::vector<float> > matrix) {
-    for (auto iterator = coords.begin(); iterator != coords.end(); ++iterator) {
-        auto result = (*iterator) * matrix;
-        iterator->setX(result.getX());
-        iterator->setY(result.getY());
+    for (int i = 0; i < coords.size(); i++) {
+        auto result = coords[i] * matrix;
+        coords[i].setX(result.getX());
+        coords[i].setY(result.getY());
     }
 }
 
@@ -25,8 +25,7 @@ Point::Point(std::string name)
     {}
 
 void Point::draw(cairo_t* cr, Camera* camera) {
-    Vector2z point = *coords.begin();
-    camera->clip_draw_point(cr, point);
+    camera->clip_draw_point(cr, *coords.begin());
 }
 
 Line::Line(std::string name)
@@ -34,12 +33,7 @@ Line::Line(std::string name)
     {}
 
 void Line::draw(cairo_t*cr, Camera* camera) {
-    std::vector<Vector2z> points{};
-
-    points.push_back(coords.front());
-    points.push_back(coords.back());
-
-    camera->clip_draw_line(cr, points);
+    camera->clip_draw_line(cr, coords);
     cairo_stroke(cr);
 }
 
@@ -48,11 +42,7 @@ Polygon::Polygon(std::string name)
     {}
 
 void Polygon::draw(cairo_t* cr, Camera* camera) {
-    std::vector<Vector2z> points{};
-    for (auto it = coords.begin(); it != coords.end(); it++) {
-        points.push_back(*it);
-    }
-    camera->clip_draw_polygon(cr, points, filled);
+    camera->clip_draw_polygon(cr, coords, filled);
 }
 
 BezierCurve::BezierCurve(std::string name, float step)
@@ -63,11 +53,7 @@ BezierCurve::BezierCurve(std::string name, float step)
 
 void BezierCurve::draw(cairo_t* cr, Camera* camera) {
     generate_curve();
-    std::vector<Vector2z> norm_points{};
-    for (int i = 0; i < points.size(); i++) {
-        norm_points.push_back(camera->world_to_norm(points[i]));
-    }
-    camera->clip_draw_curve(cr, norm_points);
+    camera->clip_draw_curve(cr, points);
 }
 
 void BezierCurve::generate_curve() {

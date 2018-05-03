@@ -316,6 +316,10 @@ void Camera::clip_draw_curve(cairo_t* cr, std::vector<Vector2z> points) {
 
     bool went_out = false;
 
+    for (int i = 0; i < points.size(); i++) {
+        points[i] = world_to_norm(points[i]);
+    }
+
     for (auto i = 0u; i < points.size()-1; ++i) {
         auto a = points[i];
         auto b = points[i+1];
