@@ -48,4 +48,16 @@ class BezierCurve : public Shape {
         float step;
         void generate_curve();
 };
+
+class Spline : public Shape {
+    public:
+        Spline(std::string name);
+        std::std::vector<Vector2z> points{};
+        void generate_curve();
+        void draw (cairo_t* cr, Camera* camera) override;
+
+    private:
+        void forwardDifference (float n, float x, float dx, float d2x, float d3x, 
+            float y, float dy, float d2y, float d3y);
+};
 #endif
