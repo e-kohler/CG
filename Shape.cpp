@@ -96,7 +96,7 @@ void Spline::draw(cairo_t* cr, Camera* camera) {
 }
 
 void Spline::generate_curve() {
-    int num_curves = world_coords.size() - 2;
+    int num_curves = world_coords.size() - 3;
 
     double t = _step;
     double t2 = t * _step;
