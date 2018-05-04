@@ -13,10 +13,10 @@ std::string Shape::getName() {
 }
 
 void Shape::transform(std::vector<std::vector<float> > matrix) {
-    for (int i = 0; i < coords.size(); i++) {
-        auto result = coords[i] * matrix;
-        coords[i].setX(result.getX());
-        coords[i].setY(result.getY());
+    for (int i = 0; i < world_coords.size(); i++) {
+        auto result = world_coords[i] * matrix;
+        world_coords[i].setX(result.getX());
+        world_coords[i].setY(result.getY());
     }
 }
 
@@ -25,7 +25,7 @@ Point::Point(std::string name)
     {}
 
 void Point::draw(cairo_t* cr, Camera* camera) {
-    camera->clip_draw_point(cr, *coords.begin());
+    camera->clip_draw_point(cr, *world_coords.begin());
 }
 
 Line::Line(std::string name)
@@ -33,7 +33,7 @@ Line::Line(std::string name)
     {}
 
 void Line::draw(cairo_t*cr, Camera* camera) {
-    camera->clip_draw_line(cr, coords);
+    camera->clip_draw_line(cr, world_coords);
     cairo_stroke(cr);
 }
 
@@ -42,7 +42,7 @@ Polygon::Polygon(std::string name)
     {}
 
 void Polygon::draw(cairo_t* cr, Camera* camera) {
-    camera->clip_draw_polygon(cr, coords, filled);
+    camera->clip_draw_polygon(cr, world_coords, filled);
 }
 
 BezierCurve::BezierCurve(std::string name, float step)
@@ -57,17 +57,13 @@ void BezierCurve::draw(cairo_t* cr, Camera* camera) {
 }
 
 void BezierCurve::generate_curve() {
-    std::vector<Vector2z> coords_vector{};
-    for (auto it = coords.begin(); it != coords.end(); it++) {  // em quase todas as operacoes de desenho
-        coords_vector.push_back(*it);                           // tamo passando de lista pra vetor,
-    }                                                           // talvez seja melhor só fazer vetor msm.
     points.clear();
-    for (auto i = 0; i < coords_vector.size() - 1; i+=3) {
+    for (auto i = 0; i < world_coords.size() - 1; i+=3) {
         float t = 0;
-        auto p0 = coords_vector[i];
-        auto p1 = coords_vector[i + 1];  
-        auto p2 = coords_vector[i + 2];
-        auto p3 = coords_vector[i + 3];
+        auto p0 = world_coords[i];
+        auto p1 = world_coords[i + 1];
+        auto p2 = world_coords[i + 2];
+        auto p3 = world_coords[i + 3];
         while (t <= (1 + step / 10)) {
             float t2 = t * t;
             float t3 = t2 * t;

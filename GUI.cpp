@@ -77,7 +77,7 @@ void GUI::add_ponto(GtkWidget** entries) {
 
     try {
         Point* point = new Point(nome);
-        point->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
+        point->world_coords.push_back(Vector2z(std::stof(x), std::stof(y)));
         std::string nome_string(nome);
         shapes.push_back(point);
         gtk_widget_queue_draw(drawing_area);
@@ -100,8 +100,8 @@ void GUI::add_line(GtkWidget** entries) {
 
     try {
         Line* line = new Line(nome);
-        line->coords.push_back(Vector2z(std::stof(x), std::stof(y)));
-        line->coords.push_back(Vector2z(std::stof(x2), std::stof(y2)));
+        line->world_coords.push_back(Vector2z(std::stof(x), std::stof(y)));
+        line->world_coords.push_back(Vector2z(std::stof(x2), std::stof(y2)));
         shapes.push_back(line);
         gtk_widget_queue_draw(drawing_area);
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
@@ -123,7 +123,7 @@ void GUI::add_polig(GtkWidget** entries){
 
         Polygon* poly = new Polygon(nome);
         for(auto it = polig_points.begin(); it != polig_points.end(); it++){
-            poly->coords.push_back(*it);
+            poly->world_coords.push_back(*it);
             std::cout << "X: " << it->getX() << "Y:" << it->getY() << std::endl;
         }        
         shapes.push_back(poly);
@@ -459,33 +459,33 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     Point* point2 = new Point("Ponto2");
     BezierCurve* curve = new BezierCurve("CurvaBezier", 0.02);
 
-    linha->coords.push_back(Vector2z(-5, 0));
-    linha->coords.push_back(Vector2z(0, 5));
+    linha->world_coords.push_back(Vector2z(-5, 0));
+    linha->world_coords.push_back(Vector2z(0, 5));
 
-    polig->coords.push_back(Vector2z(1, 1));
-    polig->coords.push_back(Vector2z(1, -1));
-    polig->coords.push_back(Vector2z(-1, -1));
-    polig->coords.push_back(Vector2z(-1, 1));
+    polig->world_coords.push_back(Vector2z(1, 1));
+    polig->world_coords.push_back(Vector2z(1, -1));
+    polig->world_coords.push_back(Vector2z(-1, -1));
+    polig->world_coords.push_back(Vector2z(-1, 1));
     polig->filled = false;
 
-    polig2->coords.push_back(Vector2z(-2, -2));
-    polig2->coords.push_back(Vector2z(-3, -4));
-    polig2->coords.push_back(Vector2z(-5, -4));
-    polig2->coords.push_back(Vector2z(-4, -2));
+    polig2->world_coords.push_back(Vector2z(-2, -2));
+    polig2->world_coords.push_back(Vector2z(-3, -4));
+    polig2->world_coords.push_back(Vector2z(-5, -4));
+    polig2->world_coords.push_back(Vector2z(-4, -2));
     polig2->filled = false;
 
-    triang->coords.push_back(Vector2z(1, 2));
-    triang->coords.push_back(Vector2z(3, 1));
-    triang->coords.push_back(Vector2z(4, 4));
+    triang->world_coords.push_back(Vector2z(1, 2));
+    triang->world_coords.push_back(Vector2z(3, 1));
+    triang->world_coords.push_back(Vector2z(4, 4));
     triang->filled = true;
 
-    point->coords.push_back(Vector2z(0, 0));
-    point2->coords.push_back(Vector2z(3, 3));
+    point->world_coords.push_back(Vector2z(0, 0));
+    point2->world_coords.push_back(Vector2z(3, 3));
 
-    curve->coords.push_back(Vector2z(0, 0));
-    curve->coords.push_back(Vector2z(1, 1));
-    curve->coords.push_back(Vector2z(2, 0));
-    curve->coords.push_back(Vector2z(3, 1));
+    curve->world_coords.push_back(Vector2z(0, -3));
+    curve->world_coords.push_back(Vector2z(1, -5));
+    curve->world_coords.push_back(Vector2z(2, 4));
+    curve->world_coords.push_back(Vector2z(3, -1));
 
     shapes.push_back(linha);  // coloca na lista global
     shapes.push_back(polig);

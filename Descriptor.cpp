@@ -42,7 +42,7 @@ std::list<Shape*> Descriptor::translator(){
 					
 					for(auto i = 1; i < pieces.size(); i++){
 						auto piece_index = std::stof(pieces[i]) - 1;
-						poly->coords.push_back(vertices[piece_index]);
+						poly->world_coords.push_back(vertices[piece_index]);
 					}
 					shapes.push_back(poly);
 
@@ -62,8 +62,8 @@ std::list<Shape*> Descriptor::translator(){
 
 					// std::cout << vertices[ind_fcoord].getX() << " " << vertices[ind_fcoord].getY() << std::endl;
 
-					linha->coords.push_back(vertices[ind_fcoord]);
-					linha->coords.push_back(vertices[ind_scoord]);
+					linha->world_coords.push_back(vertices[ind_fcoord]);
+					linha->world_coords.push_back(vertices[ind_scoord]);
 
 					shapes.push_back(linha);
 

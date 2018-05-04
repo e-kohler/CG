@@ -42,13 +42,13 @@ void Trans::translate(Shape* shape, Vector2z vector) {
 }
 
 void Trans::scale(Shape* shape, Vector2z vector) {
-    auto it_coords = shape->coords.begin();
+    auto it_coords = shape->world_coords.begin();
 
     Vector2z geo_middle = Vector2z(0,0);
-    for (; it_coords != shape->coords.end(); ++it_coords) {
+    for (; it_coords != shape->world_coords.end(); ++it_coords) {
         geo_middle = geo_middle + *it_coords;
     }
-    geo_middle = geo_middle / shape->coords.size();  // meio geométrico calculado
+    geo_middle = geo_middle / shape->world_coords.size();  // meio geométrico calculado
 
     auto scal_matrix = scaling_matrix(vector, geo_middle);
     
@@ -56,13 +56,13 @@ void Trans::scale(Shape* shape, Vector2z vector) {
 }
 
 void Trans::rotate_default(Shape* shape, float angle) {
-    auto it_coords = shape->coords.begin();
+    auto it_coords = shape->world_coords.begin();
 
     Vector2z geo_middle = Vector2z(0,0);
-    for (; it_coords != shape->coords.end(); ++it_coords) {
+    for (; it_coords != shape->world_coords.end(); ++it_coords) {
         geo_middle = geo_middle + *it_coords;
     }
-    geo_middle = geo_middle / shape->coords.size();  // meio geométrico calculado
+    geo_middle = geo_middle / shape->world_coords.size();  // meio geométrico calculado
 
     auto rot_matrix = rotating_matrix(angle, geo_middle);
 
@@ -70,7 +70,7 @@ void Trans::rotate_default(Shape* shape, float angle) {
 }
 
 void Trans::rotate_by_point(Shape* shape, float angle, Vector2z vector){
-    auto it_coords = shape->coords.begin();
+    auto it_coords = shape->world_coords.begin();
 
     float cos_ang = cos(angle);
     float sin_ang = sin(angle);

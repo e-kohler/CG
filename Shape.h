@@ -13,7 +13,7 @@ class Shape {
         std::string name;
            
     public:
-        std::vector<Vector2z> coords;
+        std::vector<Vector2z> world_coords;
         Shape(std::string name);
         ~Shape();
         virtual void draw(cairo_t* cr, Camera* camera) = 0;  // o draw depende da camera, pois a cada redesenho, as propriedades da câmera sao levadas em conta
