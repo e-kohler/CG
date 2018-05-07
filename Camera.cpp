@@ -350,7 +350,7 @@ void Camera::clip_draw_curve(cairo_t* cr, std::vector<Vector2z> points) {
     }
     if (!clip_point(points[points.size()-1]))
         new_curve.push_back(points[points.size()-1]);
-
+    
     if (new_curve.size() > 0) {
         auto va = norm_to_view(new_curve[0]);
         cairo_move_to(cr, va.getX(), va.getY());

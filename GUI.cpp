@@ -488,16 +488,15 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     // curve->world_coords.push_back(Vector2z(2, 4));
     // curve->world_coords.push_back(Vector2z(3, -1));
 
-
     spline->world_coords.push_back(Vector2z(1, 1));
-    spline->world_coords.push_back(Vector2z(2, -2));
+    spline->world_coords.push_back(Vector2z(2, 2));
     spline->world_coords.push_back(Vector2z(3, 2));
     spline->world_coords.push_back(Vector2z(4, 1));
 
     shapes.push_back(linha);  // coloca na lista global
     shapes.push_back(polig);
     shapes.push_back(polig2);
-    shapes.push_back(triang);
+    //shapes.push_back(triang);
     shapes.push_back(point);
     shapes.push_back(point2);
     // shapes.push_back(curve);

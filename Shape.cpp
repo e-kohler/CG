@@ -81,8 +81,10 @@ void BezierCurve::generate_curve() {
             t += step;
         }
     }
+    //for (int i = 0; i < points.size(); i++) {
+    //    std::cout << points[i].getX() << " " << points[i].getY() << std::endl;
+    //}
 }
-
 
 Spline::Spline(std::string name, float step)
     : Shape(name)
@@ -97,7 +99,7 @@ void Spline::draw(cairo_t* cr, Camera* camera) {
 
 void Spline::generate_curve() {
     points.clear();
-    int num_curves = world_coords.size() - 1;
+    int num_curves = world_coords.size() - 3;
 
     double t = _step;
     double t2 = t * _step;
@@ -105,7 +107,6 @@ void Spline::generate_curve() {
 
     double n16 = 1.0/6.0;
     double n23 = 2.0/3.0;
-
 
     for (int i = 0; i < num_curves; i++) {                                                          
         auto c1 = world_coords[i];
@@ -147,6 +148,6 @@ void Spline::generate_curve() {
             points.push_back(Vector2z(x,y));
             vx = x;
             vy = y;
-        }                                                           
+        }                                                    
     }
 }
