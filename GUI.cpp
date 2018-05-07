@@ -458,7 +458,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     Point* point = new Point("Ponto");
     Point* point2 = new Point("Ponto2");
     BezierCurve* curve = new BezierCurve("CurvaBezier", 0.02);
-    Spline* spline = new Spline("SPline", 0.1);
+    Spline* spline = new Spline("SPline", 0.01);
 
     linha->world_coords.push_back(Vector2z(-5, 0));
     linha->world_coords.push_back(Vector2z(0, 5));
@@ -483,24 +483,23 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     point->world_coords.push_back(Vector2z(0, 0));
     point2->world_coords.push_back(Vector2z(3, 3));
 
-    // curve->world_coords.push_back(Vector2z(0, -3));
-    // curve->world_coords.push_back(Vector2z(1, -5));
-    // curve->world_coords.push_back(Vector2z(2, 4));
-    // curve->world_coords.push_back(Vector2z(3, -1));
-
+    curve->world_coords.push_back(Vector2z(0, -3));
+    curve->world_coords.push_back(Vector2z(1, -5));
+    curve->world_coords.push_back(Vector2z(2, 4));
+    curve->world_coords.push_back(Vector2z(3, -1));
 
     spline->world_coords.push_back(Vector2z(1, 1));
-    spline->world_coords.push_back(Vector2z(2, -2));
+    spline->world_coords.push_back(Vector2z(2, 2));
     spline->world_coords.push_back(Vector2z(3, 2));
     spline->world_coords.push_back(Vector2z(4, 1));
 
     shapes.push_back(linha);  // coloca na lista global
     shapes.push_back(polig);
     shapes.push_back(polig2);
-    shapes.push_back(triang);
+    //shapes.push_back(triang);
     shapes.push_back(point);
     shapes.push_back(point2);
-    // shapes.push_back(curve);
+    shapes.push_back(curve);
     shapes.push_back(spline);
 
     camera = new Camera();

@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 
+typedef std::vector<std::vector<float> > Matrix;
+
 class Shape {
     protected:
         std::string name;
@@ -56,6 +58,9 @@ class Spline : public Shape {
         void generate_curve();
         float _step;
         void draw (cairo_t* cr, Camera* camera) override;
-
+        std::vector<std::vector<float> > float_matrix;
+        void fwd_diff(std::vector<float> fwdx, std::vector<float> fwdy);
+        std::vector<float> matrix_vector_mult(Matrix a, std::vector<float> b);
+        Matrix t_spline_matrix(float t);
 };
 #endif

@@ -4,12 +4,14 @@
 #include "Shape.h"
 #include <math.h>
 
+typedef std::vector<std::vector<float> > Matrix;
+
 namespace Trans {
-    std::vector<std::vector<float> > translating_matrix(Vector2z vector);
+    Matrix translating_matrix(Vector2z vector);
 
-    std::vector<std::vector<float> > scaling_matrix(Vector2z vector, Vector2z point);
+    Matrix scaling_matrix(Vector2z vector, Vector2z point);
 
-    std::vector<std::vector<float> > rotating_matrix(float angle, Vector2z point);
+    Matrix rotating_matrix(float angle, Vector2z point);
 
     void translate(Shape* shape, Vector2z vector);
 
@@ -18,7 +20,6 @@ namespace Trans {
     void rotate_default(Shape* shape, float angle);
 
     void rotate_by_point(Shape* shape, float angle, Vector2z vector);
-
 }
 
 #endif

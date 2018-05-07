@@ -1,7 +1,9 @@
 #include "Trans.h"
 
-std::vector<std::vector<float> > Trans::translating_matrix(Vector2z vector) {
-    std::vector<std::vector<float> > transform_matrix;
+typedef std::vector<std::vector<float> > Matrix;
+
+Matrix Trans::translating_matrix(Vector2z vector) {
+    Matrix transform_matrix;
 
     transform_matrix = {{1, 0, 0},
     {0, 1, 0},
@@ -11,8 +13,8 @@ std::vector<std::vector<float> > Trans::translating_matrix(Vector2z vector) {
     return transform_matrix;
 }
 
-std::vector<std::vector<float> > Trans::scaling_matrix(Vector2z vector, Vector2z point) {
-    std::vector<std::vector<float> > transform_matrix;
+Matrix Trans::scaling_matrix(Vector2z vector, Vector2z point) {
+    Matrix transform_matrix;
 
     transform_matrix = {{vector.getX(), 0, 0},
     {0, vector.getY(), 0},
@@ -22,8 +24,8 @@ std::vector<std::vector<float> > Trans::scaling_matrix(Vector2z vector, Vector2z
     return transform_matrix;
 }
 
-std::vector<std::vector<float> > Trans::rotating_matrix(float angle, Vector2z point) {
-    std::vector<std::vector<float> > transform_matrix;
+Matrix Trans::rotating_matrix(float angle, Vector2z point) {
+    Matrix transform_matrix;
 
     float cos_ang = cos(angle);
     float sin_ang = sin(angle);

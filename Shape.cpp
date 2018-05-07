@@ -1,6 +1,8 @@
 #include "Shape.h"
 #include <iostream>
-#include <cmath> 
+#include <cmath>
+
+typedef std::vector<std::vector<float> > Matrix;
 
 Shape::Shape(std::string name) {
     this->name = name;
@@ -34,7 +36,6 @@ Line::Line(std::string name)
 
 void Line::draw(cairo_t*cr, Camera* camera) {
     camera->clip_draw_line(cr, world_coords);
-    cairo_stroke(cr);
 }
 
 Polygon::Polygon(std::string name)
@@ -83,11 +84,17 @@ void BezierCurve::generate_curve() {
     }
 }
 
-
 Spline::Spline(std::string name, float step)
     : Shape(name)
     {
         this->_step = step;
+        this->float_matrix =
+        {
+        std::vector<float>{-1.0/6.0,  1.0/2.0, -1.0/2.0, 1.0/6.0},
+        std::vector<float>{ 1.0/2.0, -1.0,      1.0/2.0, 0},
+        std::vector<float>{-1.0/2.0,  0.0,      1.0/2.0, 0},
+        std::vector<float>{ 1.0/6.0,  2.0/3.0,  1.0/6.0, 0}
+	    };
     }
 
 void Spline::draw(cairo_t* cr, Camera* camera) {
@@ -95,58 +102,70 @@ void Spline::draw(cairo_t* cr, Camera* camera) {
     camera->clip_draw_curve(cr, points);
 }
 
+//Matrix 4x4, vetor 4 elementos
+std::vector<float> Spline::matrix_vector_mult(Matrix a, std::vector<float> b) {
+	std::vector<float> c(4, 0);
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            c[i] += b[j] * a[i][j];
+        }
+    }
+	return c;
+}
+
+Matrix Spline::t_spline_matrix(float t) {
+	return Matrix{
+		{0, 0, 0, 1},
+		{t * t * t, t * t, t, 0},
+        {6 * t * t * t, 2 * t * t, 0, 0},
+		{6 * t * t * t, 0, 0, 0}
+	};
+}
+
 void Spline::generate_curve() {
     points.clear();
-    int num_curves = world_coords.size() - 1;
 
-    double t = _step;
-    double t2 = t * _step;
-    double t3 = t2 * _step;
+	for (int i = 0; i + 3 < world_coords.size(); i++) {
 
-    double n16 = 1.0/6.0;
-    double n23 = 2.0/3.0;
+		Vector2z p0 = world_coords[i];
+		Vector2z p1 = world_coords[i + 1];
+		Vector2z p2 = world_coords[i + 2];
+		Vector2z p3 = world_coords[i + 3];
 
+		std::vector<float> gx{p0.getX(), p1.getX(), p2.getX(), p3.getX()};
+		std::vector<float> gy{p0.getY(), p1.getY(), p2.getY(), p3.getY()};
 
-    for (int i = 0; i < num_curves; i++) {                                                          
-        auto c1 = world_coords[i];
-        auto c2 = world_coords[i+1];
-        auto c3 = world_coords[i+2];
-        auto c4 = world_coords[i+3];
+		auto t_mat = t_spline_matrix(_step);
 
-        double ax = -n16 * c1.getX() +0.5 * c2.getX() -0.5 * c3.getX() +n16 * c4.getX();
-        double bx =  0.5 * c1.getX()       -c2.getX() +0.5 * c3.getX();
-        double cx = -0.5 * c1.getX()              +0.5 * c3.getX();
-        double dx =  n16 * c1.getX() +n23 * c2.getX() +n16 * c3.getX();
+		auto cx = matrix_vector_mult(float_matrix, gx);
+		auto cy = matrix_vector_mult(float_matrix, gy);
 
-        double delta_x  = ax * t3 + bx * t2 + cx * t;
-        double delta_x3 = ax * (6 * t3);
-        double delta_x2 = delta_x3 +bx * (2 * t2);
+		auto fwdx = matrix_vector_mult(t_mat, cx);
+		auto fwdy = matrix_vector_mult(t_mat, cy);
 
-        double ay = -n16 * c1.getY() +0.5 * c2.getY() -0.5 * c3.getY() +n16 * c4.getY();
-        double by =  0.5 * c1.getY()       -c2.getY() +0.5 * c3.getY();
-        double cy = -0.5 * c1.getY()              +0.5 * c3.getY();
-        double dy =  n16 * c1.getY() +n23 * c2.getY() +n16 * c3.getY();
+		fwd_diff(fwdx, fwdy);
+	}
+}
 
-        double delta_y  = ay * t3 + by * t2 + cy * t;
-        double delta_y3 = ay * (6 * t3);
-        double delta_y2 = delta_y3 +by * (2 * t2);
-
-        double vx = dx, vy = dy;
-        points.push_back(Vector2z(vx, vy));
-        for (double t = 0.0; t < 1.0; t += _step) {
-            double x = vx, y = vy;
-
-            x += delta_x;
-            delta_x += delta_x2;
-            delta_x2 += delta_x3;
-
-            y += delta_y;
-            delta_y += delta_y2;
-            delta_y2 += delta_y3;
-
-            points.push_back(Vector2z(x,y));
-            vx = x;
-            vy = y;
-        }                                                           
-    }
+void Spline::fwd_diff(std::vector<float> fwdx, std::vector<float> fwdy) {
+	int n = 1 / _step;
+	float x   = fwdx[0];
+	float dx  = fwdx[1];
+	float d2x = fwdx[2];
+	float d3x = fwdx[3];
+	float y   = fwdy[0];
+	float dy  = fwdy[1];
+	float d2y = fwdy[2];
+	float d3y = fwdy[3];
+	points.push_back(Vector2z(x, y));
+	for (int i = 0; i < n; i++) {
+		x += dx;
+		dx += d2x;
+		d2x += d3x;
+		y += dy;
+		dy += d2y;
+		d2y += d3y;
+		points.push_back(Vector2z(x, y));
+	}
 }
