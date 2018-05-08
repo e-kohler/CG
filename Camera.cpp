@@ -67,23 +67,23 @@ int Camera::get_rcode(Vector2z point) {
 
     if (x < xl)
          reg_code |= 1;
- 
+
     if (x > xr)
          reg_code |= 2;
- 
+
     if (y < yd)
          reg_code |= 4;
- 
+
     if (y > yu)
          reg_code |= 8;
-    
+
     return reg_code;
 }
 
 void Camera::clip_draw_line (cairo_t* cr, std::vector<Vector2z> points) {
     auto point1_norm = world_to_norm(points[0]);
     auto point2_norm = world_to_norm(points[1]);
-    
+
     std::vector<Vector2z> clipped;
 
     if (clip_method)
@@ -95,7 +95,7 @@ void Camera::clip_draw_line (cairo_t* cr, std::vector<Vector2z> points) {
 
         auto coord1_clipped_view = norm_to_view(clipped[0]);
         auto coord2_clipped_view = norm_to_view(clipped[1]);
-  
+
         cairo_move_to(cr, coord1_clipped_view.getX(), coord1_clipped_view.getY());
         cairo_line_to(cr, coord2_clipped_view.getX(), coord2_clipped_view.getY());
         cairo_stroke(cr);
@@ -108,50 +108,50 @@ std::vector<Vector2z> Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z
     float x1 = point1.getX();
     float y1 = point1.getY();
 
-	int outcode0 = get_rcode(Vector2z(x0, y0));
-	int outcode1 = get_rcode(Vector2z(x1, y1));
-	bool accept = false;
+    int outcode0 = get_rcode(Vector2z(x0, y0));
+    int outcode1 = get_rcode(Vector2z(x1, y1));
+    bool accept = false;
 
-	while (true) {
-		if (!(outcode0 | outcode1)) {
-			accept = true;
-			break;
-		} else if (outcode0 & outcode1) {
+    while (true) {
+        if (!(outcode0 | outcode1)) {
+            accept = true;
+            break;
+		    } else if (outcode0 & outcode1) {
             return std::vector<Vector2z>{};
-			break;
-		} else {
-			float x, y;
+			      break;
+		    } else {
+			      float x, y;
 
-			int outcodeOut = outcode0 ? outcode0 : outcode1;
+        		int outcodeOut = outcode0 ? outcode0 : outcode1;
 
-			if (outcodeOut & 8) {
-				x = x0 + (x1 - x0) * (yu - y0) / (y1 - y0);
-				y = yu;
-			} else if (outcodeOut & 4) {
-				x = x0 + (x1 - x0) * (yd - y0) / (y1 - y0);
-				y = yd;
-			} else if (outcodeOut & 2) {
-				y = y0 + (y1 - y0) * (xr - x0) / (x1 - x0);
-				x = xr;
-			} else if (outcodeOut & 1) {
-				y = y0 + (y1 - y0) * (xl - x0) / (x1 - x0);
-				x = xl;
-			}
+        		if (outcodeOut & 8) {
+        				x = x0 + (x1 - x0) * (yu - y0) / (y1 - y0);
+        				y = yu;
+        		} else if (outcodeOut & 4) {
+        				x = x0 + (x1 - x0) * (yd - y0) / (y1 - y0);
+        				y = yd;
+        		} else if (outcodeOut & 2) {
+        				y = y0 + (y1 - y0) * (xr - x0) / (x1 - x0);
+        				x = xr;
+        		} else if (outcodeOut & 1) {
+        				y = y0 + (y1 - y0) * (xl - x0) / (x1 - x0);
+        				x = xl;
+        		}
 
-			if (outcodeOut == outcode0) {
-				x0 = x;
-				y0 = y;
-				outcode0 = get_rcode(Vector2z(x0, y0));
-			} else {
-				x1 = x;
-				y1 = y;
-				outcode1 = get_rcode(Vector2z(x1, y1));
-			}
-		}
-	}
-	if (accept) {
-            return std::vector<Vector2z>{Vector2z(x0, y0), Vector2z(x1, y1)};
-	}
+        		if (outcodeOut == outcode0) {
+        				x0 = x;
+        				y0 = y;
+        				outcode0 = get_rcode(Vector2z(x0, y0));
+        		} else {
+        				x1 = x;
+        				y1 = y;
+        				outcode1 = get_rcode(Vector2z(x1, y1));
+        		}
+          }
+    	}
+      if (accept) {
+          return std::vector<Vector2z>{Vector2z(x0, y0), Vector2z(x1, y1)};
+	    }
 }
 
 std::vector<Vector2z> Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
@@ -214,10 +214,6 @@ std::vector<Vector2z> Camera::liang_barsky_clipper(Vector2z point0, Vector2z poi
     return std::vector<Vector2z>{Vector2z(xn1, yn1), Vector2z(xn2, yn2)};
 }
 
-bool Camera::clip_point(Vector2z point) {
-    return ((point.getX() < xl || point.getX() > xr || point.getY() < yd || point.getY() > yu));
-}
-
 void Camera::clip_draw_point(cairo_t* cr, Vector2z point) {
 
     point = world_to_norm(point);
@@ -247,13 +243,13 @@ void Camera::clip_pol_aux(std::vector<Vector2z>& new_polygon, Vector2z e1, Vecto
 
     for (auto i = 0u; i < new_polygon.size(); ++i) {
         auto k = (i+1)%new_polygon.size();
-        
+
         Vector2z a = Vector2z(new_polygon[i]);
         Vector2z b = Vector2z(new_polygon[k]);
 
         double a_pos = (e2.getX()-e1.getX()) * (a.getY()-e1.getY()) - (e2.getY()-e1.getY()) * (a.getX()-e1.getX());
         double b_pos = (e2.getX()-e1.getX()) * (b.getY()-e1.getY()) - (e2.getY()-e1.getY()) * (b.getX()-e1.getX());
-        
+
         if (a_pos >= 0 && b_pos >= 0) { // se os dois pontos tao dentro
             new_points.push_back(a);
         }
@@ -312,53 +308,11 @@ void Camera::clip_draw_polygon(cairo_t* cr, std::vector<Vector2z> points, gboole
 }
 
 void Camera::clip_draw_curve(cairo_t* cr, std::vector<Vector2z> points) {
-    std::vector<Vector2z> new_curve{};
-
-    bool went_out = false;
-
-    for (int i = 0; i < points.size(); i++) {
-        points[i] = world_to_norm(points[i]);
-    }
-
     for (auto i = 0u; i < points.size()-1; ++i) {
-        auto a = points[i];
-        auto b = points[i+1];
 
-        bool clip_a = clip_point(a);
-        bool clip_b = clip_point(b);
+      auto point_a = points[i];
+      auto point_b = points[i+1];
 
-        if (!went_out) {
-            if (i != 0 || !clip_a) { // if first point and clipped dont draw it
-                new_curve.push_back(a);
-            }
-        }
-
-        if (!clip_a && clip_b) { // only A is inside
-            new_curve.push_back(b);
-            went_out = true;
-        }
-        else if (clip_a && !clip_b) { // only B is inside
-            new_curve.push_back(a);
-            went_out = false;
-        }
-        else if (clip_a && clip_b) { // both are outside
-            went_out = true;
-        }
-        else if (!clip_a && !clip_b) { // both are inside
-            went_out = false;
-        }
-    }
-    if (!clip_point(points[points.size()-1]))
-        new_curve.push_back(points[points.size()-1]);
-    
-    if (new_curve.size() > 0) {
-        auto va = norm_to_view(new_curve[0]);
-        cairo_move_to(cr, va.getX(), va.getY());
-        
-        for (auto i = 1u; i < new_curve.size(); ++i) {
-            auto vb = norm_to_view(new_curve[i]);
-            cairo_line_to(cr, vb.getX(), vb.getY());
-        }
-        cairo_stroke(cr);
-    }
+      clip_draw_line(cr, std::vector<Vector2z>{point_a, point_b});
+  }
 }

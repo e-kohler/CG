@@ -28,13 +28,13 @@ void GUI::test_merge(std::list<Shape*> shapes_merge){
 }
 
 gboolean GUI::draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data) {
-   
+
     ///////////////// desenha a borda vermelha do clip //////////////////////
 
     auto clip = camera->clip/2;
 
     cairo_set_source_rgb(cr, 1, 1, 1);
-    cairo_paint(cr);    
+    cairo_paint(cr);
 
 
     cairo_set_source_rgb(cr, 1, 0, 0);
@@ -125,20 +125,20 @@ void GUI::add_polig(GtkWidget** entries){
         for(auto it = polig_points.begin(); it != polig_points.end(); it++){
             poly->world_coords.push_back(*it);
             std::cout << "X: " << it->getX() << "Y:" << it->getY() << std::endl;
-        }        
+        }
         shapes.push_back(poly);
 
         polig_points.clear();
 
         gtk_widget_queue_draw(drawing_area);
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome_string.c_str());
-        
+
     } catch (std::exception& e){
         std::cout << "Standard exception: " << e.what() << std::endl;
     }
 
     gtk_widget_destroy(GTK_WIDGET(entries[0]));
-    
+
 }
 
 void GUI::add_point_polig(GtkWidget** entries){
@@ -181,7 +181,7 @@ void GUI::on_open_file_dialog(){
 
 void GUI::on_save_file_dialog(){
     std::cout << "SAVE" << std::endl;
-    
+
 }
 
 void GUI::on_but_cima_clicked() {
@@ -229,11 +229,11 @@ void GUI::on_but_rot_cam_esq_clicked() {
 }
 
 void GUI::on_import_obj(){
-    
+
 }
 
 void GUI::on_save_obj(){
-    
+
 }
 
 void GUI::on_but_point_clicked() {
@@ -340,7 +340,7 @@ void GUI::on_but_polig_clicked() {
 
     auto label_x = gtk_label_new("X");
     auto label_y = gtk_label_new("Y");
-    
+
     auto label_nome = gtk_label_new("Nome");
 
     auto entry_x = gtk_entry_new();
@@ -358,7 +358,7 @@ void GUI::on_but_polig_clicked() {
     add_point = gtk_button_new_with_label ("Adicionar Ponto");
     g_signal_connect_swapped (confirm, "clicked", G_CALLBACK (add_polig), entries);
     g_signal_connect_swapped (add_point, "clicked", G_CALLBACK (add_point_polig), entries);
-    
+
     gtk_grid_attach(GTK_GRID(grid), label_nome, 0, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), entry_nome, 1, 0, 1, 1);
     gtk_grid_attach(GTK_GRID(grid), label_x, 0, 1, 1, 1);
@@ -450,7 +450,7 @@ void GUI::on_but_rot_point_clicked() {
 
 void GUI::activate (GtkApplication* app, gpointer user_data) {
 	GUI::app = app;
-        
+
     Polygon* polig = new Polygon("Quadrado");  // cria as formas
     Polygon* polig2 = new Polygon("Paralelogramo");
     Polygon* triang = new Polygon("Triângulo");
@@ -475,35 +475,35 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     polig2->world_coords.push_back(Vector2z(-4, -2));
     polig2->filled = false;
 
-    triang->world_coords.push_back(Vector2z(1, 2));
-    triang->world_coords.push_back(Vector2z(3, 1));
-    triang->world_coords.push_back(Vector2z(4, 4));
+    triang->world_coords.push_back(Vector2z(-1, 2));
+    triang->world_coords.push_back(Vector2z(-3, 1));
+    triang->world_coords.push_back(Vector2z(-4, 4));
     triang->filled = true;
 
     point->world_coords.push_back(Vector2z(0, 0));
     point2->world_coords.push_back(Vector2z(3, 3));
 
-    // curve->world_coords.push_back(Vector2z(0, -3));
-    // curve->world_coords.push_back(Vector2z(1, -5));
-    // curve->world_coords.push_back(Vector2z(2, 4));
-    // curve->world_coords.push_back(Vector2z(3, -1));
+    curve->world_coords.push_back(Vector2z(0, -3));
+    curve->world_coords.push_back(Vector2z(1, -5));
+    curve->world_coords.push_back(Vector2z(2, 4));
+    curve->world_coords.push_back(Vector2z(3, -1));
 
     spline->world_coords.push_back(Vector2z(1, 1));
-    spline->world_coords.push_back(Vector2z(2, 2));
-    spline->world_coords.push_back(Vector2z(3, 2));
-    spline->world_coords.push_back(Vector2z(4, 1));
+    spline->world_coords.push_back(Vector2z(-6, -6));
+    spline->world_coords.push_back(Vector2z(-3, 2));
+    spline->world_coords.push_back(Vector2z(-4, 1));
 
     shapes.push_back(linha);  // coloca na lista global
     shapes.push_back(polig);
     shapes.push_back(polig2);
-    //shapes.push_back(triang);
+    shapes.push_back(triang);
     shapes.push_back(point);
     shapes.push_back(point2);
-    // shapes.push_back(curve);
+    shapes.push_back(curve);
     shapes.push_back(spline);
 
     camera = new Camera();
-    
+
     builder = gtk_builder_new();
     gtk_builder_add_from_file(builder, "./glade/cg_top_frame.glade", NULL);  // tem que mudar isso pra rodar no moodle
     gtk_builder_add_callback_symbol(builder, "on_but_baix_clicked", on_but_baix_clicked);
@@ -538,9 +538,9 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     for (auto iterator = shapes.begin(); iterator != shapes.end(); ++iterator) {
         const char *nome = (*iterator)->getName().c_str();
         gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), nome);
-    } 
+    }
     gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
-    
+
     gtk_window_set_application (GTK_WINDOW (window), GTK_APPLICATION (app));
 
     gtk_widget_show_all (window);  // mostra tudo
