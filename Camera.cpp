@@ -116,42 +116,43 @@ std::vector<Vector2z> Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z
         if (!(outcode0 | outcode1)) {
             accept = true;
             break;
-		    } else if (outcode0 & outcode1) {
+        } else if (outcode0 & outcode1) {
             return std::vector<Vector2z>{};
-			      break;
-		    } else {
-			      float x, y;
+            break;
+        } else {
+            float x, y;
 
-        		int outcodeOut = outcode0 ? outcode0 : outcode1;
+            int outcodeOut = outcode0 ? outcode0 : outcode1;
 
-        		if (outcodeOut & 8) {
-        				x = x0 + (x1 - x0) * (yu - y0) / (y1 - y0);
-        				y = yu;
-        		} else if (outcodeOut & 4) {
-        				x = x0 + (x1 - x0) * (yd - y0) / (y1 - y0);
-        				y = yd;
-        		} else if (outcodeOut & 2) {
-        				y = y0 + (y1 - y0) * (xr - x0) / (x1 - x0);
-        				x = xr;
-        		} else if (outcodeOut & 1) {
-        				y = y0 + (y1 - y0) * (xl - x0) / (x1 - x0);
-        				x = xl;
-        		}
+            if (outcodeOut & 8) {
+                x = x0 + (x1 - x0) * (yu - y0) / (y1 - y0);
+                y = yu;
+            } else if (outcodeOut & 4) {
+                x = x0 + (x1 - x0) * (yd - y0) / (y1 - y0);
+                y = yd;
+            } else if (outcodeOut & 2) {
+                y = y0 + (y1 - y0) * (xr - x0) / (x1 - x0);
+                x = xr;
+            } else if (outcodeOut & 1) {
+                y = y0 + (y1 - y0) * (xl - x0) / (x1 - x0);
+                x = xl;
+            }
 
-        		if (outcodeOut == outcode0) {
-        				x0 = x;
-        				y0 = y;
-        				outcode0 = get_rcode(Vector2z(x0, y0));
-        		} else {
-        				x1 = x;
-        				y1 = y;
-        				outcode1 = get_rcode(Vector2z(x1, y1));
-        		}
-          }
-    	}
-      if (accept) {
+            if (outcodeOut == outcode0) {
+                x0 = x;
+                y0 = y;
+                outcode0 = get_rcode(Vector2z(x0, y0));
+            } else {
+                x1 = x;
+                y1 = y;
+                outcode1 = get_rcode(Vector2z(x1, y1));
+            }
+        }
+        
+        if (accept) {
           return std::vector<Vector2z>{Vector2z(x0, y0), Vector2z(x1, y1)};
-	    }
+        }
+    }
 }
 
 std::vector<Vector2z> Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
