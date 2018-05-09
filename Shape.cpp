@@ -45,18 +45,22 @@ void Polygon::draw(cairo_t* cr, Camera* camera) {
     camera->clip_draw_polygon(cr, world_coords, filled);
 }
 
-BezierCurve::BezierCurve(std::string name, float step)
+Curve::Curve(std::string name)
     : Shape(name)
-    {
-        this->step = step;
-    }
+    {}
 
-void BezierCurve::draw(cairo_t* cr, Camera* camera) {
+void Curve::draw(cairo_t* cr, Camera* camera) {
     generate_curve();
     camera->clip_draw_curve(cr, points);
 }
 
-void BezierCurve::generate_curve() {
+Bezier::Bezier(std::string name)
+    : Curve(name)
+    {
+        this->step = 0.02;
+    }
+
+void Bezier::generate_curve() {
     points.clear();
     for (auto i = 0; i < world_coords.size() - 1; i+=3) {
         float t = 0;
@@ -81,29 +85,21 @@ void BezierCurve::generate_curve() {
             t += step;
         }
     }
-    //for (int i = 0; i < points.size(); i++) {
-    //    std::cout << points[i].getX() << " " << points[i].getY() << std::endl;
-    //}
 }
 
-Spline::Spline(std::string name, float step)
-    : Shape(name)
+Spline::Spline(std::string name)
+    : Curve(name)
     {
-        this->_step = step;
+        this->step = 0.1;
     }
-
-void Spline::draw(cairo_t* cr, Camera* camera) {
-    generate_curve();
-    camera->clip_draw_curve(cr, points);
-}
 
 void Spline::generate_curve() {
     points.clear();
     int num_curves = world_coords.size() - 3;
 
-    double t = _step;
-    double t2 = t * _step;
-    double t3 = t2 * _step;
+    double t = step;
+    double t2 = t * step;
+    double t3 = t2 * step;
 
     double n16 = 1.0/6.0;
     double n23 = 2.0/3.0;
@@ -134,7 +130,7 @@ void Spline::generate_curve() {
 
         double vx = dx, vy = dy;
         points.push_back(Vector2z(vx, vy));
-        for (double t = 0.0; t < 1.0; t += _step) {
+        for (double t = 0.0; t < 1.0; t += step) {
             double x = vx, y = vy;
 
             x += delta_x;

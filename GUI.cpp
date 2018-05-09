@@ -457,8 +457,8 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     Line* linha = new Line("Linha");
     Point* point = new Point("Ponto");
     Point* point2 = new Point("Ponto2");
-    BezierCurve* curve = new BezierCurve("CurvaBezier", 0.02);
-    Spline* spline = new Spline("Spline", 0.1);
+    Bezier* curve = new Bezier("Bezier");
+    Spline* spline = new Spline("Spline");
 
     linha->world_coords.push_back(Vector2z(-5, 0));
     linha->world_coords.push_back(Vector2z(0, 5));

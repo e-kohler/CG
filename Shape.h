@@ -40,22 +40,24 @@ class Polygon : public Shape {
         gboolean filled;
 };
 
-class BezierCurve : public Shape {
+class Curve : public Shape {
     public:
-        BezierCurve(std::string name, float step);
+        Curve(std::string name);
         void draw(cairo_t*cr, Camera* camera) override;
+        virtual void generate_curve() = 0;
         std::vector<Vector2z> points{};
         float step;
+};
+
+class Bezier : public Curve {
+    public:
+        Bezier(std::string name);
         void generate_curve();
 };
 
-class Spline : public Shape {
+class Spline : public Curve {
     public:
-        Spline(std::string name, float step);
-        std::vector<Vector2z> points{};
+        Spline(std::string name);
         void generate_curve();
-        float _step;
-        void draw (cairo_t* cr, Camera* camera) override;
-
 };
 #endif
