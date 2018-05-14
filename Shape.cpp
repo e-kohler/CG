@@ -147,3 +147,14 @@ void Spline::generate_curve() {
         }                                                    
     }
 }
+
+Object3D::Object3D(std::string name)
+ : Shape(name){}
+
+void Object3D::draw(cairo_t* cr, Camera* camera){
+    
+}
+
+void Object3D::transform(std::vector<std::vector<float> > matrix){
+    
+}

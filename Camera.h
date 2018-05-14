@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Vector2z.h"
+#include "Vector.h"
 #include <gtk/gtk.h>
 
 struct Camera{

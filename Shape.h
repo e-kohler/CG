@@ -1,7 +1,7 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "Vector2z.h"
+#include "Vector.h"
 #include "Camera.h"
 #include <gtk/gtk.h>
 #include <list>
@@ -60,4 +60,13 @@ class Spline : public Curve {
         Spline(std::string name);
         void generate_curve();
 };
+
+class Object3D : public Shape {
+    public:
+        Object3D(std::string name);
+        std::vector<Vector3z> world_coords;
+        void draw(cairo_t* cr, Camera* camera) override;
+        void transform(std::vector<std::vector<float> > matrix);
+};
+
 #endif

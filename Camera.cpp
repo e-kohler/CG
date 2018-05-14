@@ -150,7 +150,6 @@ std::vector<Vector2z> Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z
         }
     }
     return std::vector<Vector2z>{Vector2z(x0, y0), Vector2z(x1, y1)};
-
 }
 
 std::vector<Vector2z> Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
