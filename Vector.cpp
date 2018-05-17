@@ -19,26 +19,26 @@ Vector::Vector(float x, float y, float z) : coords(4) {
     this->coords[3] = 1;
 } 
 
-Vector2z::Vector2z(){}
-
-Vector2z::Vector2z(float x, float y) : Vector(x, y) {}
-
-float Vector2z::getX() {
+float Vector::getX() {
     return this->coords[0];
 }
 
-float Vector2z::getY() {
+float Vector::getY() {
     return this->coords[1];
 }
 
 
-void Vector2z::setX(float x) {
+void Vector::setX(float x) {
     this->coords[0] = x;
 }
 
-void Vector2z::setY(float y) {
+void Vector::setY(float y) {
     this->coords[1] = y;
 }
+
+Vector2z::Vector2z(){}
+
+Vector2z::Vector2z(float x, float y) : Vector(x, y) {}
 
 Vector2z Vector2z::operator+(Vector2z vector) {
     return Vector2z(this->coords[0] + vector.getX(), this->coords[1] + vector.getY());
@@ -79,25 +79,8 @@ Vector3z::Vector3z(){}
 
 Vector3z::Vector3z(float x, float y, float z) : Vector(x, y, z) {}
 
-float Vector3z::getX() {
-    return this->coords[0];
-}
-
-float Vector3z::getY() {
-    return this->coords[1];
-}
-
 float Vector3z::getZ() {
     return this->coords[2];
-}
-
-
-void Vector3z::setX(float x) {
-    this->coords[0] = x;
-}
-
-void Vector3z::setY(float y) {
-    this->coords[1] = y;
 }
 
 void Vector3z::setZ(float z) {

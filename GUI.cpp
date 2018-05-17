@@ -459,7 +459,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     Point* point2 = new Point("Ponto2");
     Bezier* curve = new Bezier("Bezier");
     Spline* spline = new Spline("Spline");
-    Object3D* object = new Object3D("cubo");
+    Object3D* cubo = new Object3D("cubo");
 
     linha->world_coords.push_back(Vector2z(-5, 0));
     linha->world_coords.push_back(Vector2z(0, 5));
