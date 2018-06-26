@@ -1,0 +1,7 @@
+# Trapézio
+v -5 1 0
+v -4 3 0
+v -2 3 0
+v -1 1 0
+o trapezio
+l 1 2 3 4

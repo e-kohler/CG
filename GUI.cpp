@@ -446,6 +446,10 @@ void GUI::on_but_rot_point_clicked() {
     gtk_widget_queue_draw(drawing_area);
 }
 
+void GUI::on_cohen_suth_clicked() {
+    camera->clip_method = !camera->clip_method;
+}
+
 /////////////////////////////Instacia os objetos/////////////////////////////
 
 void GUI::activate (GtkApplication* app, gpointer user_data) {
@@ -530,6 +534,7 @@ void GUI::activate (GtkApplication* app, gpointer user_data) {
     gtk_builder_add_callback_symbol(builder, "on_but_rot_cam_esq_clicked", on_but_rot_cam_esq_clicked);
     gtk_builder_add_callback_symbol(builder, "on_open_file_dialog", on_open_file_dialog);
     gtk_builder_add_callback_symbol(builder, "on_save_file_dialog", on_save_file_dialog);
+    gtk_builder_add_callback_symbol(builder, "on_cohen_suth_clicked", on_cohen_suth_clicked);
 
     gtk_builder_connect_signals(builder, NULL);
 

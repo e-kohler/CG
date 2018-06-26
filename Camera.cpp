@@ -11,7 +11,7 @@ Camera::Camera() {
     size = Vector2z(10, 10);
     angle = 0;
     clip = Vector2z(1.6, 1.6);
-    clip_method = true;  // true: cohen-sutherland, false: liang-barsky
+    clip_method = false;  // true: cohen-sutherland, false: liang-barsky
     yu = clip.getY()/2;
     yd = -clip.getY()/2;
     xl = -clip.getX()/2;
@@ -86,10 +86,13 @@ void Camera::clip_draw_line (cairo_t* cr, std::vector<Vector2z> points) {
 
     std::vector<Vector2z> clipped;
 
-    if (clip_method)
+    if (clip_method) {
         clipped = cohen_sutherland_clipper(point1_norm, point2_norm);
-    else
+        std::cout << "usando cohen suth" << std::endl;
+    } else {
         clipped = liang_barsky_clipper(point1_norm, point2_norm);
+        std::cout << "usando liang barsky" << std::endl;
+    }
 
     if (clipped.size() > 0) {
 
@@ -149,9 +152,7 @@ std::vector<Vector2z> Camera::cohen_sutherland_clipper(Vector2z point0, Vector2z
             }
         }
     }
-    if (accept) {
-        return std::vector<Vector2z>{Vector2z(x0, y0), Vector2z(x1, y1)};
-    }
+    return std::vector<Vector2z>{Vector2z(x0, y0), Vector2z(x1, y1)};
 }
 
 std::vector<Vector2z> Camera::liang_barsky_clipper(Vector2z point0, Vector2z point1) {
@@ -170,7 +171,7 @@ std::vector<Vector2z> Camera::liang_barsky_clipper(Vector2z point0, Vector2z poi
     posarr[0] = 1;
     negarr[0] = 0;
 
-    if ((p1 == 0 && q1 < 0) || (p2 == 0 && q2 < 0) || (p3 == 0 && q3 < 0) || (p4 == 0 && q4 < 0)) {
+    if ((p1 == 0 && q1 < 0) || (p3 == 0 && q3 < 0)) {
         return std::vector<Vector2z>{};
     }
     if (p1 != 0) {
@@ -202,7 +203,7 @@ std::vector<Vector2z> Camera::liang_barsky_clipper(Vector2z point0, Vector2z poi
     rn2 = *std::min_element(posarr, posarr + posind);
 
     if (rn1 > rn2)  {
-        std::vector<Vector2z>{};
+        return std::vector<Vector2z>{};
     }
 
     xn1 = point0.getX() + p2 * rn1;

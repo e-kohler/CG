@@ -60,6 +60,8 @@ std::list<Shape*> Descriptor::translator(){
 					auto ind_fcoord = std::stof(pieces[1]) - 1; // -1 para considerar a linha correta quando dentro do vetor
 					auto ind_scoord = std::stof(pieces[2]) - 1;
 
+					std::cout << ind_fcoord << ind_scoord << std::endl;
+
 					// std::cout << vertices[ind_fcoord].getX() << " " << vertices[ind_fcoord].getY() << std::endl;
 
 					linha->world_coords.push_back(vertices[ind_fcoord]);
