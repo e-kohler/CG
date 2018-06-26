@@ -820,6 +820,8 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
+                        <signal name="activate" handler="on_liang_barsky_activate" swapped="yes"/>
+                        <signal name="clicked" handler="on_liang_barsky_clicked" swapped="no"/>
                         <signal name="group-changed" handler="on_liang_barsky_group_changed" swapped="no"/>
                       </object>
                       <packing>
@@ -835,6 +837,8 @@
                         <property name="receives_default">False</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">liang_barsky</property>
+                        <signal name="activate" handler="on_cohen_suth_activate" swapped="yes"/>
+                        <signal name="clicked" handler="on_cohen_suth_clicked" swapped="no"/>
                         <signal name="group-changed" handler="on_cohen_suth_group_changed" swapped="no"/>
                       </object>
                       <packing>
