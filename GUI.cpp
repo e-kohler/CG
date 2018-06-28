@@ -281,7 +281,7 @@ void GUI::on_but_line_clicked() {
     GtkWidget* button;
 
     window = gtk_application_window_new (app);
-    gtk_window_set_title (GTK_WINDOW (window), "Ponto");
+    gtk_window_set_title (GTK_WINDOW (window), "Reta");
     gtk_window_set_default_size (GTK_WINDOW(window), 100, 100);
 
     grid = gtk_grid_new();
